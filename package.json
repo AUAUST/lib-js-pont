@@ -7,6 +7,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "pnpm -r build",
+    "build:clean": "pnpm -r build:clean",
     "test": "pnpm -r test",
     "watch": "pnpm -r watch",
     "coverage": "pnpm -r coverage",
