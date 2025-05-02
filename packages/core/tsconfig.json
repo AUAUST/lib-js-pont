@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "types": ["node"],
+    "lib": ["ESNext"],
+    "isolatedModules": true,
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@auaust/pont-core": ["./src"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

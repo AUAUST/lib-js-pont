@@ -1,0 +1,70 @@
+{
+  "name": "@auaust/pont-adapter-solid",
+  "license": "GPL-3.0-only",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "",
+  "contributors": [
+    {
+      "name": "Aurian Aubert",
+      "email": "aurian@auaust.ch",
+      "url": "https://auaust.ch"
+    }
+  ],
+  "homepage": "https://github.com/AUAUST/lib-js-pont",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AUAUST/lib-js-pont",
+    "directory": "packages/adapter-solid"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "pnpm test && pnpm run build:clean && pnpm run build:js",
+    "build:clean": "rimraf dist",
+    "build:js": "tsup",
+    "test": "vitest run --config vitest.config.ts --typecheck -- && pnpm typecheck",
+    "watch": "vitest --config vitest.config.ts --typecheck --",
+    "coverage": "vitest run --coverage",
+    "typecheck": "echo 'Typechecking...' && tsc --noEmit && echo 'All good!'",
+    "ci:publish": "changeset publish"
+  },
+  "dependencies": {
+    "@auaust/pont-core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup-preset-solid": "^2.2.0"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "browser": {},
+  "exports": {
+    "solid": {
+      "development": "./dist/dev.jsx",
+      "import": "./dist/index.jsx"
+    },
+    "development": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/dev.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/dev.cjs"
+      }
+    },
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "require": {
+      "types": "./dist/index.d.cts",
+      "default": "./dist/index.cjs"
+    }
+  },
+  "typesVersions": {}
+}

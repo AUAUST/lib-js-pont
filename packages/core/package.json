@@ -1,0 +1,43 @@
+{
+  "name": "@auaust/pont-core",
+  "license": "GPL-3.0-only",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "",
+  "contributors": [
+    {
+      "name": "Aurian Aubert",
+      "email": "aurian@auaust.ch",
+      "url": "https://auaust.ch"
+    }
+  ],
+  "homepage": "https://github.com/AUAUST/lib-js-pont",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AUAUST/lib-js-pont",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "pnpm test && pnpm run build:clean && pnpm run build:js",
+    "build:clean": "rimraf dist",
+    "build:js": "tsup",
+    "test": "vitest run --config vitest.config.ts --typecheck -- && pnpm typecheck",
+    "watch": "vitest --config vitest.config.ts --typecheck --",
+    "coverage": "vitest run --coverage",
+    "typecheck": "echo 'Typechecking...' && tsc --noEmit && echo 'All good!'",
+    "ci:publish": "changeset publish"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
