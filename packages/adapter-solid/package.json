@@ -43,7 +43,6 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "browser": {},
   "exports": {
     "solid": {
       "development": "./dist/dev.jsx",
@@ -68,5 +67,6 @@
       "default": "./dist/index.cjs"
     }
   },
-  "typesVersions": {}
+  "typesVersions": {},
+  "browser": {}
 }
