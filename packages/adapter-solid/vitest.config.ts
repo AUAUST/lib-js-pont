@@ -7,6 +7,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      "@auaust/pont-core": path.resolve(__dirname, "../core/src"),
       "@auaust/pont-adapter-solid": path.resolve(__dirname, "src"),
     },
   },

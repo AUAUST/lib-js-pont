@@ -15,7 +15,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@auaust/pont-core": ["./src"]
+      "@auaust/pont-core": ["packages/pont-core/src"],
+      "@auaust/pont-adapter-solid": ["packages/adapter-solid/src"]
     }
   },
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
