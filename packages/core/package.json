@@ -38,6 +38,7 @@
     "typecheck": "echo 'Typechecking...' && tsc --noEmit && echo 'All good!'",
     "ci:publish": "changeset publish"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "@auaust/primitive-kit": "^0.41.2"
+  }
 }

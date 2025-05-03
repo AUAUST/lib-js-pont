@@ -38,18 +38,34 @@ importers:
       '@auaust/pont-core':
         specifier: workspace:*
         version: link:../core
+      '@auaust/primitive-kit':
+        specifier: ^0.41.2
+        version: 0.41.2
+      '@solidjs/meta':
+        specifier: ^0.29.4
+        version: 0.29.4(solid-js@1.9.6)
+      solid-js:
+        specifier: ^1.9.0
+        version: 1.9.6
     devDependencies:
       tsup-preset-solid:
         specifier: ^2.2.0
         version: 2.2.0(esbuild@0.25.3)(solid-js@1.9.6)(tsup@8.4.0(postcss@8.5.3)(typescript@5.8.3))
 
-  packages/core: {}
+  packages/core:
+    dependencies:
+      '@auaust/primitive-kit':
+        specifier: ^0.41.2
+        version: 0.41.2
 
 packages:
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
+
+  '@auaust/primitive-kit@0.41.2':
+    resolution: {integrity: sha512-yDA6IkJoCm60FD0JDFBtysypD8MHzOn8esNGwO2djz+1bGMRR9+jlD2S4IT0IpWmMIqn54z8DsN1ZLWjzWqNfg==}
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -543,6 +559,11 @@ packages:
     resolution: {integrity: sha512-ECyOuDeH3C1I8jH2MK1RtBJW+YPMvSfT0a5NN0nHfQYnDSJ6tUiZH3gzwVP5/Kfh/+Tt7tpWVF9LXNTnhTJ3kA==}
     cpu: [x64]
     os: [win32]
+
+  '@solidjs/meta@0.29.4':
+    resolution: {integrity: sha512-zdIWBGpR9zGx1p1bzIPqF5Gs+Ks/BH8R6fWhmUa/dcK1L2rUC8BAcZJzNRYBQv74kScf1TSOs0EY//Vd/I0V8g==}
+    peerDependencies:
+      solid-js: '>=1.8.4'
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
@@ -1382,6 +1403,10 @@ packages:
       typescript:
         optional: true
 
+  type-fest@4.40.1:
+    resolution: {integrity: sha512-9YvLNnORDpI+vghLU/Nf+zSv0kL47KbVJ1o3sKgoTefl6i+zebxbiDQWoe/oWWqPhIgQdRZRT1KA9sCPL810SA==}
+    engines: {node: '>=16'}
+
   typescript@5.8.3:
     resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
@@ -1509,6 +1534,10 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
+
+  '@auaust/primitive-kit@0.41.2':
+    dependencies:
+      type-fest: 4.40.1
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -2039,6 +2068,10 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.40.1':
     optional: true
+
+  '@solidjs/meta@0.29.4(solid-js@1.9.6)':
+    dependencies:
+      solid-js: 1.9.6
 
   '@types/estree@1.0.7': {}
 
@@ -2847,6 +2880,8 @@ snapshots:
       - supports-color
       - tsx
       - yaml
+
+  type-fest@4.40.1: {}
 
   typescript@5.8.3: {}
 

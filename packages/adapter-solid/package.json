@@ -35,7 +35,8 @@
     "ci:publish": "changeset publish"
   },
   "dependencies": {
-    "@auaust/pont-core": "workspace:*"
+    "@auaust/pont-core": "workspace:*",
+    "@auaust/primitive-kit": "^0.41.2"
   },
   "devDependencies": {
     "tsup-preset-solid": "^2.2.0"
@@ -68,5 +69,9 @@
     }
   },
   "typesVersions": {},
-  "browser": {}
+  "browser": {},
+  "peerDependencies": {
+    "@solidjs/meta": "^0.29.0",
+    "solid-js": "^1.9.0"
+  }
 }
