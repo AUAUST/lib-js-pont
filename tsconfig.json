@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "rootDir": "."
+  },
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/adapter-solid" }
+  ]
+}

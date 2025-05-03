@@ -2,7 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ESNext"],
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@auaust/pont-core": ["./src/index.js"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }

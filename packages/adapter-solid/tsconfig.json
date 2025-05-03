@@ -4,7 +4,12 @@
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@auaust/pont-core": ["../core/src/index.js"],
+      "@auaust/pont-adapter-solid": ["./src/index.js"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }

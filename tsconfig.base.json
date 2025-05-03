@@ -2,19 +2,14 @@
   "compilerOptions": {
     "strict": true,
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "types": ["node"],
     "isolatedModules": true,
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@auaust/pont-core": ["packages/core/src"],
-      "@auaust/pont-adapter-solid": ["packages/adapter-solid/src"]
-    }
+    "skipLibCheck": true
   }
 }
