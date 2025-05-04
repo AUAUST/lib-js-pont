@@ -1,3 +1,4 @@
+import type { RequestsManager } from "src/managers/RequestsManager.js";
 import type {
   RequestDataInit,
   RequestHeadersInit,
@@ -7,7 +8,6 @@ import type {
 import type { Method, Url } from "src/types/utils.js";
 import { toMethod } from "src/utils/methods.js";
 import { EventsEmitter } from "./EventsEmitter.js";
-import type { Pont } from "./Pont.js";
 import { RequestData } from "./RequestData.js";
 import { RequestHeaders } from "./RequestHeaders.js";
 import { RequestParameters } from "./RequestParameters.js";
@@ -56,7 +56,7 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
   protected response: unknown | null = null;
 
   public constructor(
-    public readonly pont: Pont,
+    public readonly requestsManager: RequestsManager,
     { url, method, data, params, headers }: RequestInit
   ) {
     super(["start", "success", "error", "finish", "cancel"]);
@@ -66,6 +66,10 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
     this.data = new RequestData(this, data);
     this.params = new RequestParameters(this, params);
     this.headers = new RequestHeaders(this, headers);
+  }
+
+  public get pont() {
+    return this.requestsManager.pont;
   }
 
   public onStart = this.eventSetter("start");

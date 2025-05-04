@@ -19,7 +19,7 @@ export type VisitOptions = Omit<RequestInit, "url">;
 export class RequestsManager {
   protected baseUrl!: Url;
 
-  public constructor(protected pont: Pont) {}
+  public constructor(public readonly pont: Pont) {}
 
   public init({ baseUrl }: RequestManagerInit) {
     this.baseUrl = S(baseUrl);
@@ -80,7 +80,7 @@ export class RequestsManager {
    * Instanciates a new request.
    */
   public createRequest(url: Url, options: Omit<RequestInit, "url">): Request {
-    return new Request(this.pont, {
+    return new Request(this, {
       url: S(url),
       method: options.method,
       data: options.data,

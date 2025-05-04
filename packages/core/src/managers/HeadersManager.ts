@@ -14,7 +14,7 @@ export class HeadersManager {
   protected coreHeaders: Record<string, string> = {};
   protected defaultHeaders: Record<string, string> = {};
 
-  public constructor(protected pont: Pont) {}
+  public constructor(public readonly pont: Pont) {}
 
   public init(init?: HeadersManagerInit) {
     this.defaultHeaders = this.parseHeaders(init?.defaultHeaders);

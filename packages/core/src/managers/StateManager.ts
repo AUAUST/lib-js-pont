@@ -19,7 +19,7 @@ export class StateManager {
   protected props!: PropsGroups;
   protected title!: string;
 
-  public constructor(protected pont: Pont) {}
+  public constructor(public readonly pont: Pont) {}
 
   public init({ url, component, props, title }: PontAppStateInit) {
     this.url = url;
