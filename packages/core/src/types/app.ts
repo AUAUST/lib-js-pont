@@ -56,14 +56,20 @@ export interface PontAppState {
 /**
  * The initial state of the app as received from the server.
  */
-export interface PontAppStateInitializer {
+export interface PontAppStateInit {
   url: Url;
   component: ComponentName;
   title: string;
-  props: {
-    page: Record<string, unknown>;
-    global: Record<string, unknown>;
-  };
+  props: PropsGroups;
   errors: Errors;
   effects: Effects;
 }
+
+export type PropsGroups = {
+  page: PageProps;
+  global: GlobalProps;
+};
+
+export interface PageProps {}
+
+export interface GlobalProps {}

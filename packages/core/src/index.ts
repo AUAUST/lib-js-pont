@@ -1,6 +1,9 @@
 export default "@auaust/pont-core";
 
-export type { PontAppState, PontAppStateInitializer } from "./types/app.js";
+export type {
+  PontAppState,
+  PontAppStateInit as PontAppStateInitializer,
+} from "./types/app.js";
 export type { ComponentName, Url } from "./types/index.js";
 export {
   getElement,

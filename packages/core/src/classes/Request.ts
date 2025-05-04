@@ -12,7 +12,7 @@ import { RequestHeaders } from "./RequestHeaders.js";
 import { RequestParameters } from "./RequestParameters.js";
 
 export type RequestInit = {
-  manager: RequestsManager;
+  requestsManager: RequestsManager;
   url: Url;
   method: Method;
   data?: RequestDataInit;
@@ -38,7 +38,7 @@ export type RequestEvents = {
  * It includes the URL, the method, the body, the headers.
  */
 export class Request extends EventsEmitter<Request, RequestEvents> {
-  protected readonly manager: RequestsManager;
+  protected readonly requestsManager: RequestsManager;
   protected readonly url: Url;
   protected readonly method: Method;
   protected readonly data: RequestData;
@@ -57,7 +57,7 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
   protected response: unknown | null = null;
 
   public constructor({
-    manager,
+    requestsManager,
     url,
     method,
     data,
@@ -66,7 +66,7 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
   }: RequestInit) {
     super(["start", "success", "error", "finish", "cancel"]);
 
-    this.manager = manager;
+    this.requestsManager = requestsManager;
     this.url = url;
     this.method = method;
     this.data = new RequestData(this, data);
@@ -84,16 +84,17 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
    * Sends the request to the server.
    */
   public async send() {
-    const response = await this.getManager()
+    const response = await this.getRequestsManager()
       .getTransporter()
       .request(this.getOptions());
   }
 
-  /**
-   * Returns the request manager.
-   */
-  public getManager(): RequestsManager {
-    return this.manager;
+  public getRequestsManager(): RequestsManager {
+    return this.requestsManager;
+  }
+
+  public getHeadersManager() {
+    return this.getRequestsManager().getHeadersManager();
   }
 
   /**
