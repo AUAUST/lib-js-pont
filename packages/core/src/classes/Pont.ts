@@ -5,7 +5,7 @@ import {
   createDefaultTransporter,
   type Transporter,
 } from "src/services/TransporterService.js";
-import { forwardsCalls } from "src/utils/forwardsCalls.js";
+import { forwardCalls } from "src/utils/forwardsCalls.js";
 
 export type PontInit = {
   baseUrl?: string;
@@ -46,7 +46,7 @@ class Pont {
 
     this.services = {};
 
-    forwardsCalls(this.managers.requests, this, [
+    forwardCalls(this.managers.requests, this, [
       "getBaseUrl",
       "visit",
       "get",
