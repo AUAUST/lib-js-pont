@@ -1,5 +1,3 @@
-export default "@auaust/pont-core";
-
 export type {
   PontAppState,
   PontAppStateInit as PontAppStateInitializer,
@@ -12,4 +10,4 @@ export {
 } from "./utils/bootstrap.js";
 export { getTitleTransformer } from "./utils/title.js";
 
-export { pont } from "./classes/Pont.js";
+export { pont, Pont } from "./classes/Pont.js";

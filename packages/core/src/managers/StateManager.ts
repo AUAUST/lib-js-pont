@@ -1,3 +1,4 @@
+import type { Pont } from "src/classes/Pont.js";
 import type {
   GlobalProps,
   PageProps,
@@ -17,6 +18,8 @@ export class StateManager {
   protected url!: string;
   protected props!: PropsGroups;
   protected title!: string;
+
+  public constructor(protected pont: Pont) {}
 
   public init({ url, component, props, title }: PontAppStateInit) {
     this.url = url;

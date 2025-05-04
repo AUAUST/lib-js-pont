@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Pont } from "src/classes/Pont.js";
+import type { Pont } from "src/classes/Pont.js";
 import type { RequestOptions } from "src/types/requests.js";
 
 /**

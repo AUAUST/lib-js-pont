@@ -1,8 +1,8 @@
+import { pont, Pont } from "@auaust/pont-core";
 import { expect, test } from "vitest";
 
-import core from "@auaust/pont-core";
-
-test("test", () => {
-  expect(core).toBeDefined();
-  expect(core).toBe("@auaust/pont-core");
+test("Pont exists as a singleton", () => {
+  expect(pont).toBeDefined();
+  expect(pont).toBeInstanceOf(Pont);
+  expect(Pont.getInstance()).toBe(pont);
 });

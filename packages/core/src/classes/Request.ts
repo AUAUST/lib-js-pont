@@ -7,7 +7,7 @@ import type {
 import type { Method, Url } from "src/types/utils.js";
 import { toMethod } from "src/utils/methods.js";
 import { EventsEmitter } from "./EventsEmitter.js";
-import { pont } from "./Pont.js";
+import type { Pont } from "./Pont.js";
 import { RequestData } from "./RequestData.js";
 import { RequestHeaders } from "./RequestHeaders.js";
 import { RequestParameters } from "./RequestParameters.js";
@@ -55,7 +55,10 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
    */
   protected response: unknown | null = null;
 
-  public constructor({ url, method, data, params, headers }: RequestInit) {
+  public constructor(
+    public readonly pont: Pont,
+    { url, method, data, params, headers }: RequestInit
+  ) {
     super(["start", "success", "error", "finish", "cancel"]);
 
     this.url = url;
@@ -70,13 +73,6 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
   public onError = this.eventSetter("error");
   public onFinish = this.eventSetter("finish");
   public onCancel = this.eventSetter("cancel");
-
-  /**
-   * Sends the request to the server.
-   */
-  public async send() {
-    const response = await pont.getTransporter().send(this.getOptions());
-  }
 
   public getOptions(): RequestOptions {
     return {

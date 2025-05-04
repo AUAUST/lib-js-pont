@@ -1,4 +1,5 @@
 import { O } from "@auaust/primitive-kit";
+import type { Pont } from "src/classes/Pont.js";
 import type { RequestHeadersInit } from "src/types/requests.js";
 
 export type HeadersManagerInit = {
@@ -12,6 +13,8 @@ export type HeadersManagerInit = {
 export class HeadersManager {
   protected coreHeaders: Record<string, string> = {};
   protected defaultHeaders: Record<string, string> = {};
+
+  public constructor(protected pont: Pont) {}
 
   public init(init?: HeadersManagerInit) {
     this.defaultHeaders = this.parseHeaders(init?.defaultHeaders);
@@ -50,7 +53,7 @@ export class HeadersManager {
   }
 
   public setDefaultHeader(name: string, value: string | null): void {
-    if (value === null) {
+    if (!value) {
       this.removeDefaultHeader(name);
     } else {
       this.defaultHeaders[name] = value;

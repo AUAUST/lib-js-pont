@@ -1,9 +1,12 @@
 import { HeadersManager } from "src/managers/HeadersManager.js";
-import { RequestsManager } from "src/managers/RequestsManager.js";
+import {
+  RequestsManager,
+  type VisitOptions,
+} from "src/managers/RequestsManager.js";
 import { StateManager } from "src/managers/StateManager.js";
 import {
   createDefaultTransporter,
-  Transporter,
+  type Transporter,
 } from "src/services/TransporterService.js";
 
 export type PontInit = {
@@ -14,6 +17,12 @@ export type PontInit = {
 };
 
 class Pont {
+  protected static instance: Pont;
+
+  public static getInstance(): Pont {
+    return (this.instance ??= new this());
+  }
+
   protected readonly managers: {
     headers: HeadersManager;
     requests: RequestsManager;
@@ -26,21 +35,27 @@ class Pont {
 
   public constructor() {
     this.managers = {
-      headers: new HeadersManager(),
-      requests: new RequestsManager(),
-      state: new StateManager(),
+      headers: new HeadersManager(this),
+      requests: new RequestsManager(this),
+      state: new StateManager(this),
     };
 
     this.services = {};
   }
 
-  public init({ baseUrl, services = {} }: PontInit) {
-    this.managers.state.init();
-    this.managers.requests.init();
+  public init({ services }: PontInit): this {
+    this.managers.state.init({});
+    this.managers.requests.init({});
     this.managers.headers.init();
 
     this.services.transporter =
-      services.transporter ?? createDefaultTransporter(this);
+      services?.transporter ?? createDefaultTransporter(this);
+
+    return this;
+  }
+
+  public async visit(url: string, options: VisitOptions): Promise<Response> {
+    return this.getRequestsManager().visit(url, options);
   }
 
   public getBaseUrl() {
@@ -68,5 +83,6 @@ class Pont {
   }
 }
 
-export type { Pont };
-export const pont = new Pont();
+const pont = Pont.getInstance();
+
+export { pont, Pont };
