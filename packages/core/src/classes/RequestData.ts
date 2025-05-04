@@ -1,4 +1,5 @@
 import type { RequestDataInit } from "src/types/requests.js";
+import { supportsData } from "src/utils/methods.js";
 import { Request } from "./Request.js";
 
 export class RequestData {
@@ -8,7 +9,15 @@ export class RequestData {
     this.data = init ?? {};
   }
 
+  public getContentType(): string {
+    return "application/json";
+  }
+
   public getData(): unknown {
+    if (!supportsData(this.request.getMethod())) {
+      return undefined;
+    }
+
     return this.data;
   }
 }

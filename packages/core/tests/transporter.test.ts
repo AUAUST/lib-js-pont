@@ -22,7 +22,7 @@ test("Pont sends requests using the transporter", () => {
   expect(transporter.send).toHaveBeenCalledExactlyOnceWith({
     url: "https://example.com",
     method: "get",
-    data: {},
+    data: undefined,
     headers: {},
     params: {},
   });

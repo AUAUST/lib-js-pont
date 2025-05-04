@@ -6,6 +6,7 @@ import type {
   RequestParametersInit,
 } from "src/types/requests.js";
 import type { Method, Url } from "src/types/utils.js";
+import { forwardCalls } from "src/utils/forwardsCalls.js";
 import { toMethod } from "src/utils/methods.js";
 import { EventsEmitter } from "./EventsEmitter.js";
 import { RequestData } from "./RequestData.js";
@@ -32,6 +33,11 @@ export type RequestEvents = {
   /** The request is being canceled. */
   cancel: () => void;
 };
+
+export interface Request
+  extends Pick<RequestData, "getContentType" | "getData"> {}
+export interface Request extends Pick<RequestParameters, "getParams"> {}
+export interface Request extends Pick<RequestHeaders, "getHeaders"> {}
 
 /**
  * A request object contains all the information needed to process a request.
@@ -66,6 +72,10 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
     this.data = new RequestData(this, data);
     this.params = new RequestParameters(this, params);
     this.headers = new RequestHeaders(this, headers);
+
+    forwardCalls(this.data, this, ["getContentType", "getData"]);
+    forwardCalls(this.params, this, ["getParams"]);
+    forwardCalls(this.headers, this, ["getHeaders"]);
   }
 
   public get pont() {
@@ -94,17 +104,5 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
 
   public getMethod(): Method {
     return this.method;
-  }
-
-  public getData(): unknown {
-    return this.data.getData();
-  }
-
-  public getParams(): Record<string, unknown> {
-    return this.params.getParams();
-  }
-
-  public getHeaders(): Record<string, string> {
-    return this.headers.getHeaders();
   }
 }
