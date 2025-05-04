@@ -1,10 +1,13 @@
 import type { RequestHeadersInit } from "src/types/requests.js";
+import { parseHeaders } from "src/utils/headers.js";
 import type { Request } from "./Request.js";
 
 export class RequestHeaders {
-  protected readonly headers: Record<string, string> = {};
+  protected readonly headers: RequestHeadersInit = {};
 
-  public constructor(protected request: Request, init?: RequestHeadersInit) {}
+  public constructor(protected request: Request, init?: RequestHeadersInit) {
+    this.headers = parseHeaders(init);
+  }
 
   public get pont() {
     return this.request.pont;

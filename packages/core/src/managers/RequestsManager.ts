@@ -1,6 +1,7 @@
 import { S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
-import { Request, RequestInit } from "src/classes/Request.js";
+import { Request, type RequestInit } from "src/classes/Request.js";
+import type { RequestDataInit } from "src/types/requests.js";
 import type { Url } from "src/types/utils.js";
 
 export type RequestManagerInit = {
@@ -46,16 +47,18 @@ export class RequestsManager {
 
   public async post(
     url: Url,
-    options: Omit<VisitOptions, "method">
+    data: RequestDataInit,
+    options: Omit<VisitOptions, "method" | "data">
   ): Promise<Response> {
-    return this.visit(url, { ...options, method: "post" });
+    return this.visit(url, { ...options, data, method: "post" });
   }
 
   public async put(
     url: Url,
-    options: Omit<VisitOptions, "method">
+    data: RequestDataInit,
+    options: Omit<VisitOptions, "method" | "data">
   ): Promise<Response> {
-    return this.visit(url, { ...options, method: "put" });
+    return this.visit(url, { ...options, data, method: "put" });
   }
 
   public async delete(
@@ -67,9 +70,10 @@ export class RequestsManager {
 
   public async patch(
     url: Url,
+    data: RequestDataInit,
     options: Omit<VisitOptions, "method">
   ): Promise<Response> {
-    return this.visit(url, { ...options, method: "patch" });
+    return this.visit(url, { ...options, data, method: "patch" });
   }
 
   public getBaseUrl(): Url {

@@ -2,9 +2,13 @@ import type { RequestDataInit } from "src/types/requests.js";
 import { Request } from "./Request.js";
 
 export class RequestData {
-  public constructor(protected request: Request, init?: RequestDataInit) {}
+  protected readonly data: RequestDataInit;
+
+  public constructor(protected request: Request, init?: RequestDataInit) {
+    this.data = init ?? {};
+  }
 
   public getData(): unknown {
-    return {};
+    return this.data;
   }
 }

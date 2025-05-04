@@ -1,6 +1,7 @@
 import { O } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import type { RequestHeadersInit } from "src/types/requests.js";
+import { parseHeaders } from "src/utils/headers.js";
 
 export type HeadersManagerInit = {
   defaultHeaders: RequestHeadersInit;
@@ -17,15 +18,7 @@ export class HeadersManager {
   public constructor(public readonly pont: Pont) {}
 
   public init(init?: HeadersManagerInit) {
-    this.defaultHeaders = this.parseHeaders(init?.defaultHeaders);
-  }
-
-  public parseHeaders(headers?: RequestHeadersInit): Record<string, string> {
-    if (!headers) {
-      return {};
-    }
-
-    return O.fromEntries(new Headers(headers).entries());
+    this.defaultHeaders = parseHeaders(init?.defaultHeaders);
   }
 
   /**
@@ -34,7 +27,7 @@ export class HeadersManager {
   public getHeaders(headers?: RequestHeadersInit): Record<string, string> {
     return {
       ...this.getDefaultHeaders(),
-      ...this.parseHeaders(headers),
+      ...parseHeaders(headers),
       ...this.getCoreHeaders(),
     };
   }
@@ -47,7 +40,7 @@ export class HeadersManager {
    * Merges the default headers with the provided headers.
    */
   public setDefaultHeaders(headers: RequestHeadersInit): void {
-    for (const [name, value] of O.entries(this.parseHeaders(headers))) {
+    for (const [name, value] of O.entries(parseHeaders(headers))) {
       this.setDefaultHeader(name, value);
     }
   }

@@ -26,4 +26,18 @@ test("Pont sends requests using the transporter", () => {
     headers: {},
     params: {},
   });
+
+  pont.post(
+    "https://example.com",
+    { john: "doe" },
+    { headers: { "X-Test": "Test" } }
+  );
+
+  expect(transporter.send).toHaveBeenLastCalledWith({
+    url: "https://example.com",
+    method: "post",
+    data: { john: "doe" },
+    headers: { "x-test": "Test" }, // headers are normalized to lowercase
+    params: {},
+  });
 });
