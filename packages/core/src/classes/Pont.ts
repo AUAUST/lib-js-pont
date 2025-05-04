@@ -27,6 +27,8 @@ class Pont {
     return (this.instance ??= new this());
   }
 
+  protected initialized: boolean = false;
+
   protected readonly managers: {
     headers: HeadersManager;
     requests: RequestsManager;
@@ -35,7 +37,7 @@ class Pont {
 
   protected readonly services: {
     transporter?: Transporter;
-  };
+  } = {};
 
   public constructor() {
     this.managers = {
@@ -43,8 +45,6 @@ class Pont {
       requests: new RequestsManager(this),
       state: new StateManager(this),
     };
-
-    this.services = {};
 
     forwardCalls(this.managers.requests, this, [
       "getBaseUrl",
@@ -58,6 +58,10 @@ class Pont {
   }
 
   public init({ services }: PontInit): this {
+    if (this.initialized) {
+      throw new Error("Pont is already initialized");
+    }
+
     this.managers.state.init({});
     this.managers.requests.init({});
     this.managers.headers.init();
@@ -65,7 +69,13 @@ class Pont {
     this.services.transporter =
       services?.transporter ?? createDefaultTransporter(this);
 
+    this.initialized = true;
+
     return this;
+  }
+
+  public isInitialized(): boolean {
+    return this.initialized;
   }
 
   public getStateManager() {
@@ -80,12 +90,20 @@ class Pont {
     return this.managers.headers;
   }
 
-  public getTransporter(): Transporter {
-    if (!this.services.transporter) {
-      throw new Error("Pont is not initialized");
+  public getService<T extends keyof Pont["services"]>(
+    name: T
+  ): NonNullable<Pont["services"][T]> {
+    const service = this.services[name];
+
+    if (!service) {
+      throw new Error(`Pont ${name} is not initialized`);
     }
 
-    return this.services.transporter;
+    return service;
+  }
+
+  public getTransporter(): Transporter {
+    return this.getService("transporter");
   }
 }
 

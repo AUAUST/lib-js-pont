@@ -99,7 +99,7 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
   }
 
   public getUrl(): Url {
-    return this.url;
+    return this.requestsManager.getUrl(this.url);
   }
 
   public getMethod(): Method {
