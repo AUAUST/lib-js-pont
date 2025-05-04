@@ -8,3 +8,5 @@ export {
   type RootElement,
 } from "./utils/bootstrap.js";
 export { getTitleTransformer } from "./utils/title.js";
+
+export { pont } from "./classes/Pont.js";

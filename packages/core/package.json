@@ -39,6 +39,7 @@
     "ci:publish": "changeset publish"
   },
   "dependencies": {
-    "@auaust/primitive-kit": "^0.41.2"
+    "@auaust/primitive-kit": "^0.41.2",
+    "axios": "^1.9.0"
   }
 }

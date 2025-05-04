@@ -22,19 +22,6 @@ export interface PontAppState {
    * The current title of the app, after being transformed by the title transformer.
    */
   title: string;
-}
-
-/**
- * The initial state of the app as received from the server.
- */
-export interface PontAppStateInitializer {
-  url: Url;
-  component: ComponentName;
-
-  /**
-   * The title of the app, used to set `document.title`.
-   */
-  title: string;
 
   /**
    * The props groups.
@@ -63,5 +50,20 @@ export interface PontAppStateInitializer {
   /**
    * Effects to be executed on the client side.
    */
+  effects: Effects;
+}
+
+/**
+ * The initial state of the app as received from the server.
+ */
+export interface PontAppStateInitializer {
+  url: Url;
+  component: ComponentName;
+  title: string;
+  props: {
+    page: Record<string, unknown>;
+    global: Record<string, unknown>;
+  };
+  errors: Errors;
   effects: Effects;
 }
