@@ -1,6 +1,5 @@
 import { O } from "@auaust/primitive-kit";
 import type { RequestHeadersInit } from "src/types/requests.js";
-import { RequestsManager } from "./RequestsManager.js";
 
 export type HeadersManagerInit = {
   defaultHeaders: RequestHeadersInit;
@@ -11,13 +10,10 @@ export type HeadersManagerInit = {
  * If holds default headers, is responsible for CSRF tokens and other headers.
  */
 export class HeadersManager {
-  protected readonly coreHeaders: Record<string, string> = {};
-  protected readonly defaultHeaders: Record<string, string> = {};
+  protected coreHeaders: Record<string, string> = {};
+  protected defaultHeaders: Record<string, string> = {};
 
-  public constructor(
-    protected readonly requestsManager: RequestsManager,
-    init?: HeadersManagerInit
-  ) {
+  public init(init?: HeadersManagerInit) {
     this.defaultHeaders = this.parseHeaders(init?.defaultHeaders);
   }
 

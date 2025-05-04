@@ -1,4 +1,3 @@
-import type { RequestsManager } from "src/managers/RequestsManager.js";
 import type {
   RequestDataInit,
   RequestHeadersInit,
@@ -6,15 +5,16 @@ import type {
   RequestParametersInit,
 } from "src/types/requests.js";
 import type { Method, Url } from "src/types/utils.js";
+import { toMethod } from "src/utils/methods.js";
 import { EventsEmitter } from "./EventsEmitter.js";
+import { pont } from "./Pont.js";
 import { RequestData } from "./RequestData.js";
 import { RequestHeaders } from "./RequestHeaders.js";
 import { RequestParameters } from "./RequestParameters.js";
 
 export type RequestInit = {
-  requestsManager: RequestsManager;
   url: Url;
-  method: Method;
+  method?: Method;
   data?: RequestDataInit;
   params?: RequestParametersInit;
   headers?: RequestHeadersInit;
@@ -38,7 +38,6 @@ export type RequestEvents = {
  * It includes the URL, the method, the body, the headers.
  */
 export class Request extends EventsEmitter<Request, RequestEvents> {
-  protected readonly requestsManager: RequestsManager;
   protected readonly url: Url;
   protected readonly method: Method;
   protected readonly data: RequestData;
@@ -56,19 +55,11 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
    */
   protected response: unknown | null = null;
 
-  public constructor({
-    requestsManager,
-    url,
-    method,
-    data,
-    params,
-    headers,
-  }: RequestInit) {
+  public constructor({ url, method, data, params, headers }: RequestInit) {
     super(["start", "success", "error", "finish", "cancel"]);
 
-    this.requestsManager = requestsManager;
     this.url = url;
-    this.method = method;
+    this.method = toMethod(method, "get");
     this.data = new RequestData(this, data);
     this.params = new RequestParameters(this, params);
     this.headers = new RequestHeaders(this, headers);
@@ -84,22 +75,9 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
    * Sends the request to the server.
    */
   public async send() {
-    const response = await this.getRequestsManager()
-      .getTransporter()
-      .request(this.getOptions());
+    const response = await pont.getTransporter().send(this.getOptions());
   }
 
-  public getRequestsManager(): RequestsManager {
-    return this.requestsManager;
-  }
-
-  public getHeadersManager() {
-    return this.getRequestsManager().getHeadersManager();
-  }
-
-  /**
-   * Returns the options of the request.
-   */
   public getOptions(): RequestOptions {
     return {
       url: this.getUrl(),
@@ -110,37 +88,22 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
     };
   }
 
-  /**
-   * The URL of the request.
-   */
   public getUrl(): Url {
-    return "";
+    return this.url;
   }
 
-  /**
-   * The method of the request.
-   */
   public getMethod(): Method {
-    return "GET";
+    return this.method;
   }
 
-  /**
-   * The body of the request.
-   */
   public getData(): unknown {
     return this.data.getData();
   }
 
-  /**
-   * The query parameters of the request.
-   */
   public getParams(): Record<string, unknown> {
     return this.params.getParams();
   }
 
-  /**
-   * The headers of the request.
-   */
   public getHeaders(): Record<string, string> {
     return this.headers.getHeaders();
   }

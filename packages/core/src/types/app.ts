@@ -26,20 +26,7 @@ export interface PontAppState {
   /**
    * The props groups.
    */
-  props: {
-    /**
-     * The page props. They are passed to the component
-     * and represent the current page state.
-     */
-    page: Record<string, unknown>;
-
-    /**
-     * The global props. They are global to the app and
-     * shared across requests. They are useful for storing
-     * data that is not specific to a single page.
-     */
-    global: Record<string, unknown>;
-  };
+  props: PropsGroups;
 
   /**
    * The errors that occurred during form validation, if any.
@@ -66,7 +53,17 @@ export interface PontAppStateInit {
 }
 
 export type PropsGroups = {
+  /**
+   * The page props. They are passed to the component
+   * and represent the current page state.
+   */
   page: PageProps;
+
+  /**
+   * The global props. They are global to the app and
+   * shared across requests. They are useful for storing
+   * data that is not specific to a single page.
+   */
   global: GlobalProps;
 };
 

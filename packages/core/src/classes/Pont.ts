@@ -1,3 +1,4 @@
+import { HeadersManager } from "src/managers/HeadersManager.js";
 import { RequestsManager } from "src/managers/RequestsManager.js";
 import { StateManager } from "src/managers/StateManager.js";
 import {
@@ -13,52 +14,56 @@ export type PontInit = {
 };
 
 class Pont {
-  protected readonly stateManager: StateManager | undefined;
-  protected readonly requestsManager: RequestsManager;
+  protected readonly managers: {
+    headers: HeadersManager;
+    requests: RequestsManager;
+    state: StateManager;
+  };
 
-  protected readonly services!: {
-    transporter: Transporter;
+  protected readonly services: {
+    transporter?: Transporter;
   };
 
   public constructor() {
-    this.stateManager = new StateManager();
-    this.requestsManager = new RequestsManager();
-
-    this.services = {
-      transporter: services.transporter ?? createDefaultTransporter(this),
+    this.managers = {
+      headers: new HeadersManager(),
+      requests: new RequestsManager(),
+      state: new StateManager(),
     };
+
+    this.services = {};
   }
 
-  /**
-   * Initialize the state manager with the initial state.
-   * It must be called before using the app, usually withing the
-   * `createPontApp` function of the adapter.
-   */
-  public init({ baseUrl, services = {} }: PontInit) {}
+  public init({ baseUrl, services = {} }: PontInit) {
+    this.managers.state.init();
+    this.managers.requests.init();
+    this.managers.headers.init();
+
+    this.services.transporter =
+      services.transporter ?? createDefaultTransporter(this);
+  }
 
   public getBaseUrl() {
-    return this.requestsManager.getBaseUrl();
+    return this.getRequestsManager().getBaseUrl();
   }
 
-  /**
-   * Get the requests manager.
-   */
-  public getRequestsManager() {
-    return this.requestsManager;
-  }
-
-  /**
-   * Get the state manager.
-   */
   public getStateManager() {
-    if (!this.stateManager) {
-      throw new Error("Pont.init() must be called before using the app");
+    return this.managers.state;
+  }
+
+  public getRequestsManager() {
+    return this.managers.requests;
+  }
+
+  public getHeadersManager() {
+    return this.managers.headers;
+  }
+
+  public getTransporter(): Transporter {
+    if (!this.services.transporter) {
+      throw new Error("Pont is not initialized");
     }
 
-    return this.stateManager;
-  }
-
-  public getTransporter() {
     return this.services.transporter;
   }
 }

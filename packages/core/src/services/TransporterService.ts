@@ -9,11 +9,15 @@ export interface Transporter {
   /**
    * Sends a request to the server.
    */
-  request(options: RequestOptions): Promise<Response>;
+  send(options: RequestOptions): Promise<Response>;
 }
 
 export function createDefaultTransporter(pont: Pont): Transporter {
-  return axios.create({
+  const instance = axios.create({
     baseURL: pont.getBaseUrl(),
   });
+
+  return {
+    send: instance.request.bind(instance),
+  };
 }

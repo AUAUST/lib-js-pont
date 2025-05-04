@@ -10,12 +10,6 @@ export type RequestOptions = {
   data?: unknown;
   params?: Record<string, unknown>;
   headers?: Record<string, string>;
-
-  /**
-   * The request timeout in milliseconds. If the request takes longer than this time,
-   * it will be aborted. If not set or set to 0, the request will not timeout.
-   */
-  timeout?: number;
 };
 
 /**
