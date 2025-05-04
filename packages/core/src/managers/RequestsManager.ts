@@ -1,7 +1,7 @@
 import { S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { Request, type RequestInit } from "src/classes/Request.js";
-import type { RequestDataInit } from "src/types/requests.js";
+import type { RequestDataInit } from "src/classes/RequestData.js";
 import type { Url } from "src/types/utils.js";
 
 export type RequestManagerInit = {
@@ -18,12 +18,12 @@ export type VisitOptions = Omit<RequestInit, "url">;
  * It handles the form submissions, navigations, try-catches, and other requests.
  */
 export class RequestsManager {
-  protected baseUrl!: Url;
+  protected baseUrl: Url | undefined;
 
   public constructor(public readonly pont: Pont) {}
 
   public init({ baseUrl }: RequestManagerInit) {
-    this.baseUrl = S(baseUrl);
+    this.baseUrl = S.trim(baseUrl) || undefined;
   }
 
   public async send(request: Request): Promise<Response> {
@@ -76,7 +76,7 @@ export class RequestsManager {
     return this.visit(url, { ...options, data, method: "patch" });
   }
 
-  public getBaseUrl(): Url {
+  public getBaseUrl(): Url | undefined {
     return this.baseUrl;
   }
 
@@ -89,7 +89,7 @@ export class RequestsManager {
    */
   public createRequest(url: Url, options: Omit<RequestInit, "url">): Request {
     return new Request(this, {
-      url: S(url),
+      url: url,
       method: options.method,
       data: options.data,
       params: options.params,

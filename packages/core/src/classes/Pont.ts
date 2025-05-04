@@ -4,14 +4,15 @@ import { StateManager } from "src/managers/StateManager.js";
 import {
   createDefaultTransporter,
   type Transporter,
-} from "src/services/TransporterService.js";
+} from "src/services/Transporter.js";
+import type { PontAppStateInit } from "src/types/app.js";
 import { forwardCalls } from "src/utils/forwardsCalls.js";
 
 export type PontInit = {
   baseUrl?: string;
-  services?: {
-    transporter?: Transporter;
-  };
+  defaultHeaders?: Record<string, string>;
+  initialState?: PontAppStateInit;
+  services?: { transporter?: Transporter };
 };
 
 interface Pont
@@ -57,14 +58,19 @@ class Pont {
     ]);
   }
 
-  public init({ services }: PontInit): this {
+  public init({
+    baseUrl,
+    defaultHeaders,
+    initialState,
+    services,
+  }: PontInit): this {
     if (this.initialized) {
       throw new Error("Pont is already initialized");
     }
 
-    this.managers.state.init({});
-    this.managers.requests.init({});
-    this.managers.headers.init();
+    this.managers.state.init({ initialState });
+    this.managers.requests.init({ baseUrl });
+    this.managers.headers.init({ defaultHeaders });
 
     this.services.transporter =
       services?.transporter ?? createDefaultTransporter(this);

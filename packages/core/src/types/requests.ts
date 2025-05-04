@@ -1,4 +1,3 @@
-import type { Stream } from "stream";
 import type { Method, Url } from "./utils.js";
 
 /**
@@ -11,34 +10,3 @@ export type RequestOptions = {
   params?: Record<string, unknown>;
   headers?: Record<string, string>;
 };
-
-/**
- * A value that can be used to initialize the request data.
- */
-export type RequestDataInit =
-  | { [key: string]: unknown }
-  | ArrayBuffer
-  | ArrayBufferView
-  | FormData
-  | Blob
-  | URLSearchParams
-  | Stream
-  | Buffer
-  | string
-  | number
-  | boolean
-  | null;
-
-/**
- * A value that can be used to initialize the request parameters.
- */
-export type RequestParametersInit =
-  | Record<string, string>
-  | URLSearchParams
-  | string[][]
-  | string;
-
-/**
- * A value that can be used to initialize the request headers.
- */
-export type RequestHeadersInit = HeadersInit;

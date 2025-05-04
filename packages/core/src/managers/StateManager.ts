@@ -6,8 +6,8 @@ import type {
   PropsGroups,
 } from "src/types/app.js";
 
-export type StateManagerConfig = {
-  transformTitle?: (title: string) => string;
+export type StateManagerInit = {
+  initialState?: PontAppStateInit;
 };
 
 /**
@@ -21,11 +21,11 @@ export class StateManager {
 
   public constructor(public readonly pont: Pont) {}
 
-  public init({ url, component, props, title }: PontAppStateInit) {
-    this.url = url;
-    this.component = component;
-    this.props = props;
-    this.title = title;
+  public init({ initialState }: StateManagerInit = {}) {
+    this.url = initialState?.url!;
+    this.component = initialState?.component!;
+    this.props = initialState?.props!;
+    this.title = initialState?.title!;
   }
 
   public getComponent(): string {

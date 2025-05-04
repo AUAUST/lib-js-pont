@@ -1,6 +1,9 @@
-import type { RequestHeadersInit } from "src/types/requests.js";
 import { parseHeaders } from "src/utils/headers.js";
 import type { Request } from "./Request.js";
+/**
+ * A value that can be used to initialize the request headers.
+ */
+export type RequestHeadersInit = HeadersInit;
 
 export class RequestHeaders {
   protected readonly headers: RequestHeadersInit = {};

@@ -1,6 +1,23 @@
-import type { RequestDataInit } from "src/types/requests.js";
 import { supportsData } from "src/utils/methods.js";
-import { Request } from "./Request.js";
+import type Stream from "stream";
+import type { Request } from "./Request.js";
+
+/**
+ * A value that can be used to initialize the request data.
+ */
+export type RequestDataInit =
+  | { [key: string]: unknown }
+  | ArrayBuffer
+  | ArrayBufferView
+  | FormData
+  | Blob
+  | URLSearchParams
+  | Stream
+  | Buffer
+  | string
+  | number
+  | boolean
+  | null;
 
 export class RequestData {
   protected readonly data: RequestDataInit;

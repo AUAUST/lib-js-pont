@@ -1,17 +1,15 @@
 import type { RequestsManager } from "src/managers/RequestsManager.js";
-import type {
-  RequestDataInit,
-  RequestHeadersInit,
-  RequestOptions,
-  RequestParametersInit,
-} from "src/types/requests.js";
+import type { RequestOptions } from "src/types/requests.js";
 import type { Method, Url } from "src/types/utils.js";
 import { forwardCalls } from "src/utils/forwardsCalls.js";
 import { toMethod } from "src/utils/methods.js";
 import { EventsEmitter } from "./EventsEmitter.js";
-import { RequestData } from "./RequestData.js";
-import { RequestHeaders } from "./RequestHeaders.js";
-import { RequestParameters } from "./RequestParameters.js";
+import { RequestData, type RequestDataInit } from "./RequestData.js";
+import { RequestHeaders, type RequestHeadersInit } from "./RequestHeaders.js";
+import {
+  RequestParameters,
+  type RequestParametersInit,
+} from "./RequestParameters.js";
 
 export type RequestInit = {
   url: Url;
@@ -93,7 +91,6 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
       url: this.getUrl(),
       method: this.getMethod(),
       data: this.getData(),
-      params: this.getParams(),
       headers: this.getHeaders(),
     };
   }

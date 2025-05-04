@@ -1,5 +1,5 @@
 import { Pont } from "@auaust/pont-core";
-import type { Transporter } from "src/services/TransporterService.js";
+import type { Transporter } from "src/services/Transporter.js";
 import { expect, test, vitest } from "vitest";
 
 test("Pont sends requests using the transporter", () => {
@@ -20,11 +20,10 @@ test("Pont sends requests using the transporter", () => {
   });
 
   expect(transporter.send).toHaveBeenCalledExactlyOnceWith({
-    url: "https://example.com",
+    url: "https://example.com/",
     method: "get",
     data: undefined,
     headers: {},
-    params: {},
   });
 
   pont.post(
@@ -34,10 +33,9 @@ test("Pont sends requests using the transporter", () => {
   );
 
   expect(transporter.send).toHaveBeenLastCalledWith({
-    url: "https://example.com",
+    url: "https://example.com/",
     method: "post",
     data: { john: "doe" },
     headers: { "x-test": "Test" }, // headers are normalized to lowercase
-    params: {},
   });
 });
