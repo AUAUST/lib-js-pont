@@ -1,8 +1,8 @@
-import type { RequestsManager } from "src/managers/index.js";
 import type { RequestOptions } from "src/types/requests.js";
 import type { Method } from "src/types/utils.js";
 import { forwardCalls } from "src/utils/forwardsCalls.js";
 import { toMethod } from "src/utils/methods.js";
+import type { WithPont } from "./Pont.js";
 import { RequestData, type RequestDataInit } from "./RequestData.js";
 import { RequestHeaders, type RequestHeadersInit } from "./RequestHeaders.js";
 import { Url } from "./Url.js";
@@ -25,7 +25,7 @@ export interface Request extends Pick<RequestHeaders, "getHeaders"> {}
  * A request object contains all the information needed to process a request.
  * It includes the URL, the method, the body, the headers.
  */
-export class Request {
+export class Request implements WithPont {
   protected readonly url: Url;
   protected readonly method: Method;
   protected readonly data: RequestData;
@@ -43,7 +43,7 @@ export class Request {
   protected response: unknown | null = null;
 
   public constructor(
-    public readonly requestsManager: RequestsManager,
+    public readonly context: WithPont,
     { url, method, data, params, headers }: RequestInit
   ) {
     // Omit the search params from the URL, which are passed to the RequestParameters below
@@ -58,7 +58,7 @@ export class Request {
   }
 
   public get pont() {
-    return this.requestsManager.pont;
+    return this.context.pont;
   }
 
   public getOptions(): RequestOptions {

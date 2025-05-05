@@ -16,6 +16,10 @@ import { forwardCalls } from "src/utils/forwardsCalls.js";
 import { Url } from "./Url.js";
 import { UrlParamsInit } from "./UrlParams.js";
 
+export interface WithPont {
+  readonly pont: Pont;
+}
+
 export type PontInit = {
   baseUrl?: string;
   defaultHeaders?: Record<string, string>;
@@ -35,7 +39,7 @@ interface Pont
     "getComponent" | "getUrl" | "getPageProps" | "getGlobalProps"
   > {}
 
-class Pont {
+class Pont implements WithPont {
   protected static instance: Pont;
 
   public static getInstance(): Pont {
@@ -101,6 +105,10 @@ class Pont {
 
     this.initialized = true;
 
+    return this;
+  }
+
+  public get pont(): Pont {
     return this;
   }
 

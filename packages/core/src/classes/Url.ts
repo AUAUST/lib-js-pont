@@ -1,5 +1,5 @@
 import { forwardCalls } from "src/utils/forwardsCalls.js";
-import type { Pont } from "./Pont.js";
+import type { Pont, WithPont } from "./Pont.js";
 import { UrlParams, type UrlParamsInit } from "./UrlParams.js";
 
 export interface Url extends Pick<UrlParams, "getParams" | "setParam"> {}
@@ -9,12 +9,12 @@ export interface Url extends Pick<UrlParams, "getParams" | "setParam"> {}
  * The most important part is that, by keeping reference to a Pont instance,
  * it correctly handles the base URL and the params serializer service.
  */
-export class Url {
+export class Url implements WithPont {
   protected readonly url: URL;
   protected readonly params: UrlParams;
 
   public constructor(
-    public readonly pont: Pont,
+    public readonly context: WithPont,
     url: URL | string,
     params?: UrlParamsInit
   ) {
@@ -22,6 +22,10 @@ export class Url {
     this.params = new UrlParams(this, this.url.searchParams, params);
 
     forwardCalls(this.params, this, ["getParams", "setParam"]);
+  }
+
+  public get pont(): Pont {
+    return this.context.pont;
   }
 
   public getBaseUrl() {
