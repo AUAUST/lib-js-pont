@@ -135,13 +135,11 @@ class Pont {
     return this;
   }
 
-  public getService<T extends keyof Pont["services"]>(
-    name: T
-  ): NonNullable<Pont["services"][T]> {
+  public getService<T extends keyof Pont["services"]>(name: T) {
     const service = this.services[name];
 
     if (!service) {
-      throw new Error(`Pont ${name} is not initialized`);
+      throw new Error(`Service ${name} does not exist`);
     }
 
     return service;
