@@ -9,6 +9,9 @@ import {
   createDefaultTransporter,
   type ParamsSerializer,
   type PartialServicesMap,
+  type ServiceName,
+  type ServiceParameters,
+  type ServiceReturnType,
   type Transporter,
 } from "src/services/index.js";
 import type { PontAppStateInit } from "src/types/app.js";
@@ -176,6 +179,17 @@ class Pont implements WithPont {
 
   public createUrl(url: string, params?: UrlParamsInit) {
     return new Url(this, url, params);
+  }
+
+  /**
+   * Calls the specified service with the given arguments.
+   */
+  public use<T extends ServiceName>(
+    service: T,
+    ...args: ServiceParameters<T>
+  ): ServiceReturnType<T> {
+    // @ts-expect-error - The unions are converted to intersections by `ReturnType` and `Parameters` thus the types can no longer be satisfied
+    return this.getService(service).handle.call(this, ...args);
   }
 }
 

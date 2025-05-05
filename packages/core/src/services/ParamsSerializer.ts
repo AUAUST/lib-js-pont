@@ -2,16 +2,17 @@ import { A, B, N, O, P, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import type { Primitive } from "src/types/utils.js";
 import { shouldAppend, type NormalizedUrlParams } from "src/utils/params.js";
+import type { Service } from "./index.js";
 
 /**
- * The params serializer interface provides the methods required to serialize request parameters.
+ * This contract defines the structure of the params serializer service.
  */
-export interface ParamsSerializer {
+export interface ParamsSerializer extends Service {
   /**
    * Serializes the request parameters into a format suitable for sending in a request.
    * The resulting string **MUST NOT** include the leading `?` character.
    */
-  serialize(options: NormalizedUrlParams): URLSearchParams | string;
+  handle(this: Pont, options: NormalizedUrlParams): URLSearchParams | string;
 }
 
 function getValue(
@@ -55,7 +56,7 @@ function getValue(
 
 export function createDefaultParamsSerializer(pont: Pont): ParamsSerializer {
   return {
-    serialize: (options) => {
+    handle: (options) => {
       const params = new URLSearchParams();
 
       for (const [key, value] of options) {

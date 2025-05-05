@@ -4,7 +4,7 @@ import { expect, test, vitest } from "vitest";
 
 test("Pont sends requests using the transporter", () => {
   const transporter: Transporter = {
-    send: vitest.fn(async (options) => {
+    handle: vitest.fn(async (options) => {
       return new Response();
     }),
   };
@@ -19,7 +19,7 @@ test("Pont sends requests using the transporter", () => {
     method: "get",
   });
 
-  expect(transporter.send).toHaveBeenCalledExactlyOnceWith({
+  expect(transporter.handle).toHaveBeenCalledExactlyOnceWith({
     url: "https://example.com/",
     method: "get",
     data: undefined,
@@ -32,7 +32,7 @@ test("Pont sends requests using the transporter", () => {
     { headers: { "X-Test": "Test" } }
   );
 
-  expect(transporter.send).toHaveBeenLastCalledWith({
+  expect(transporter.handle).toHaveBeenLastCalledWith({
     url: "https://example.com/",
     method: "post",
     data: { john: "doe" },

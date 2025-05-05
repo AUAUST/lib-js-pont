@@ -28,8 +28,8 @@ export class RequestsManager {
   }
 
   public async send(request: Request): Promise<Response> {
-    const transporter = this.pont.getTransporter();
-    const response = await transporter.send(request.getOptions());
+    const response = await this.pont.use("transporter", request.getOptions());
+
     return response;
   }
 

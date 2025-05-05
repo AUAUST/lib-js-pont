@@ -44,7 +44,7 @@ describe("Url parameters", async () => {
 
 test("Pont can use a custom params serializer", () => {
   const paramsSerializer = {
-    serialize: vitest.fn((options: NormalizedUrlParams) => {
+    handle: vitest.fn((options: NormalizedUrlParams) => {
       const params: Record<string, string> = {};
 
       for (const [key, value] of options) {
@@ -75,10 +75,10 @@ test("Pont can use a custom params serializer", () => {
   expect(request.getUrl()).toBe(
     "https://example.com/users?page=3&ids=[1,2,3]#fragment"
   );
-  expect(paramsSerializer.serialize).toHaveBeenCalled();
-  expect(paramsSerializer.serialize).toHaveReturnedWith("page=3&ids=[1,2,3]");
+  expect(paramsSerializer.handle).toHaveBeenCalled();
+  expect(paramsSerializer.handle).toHaveReturnedWith("page=3&ids=[1,2,3]");
 
-  paramsSerializer.serialize.mockReturnValueOnce("");
+  paramsSerializer.handle.mockReturnValueOnce("");
 
   expect(request.getUrl()).toBe("https://example.com/users#fragment");
 });

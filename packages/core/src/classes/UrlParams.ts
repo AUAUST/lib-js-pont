@@ -29,8 +29,8 @@ export class UrlParams implements WithPont {
     return this.context.pont;
   }
 
-  public getParams(): string {
-    return this.pont.getParamsSerializer().serialize(this.params).toString();
+  public getParams() {
+    return this.pont.use("paramsSerializer", this.params).toString();
   }
 
   public setParam(key: string, value: string): this {

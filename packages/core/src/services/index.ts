@@ -1,10 +1,11 @@
 import type { Pont } from "src/classes/Pont.js";
 
-export {
-  createDefaultParamsSerializer,
-  type ParamsSerializer,
-} from "./ParamsSerializer.js";
-export { createDefaultTransporter, type Transporter } from "./Transporter.js";
+export interface Service {
+  /**
+   * Handles the service's logic.
+   */
+  handle(this: Pont, ...args: unknown[]): unknown;
+}
 
 export type ServiceName = keyof Pont["services"];
 
@@ -13,3 +14,20 @@ export type ServicesMap = {
 };
 
 export type PartialServicesMap = Partial<ServicesMap>;
+
+export type ServiceHandler<T extends ServiceName = ServiceName> =
+  ServicesMap[T]["handle"];
+
+export type ServiceParameters<T extends ServiceName> = Parameters<
+  ServiceHandler<T>
+>;
+
+export type ServiceReturnType<T extends ServiceName> = ReturnType<
+  ServiceHandler<T>
+>;
+
+export {
+  createDefaultParamsSerializer,
+  type ParamsSerializer,
+} from "./ParamsSerializer.js";
+export { createDefaultTransporter, type Transporter } from "./Transporter.js";

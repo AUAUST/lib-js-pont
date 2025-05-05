@@ -1,15 +1,16 @@
 import axios from "axios";
 import type { Pont } from "src/classes/Pont.js";
 import type { RequestOptions } from "src/types/requests.js";
+import type { Service } from "./index.js";
 
 /**
- * The transporter interface provides the methods required to send requests.
+ * This contract defines the structure of the transporter service.
  */
-export interface Transporter {
+export interface Transporter extends Service {
   /**
    * Sends a request to the server.
    */
-  send(options: RequestOptions): Promise<Response>;
+  handle(this: Pont, options: RequestOptions): Promise<Response>;
 }
 
 export function createDefaultTransporter(pont: Pont): Transporter {
@@ -18,6 +19,6 @@ export function createDefaultTransporter(pont: Pont): Transporter {
   });
 
   return {
-    send: instance.request.bind(instance),
+    handle: instance.request.bind(instance),
   };
 }

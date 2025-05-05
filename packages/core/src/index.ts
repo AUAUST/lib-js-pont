@@ -4,6 +4,7 @@ const pont = Pont.getInstance();
 
 export { pont, Pont };
 
+export type { ParamsSerializer, Transporter } from "./services/index.js";
 export type {
   ComponentName,
   PontAppState,
