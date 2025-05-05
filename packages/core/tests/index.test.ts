@@ -1,4 +1,4 @@
-import { pont, Pont } from "@auaust/pont-core";
+import { pont, Pont } from "@auaust/pont";
 import { expect, test } from "vitest";
 
 test("Pont exists as a singleton", () => {

@@ -35,7 +35,7 @@
     "ci:publish": "changeset publish"
   },
   "dependencies": {
-    "@auaust/pont-core": "workspace:*",
+    "@auaust/pont": "workspace:*",
     "@auaust/primitive-kit": "^0.41.3"
   },
   "devDependencies": {

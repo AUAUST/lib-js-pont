@@ -5,7 +5,7 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@auaust/pont-core": ["./src/index.js"]
+      "@auaust/pont": ["./src/index.js"]
     }
   },
   "exclude": ["node_modules", "dist"]

@@ -5,7 +5,7 @@ import {
   type ComponentName,
   type PontAppStateInitializer,
   type RootElement,
-} from "@auaust/pont-core";
+} from "@auaust/pont";
 import type { Component } from "solid-js";
 
 export type SetupOptions = {

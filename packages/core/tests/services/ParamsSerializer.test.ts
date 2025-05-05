@@ -1,4 +1,4 @@
-import { type NormalizedUrlParams, Pont } from "@auaust/pont-core";
+import { type NormalizedUrlParams, Pont } from "@auaust/pont";
 import { O, P, S } from "@auaust/primitive-kit";
 import { describe, expect, test, vitest } from "vitest";
 

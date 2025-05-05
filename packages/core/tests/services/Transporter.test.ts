@@ -1,4 +1,4 @@
-import { Pont } from "@auaust/pont-core";
+import { Pont } from "@auaust/pont";
 import type { Transporter } from "src/services/Transporter.js";
 import { expect, test, vitest } from "vitest";
 
