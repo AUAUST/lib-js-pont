@@ -73,7 +73,7 @@ export class RequestsManager {
   public async patch(
     url: string,
     data: RequestDataInit,
-    options: Omit<VisitOptions, "method">
+    options: Omit<VisitOptions, "method" | "data">
   ): Promise<Response> {
     return this.visit(url, { ...options, data, method: "patch" });
   }

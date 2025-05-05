@@ -1,13 +1,16 @@
 import { S } from "@auaust/primitive-kit";
+import type {
+  AmbientResponse,
+  AmbientResponseInit,
+} from "./AmbientResponse.js";
 import type { DataResponse, DataResponseInit } from "./DataResponse.js";
-import type { EmptyResponse, EmptyResponseInit } from "./EmptyResponse.js";
 import type {
   FragmentResponse,
   FragmentResponseInit,
 } from "./FragmentResponse.js";
 import type { VisitResponse, VisitResponseInit } from "./VisitResponse.js";
 
-export type ResponseType = "visit" | "fragment" | "empty" | "data";
+export type ResponseType = "visit" | "fragment" | "ambient" | "data";
 
 export interface BaseResponseInit {
   type: ResponseType;
@@ -16,7 +19,7 @@ export interface BaseResponseInit {
 export type ResponsesMap = {
   visit: [typeof VisitResponse, VisitResponse, VisitResponseInit];
   fragment: [typeof FragmentResponse, FragmentResponse, FragmentResponseInit];
-  empty: [typeof EmptyResponse, EmptyResponse, EmptyResponseInit];
+  ambient: [typeof AmbientResponse, AmbientResponse, AmbientResponseInit];
   data: [typeof DataResponse, DataResponse, DataResponseInit];
 };
 
