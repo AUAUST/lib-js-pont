@@ -1,6 +1,6 @@
 import type { Effects } from "./effects.js";
 import type { Errors } from "./errors.js";
-import type { ComponentName, Url } from "./utils.js";
+import type { ComponentName } from "./utils.js";
 
 /**
  * The state of the app. It contains all the information needed to
@@ -11,7 +11,7 @@ export interface PontAppState {
   /**
    * The current URL of the app.
    */
-  url: Url;
+  url: string;
 
   /**
    * The name of the current component.
@@ -44,7 +44,7 @@ export interface PontAppState {
  * The initial state of the app as received from the server.
  */
 export interface PontAppStateInit {
-  url: Url;
+  url: string;
   component: ComponentName;
   title: string;
   props: PropsGroups;

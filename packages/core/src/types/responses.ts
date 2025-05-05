@@ -1,4 +1,4 @@
-import type { ComponentName, Url } from "./utils.js";
+import type { ComponentName } from "./utils.js";
 
 export type ResponseType = "visit" | "fragment" | "empty" | "data";
 
@@ -11,7 +11,7 @@ export interface VisitResponse extends Response<"visit"> {
   /** The component name to render. */
   component: ComponentName;
   /** The new URL that the browser should display. */
-  url: Url;
+  url: string;
   /** The page props to pass to the component. */
   props: Record<string, unknown>;
 }

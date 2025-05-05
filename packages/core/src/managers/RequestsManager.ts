@@ -2,13 +2,12 @@ import { S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { Request, type RequestInit } from "src/classes/Request.js";
 import type { RequestDataInit } from "src/classes/RequestData.js";
-import type { Url } from "src/types/utils.js";
 
 export type RequestManagerInit = {
   /**
    * The base URL for the requests.
    */
-  baseUrl?: Url;
+  baseUrl?: string;
 };
 
 export type VisitOptions = Omit<RequestInit, "url">;
@@ -18,7 +17,7 @@ export type VisitOptions = Omit<RequestInit, "url">;
  * It handles the form submissions, navigations, try-catches, and other requests.
  */
 export class RequestsManager {
-  protected baseUrl: Url | undefined;
+  protected baseUrl: string | undefined;
 
   public constructor(public readonly pont: Pont) {}
 
@@ -34,21 +33,21 @@ export class RequestsManager {
     return response;
   }
 
-  public async visit(url: Url, options: VisitOptions): Promise<Response> {
+  public async visit(url: string, options: VisitOptions): Promise<Response> {
     const request = this.createRequest(url, options);
     const response = await this.send(request);
     return response;
   }
 
   public async get(
-    url: Url,
+    url: string,
     options: Omit<VisitOptions, "method">
   ): Promise<Response> {
     return this.visit(url, { ...options, method: "get" });
   }
 
   public async post(
-    url: Url,
+    url: string,
     data: RequestDataInit,
     options: Omit<VisitOptions, "method" | "data">
   ): Promise<Response> {
@@ -56,7 +55,7 @@ export class RequestsManager {
   }
 
   public async put(
-    url: Url,
+    url: string,
     data: RequestDataInit,
     options: Omit<VisitOptions, "method" | "data">
   ): Promise<Response> {
@@ -64,32 +63,31 @@ export class RequestsManager {
   }
 
   public async delete(
-    url: Url,
+    url: string,
     options: Omit<VisitOptions, "method">
   ): Promise<Response> {
     return this.visit(url, { ...options, method: "delete" });
   }
 
   public async patch(
-    url: Url,
+    url: string,
     data: RequestDataInit,
     options: Omit<VisitOptions, "method">
   ): Promise<Response> {
     return this.visit(url, { ...options, data, method: "patch" });
   }
 
-  public getBaseUrl(): Url | undefined {
+  public getBaseUrl(): string | undefined {
     return this.baseUrl;
-  }
-
-  public getUrl(url: Url): URL {
-    return new URL(url, this.getBaseUrl());
   }
 
   /**
    * Instanciates a new request.
    */
-  public createRequest(url: Url, options: Omit<RequestInit, "url">): Request {
+  public createRequest(
+    url: string,
+    options: Omit<RequestInit, "url">
+  ): Request {
     return new Request(this, {
       url: url,
       method: options.method,

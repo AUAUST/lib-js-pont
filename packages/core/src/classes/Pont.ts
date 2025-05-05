@@ -13,6 +13,8 @@ import {
 } from "src/services/index.js";
 import type { PontAppStateInit } from "src/types/app.js";
 import { forwardCalls } from "src/utils/forwardsCalls.js";
+import { Url } from "./Url.js";
+import { UrlParamsInit } from "./UrlParams.js";
 
 export type PontInit = {
   baseUrl?: string;
@@ -162,6 +164,10 @@ class Pont {
 
   public getParamsSerializer(): ParamsSerializer {
     return this.getService("paramsSerializer");
+  }
+
+  public createUrl(url: string, params?: UrlParamsInit) {
+    return new Url(this, url, params);
   }
 }
 

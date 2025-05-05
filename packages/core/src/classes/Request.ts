@@ -1,26 +1,24 @@
 import type { RequestsManager } from "src/managers/index.js";
 import type { RequestOptions } from "src/types/requests.js";
-import type { Method, Url } from "src/types/utils.js";
+import type { Method } from "src/types/utils.js";
 import { forwardCalls } from "src/utils/forwardsCalls.js";
 import { toMethod } from "src/utils/methods.js";
 import { RequestData, type RequestDataInit } from "./RequestData.js";
 import { RequestHeaders, type RequestHeadersInit } from "./RequestHeaders.js";
-import {
-  RequestParameters,
-  type RequestParametersInit,
-} from "./RequestParameters.js";
+import { Url } from "./Url.js";
+import type { UrlParamsInit } from "./UrlParams.js";
 
 export type RequestInit = {
-  url: Url;
+  url: string;
   method?: Method;
   data?: RequestDataInit;
-  params?: RequestParametersInit;
+  params?: UrlParamsInit;
   headers?: RequestHeadersInit;
 };
 
 export interface Request
   extends Pick<RequestData, "getContentType" | "getData"> {}
-export interface Request extends Pick<RequestParameters, "getParams"> {}
+export interface Request extends Pick<Url, "getParams" | "getUrl"> {}
 export interface Request extends Pick<RequestHeaders, "getHeaders"> {}
 
 /**
@@ -31,7 +29,6 @@ export class Request {
   protected readonly url: Url;
   protected readonly method: Method;
   protected readonly data: RequestData;
-  protected readonly params: RequestParameters;
   protected readonly headers: RequestHeaders;
 
   /**
@@ -49,17 +46,14 @@ export class Request {
     public readonly requestsManager: RequestsManager,
     { url, method, data, params, headers }: RequestInit
   ) {
-    const parsed = this.requestsManager.getUrl(url);
-
     // Omit the search params from the URL, which are passed to the RequestParameters below
-    this.url = `${parsed.origin}${parsed.pathname}${parsed.hash}`;
     this.method = toMethod(method, "get");
+    this.url = this.pont.createUrl(url, params);
     this.data = new RequestData(this, data);
-    this.params = new RequestParameters(this, parsed.searchParams, params);
     this.headers = new RequestHeaders(this, headers);
 
     forwardCalls(this.data, this, ["getContentType", "getData"]);
-    forwardCalls(this.params, this, ["getParams"]);
+    forwardCalls(this.url, this, ["getParams", "getUrl"]);
     forwardCalls(this.headers, this, ["getHeaders"]);
   }
 
@@ -74,14 +68,6 @@ export class Request {
       data: this.getData(),
       headers: this.getHeaders(),
     };
-  }
-
-  public getUrl(): Url {
-    const url = new URL(this.url);
-
-    url.search = this.params.getParams();
-
-    return url.toString();
   }
 
   public getMethod(): Method {

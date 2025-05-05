@@ -1,35 +1,32 @@
 import { type Stringifiable } from "@auaust/primitive-kit";
-import {
-  type NormalizedRequestParameters,
-  normalizeParams,
-} from "src/utils/params.js";
-import type { Request } from "./Request.js";
+import { type NormalizedUrlParams, normalizeParams } from "src/utils/params.js";
+import type { Url } from "./Url.js";
 
 /**
  * A value that can be used to initialize the request parameters.
  */
-export type RequestParametersInit =
+export type UrlParamsInit =
   | Record<string, Stringifiable | string[]>
   | URLSearchParams
   | string[][]
   | string;
 
-export class RequestParameters {
-  protected params: NormalizedRequestParameters;
+export class UrlParams {
+  protected readonly params: NormalizedUrlParams;
 
   public constructor(
-    protected request: Request,
+    public readonly url: Url,
     /**
      * Multiple sources can be passed to the constructor.
      * They will be merged, with the later ones taking precedence over the earlier ones.
      */
-    ...inits: (RequestParametersInit | undefined)[]
+    ...inits: (UrlParamsInit | undefined)[]
   ) {
     this.params = normalizeParams(...inits);
   }
 
   public get pont() {
-    return this.request.pont;
+    return this.url.pont;
   }
 
   public getParams(): string {

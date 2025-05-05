@@ -13,7 +13,7 @@ export function forwardCalls<
     const method = source[name];
 
     if (!F.is(method)) {
-      throw new TypeError(`Method ${String(name)} is not a function`);
+      throw new TypeError(`Property ${String(name)} is not a function`);
     }
 
     Object.defineProperty(target, name, {

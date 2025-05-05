@@ -6,4 +6,4 @@ export type {
   ResponseType,
   VisitResponse,
 } from "./responses.js";
-export type { ComponentName, Url } from "./utils.js";
+export type { ComponentName } from "./utils.js";

@@ -1,4 +1,4 @@
-import { type NormalizedRequestParameters, Pont } from "@auaust/pont-core";
+import { type NormalizedUrlParams, Pont } from "@auaust/pont-core";
 import { O, P, S } from "@auaust/primitive-kit";
 import { describe, expect, test, vitest } from "vitest";
 
@@ -44,7 +44,7 @@ describe("Url parameters", async () => {
 
 test("Pont can use a custom params serializer", () => {
   const paramsSerializer = {
-    serialize: vitest.fn((options: NormalizedRequestParameters) => {
+    serialize: vitest.fn((options: NormalizedUrlParams) => {
       const params: Record<string, string> = {};
 
       for (const [key, value] of options) {

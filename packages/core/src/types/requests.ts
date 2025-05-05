@@ -1,10 +1,10 @@
-import type { Method, Url } from "./utils.js";
+import type { Method } from "./utils.js";
 
 /**
  * A request object contains all the information needed to process a request.
  */
 export type RequestOptions = {
-  url: Url;
+  url: string;
   method: Method;
   data?: unknown;
   params?: Record<string, unknown>;

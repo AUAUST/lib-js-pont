@@ -1,8 +1,8 @@
 import { A, O, P, S } from "@auaust/primitive-kit";
-import type { RequestParametersInit } from "src/classes/RequestParameters.js";
+import type { UrlParamsInit } from "src/classes/UrlParams.js";
 
 /**
- * The result of basic pre-processing of request parameters.
+ * The result of basic pre-processing of URL parameters.
  * The values might still be arrays or other complex types,
  * and it's up to the params serializer to handle them.
  *
@@ -12,12 +12,12 @@ import type { RequestParametersInit } from "src/classes/RequestParameters.js";
  *
  * It's up to the params serializer service to handle these cases.
  */
-export type NormalizedRequestParameters = [string, unknown][];
+export type NormalizedUrlParams = [string, unknown][];
 
 export function normalizeParams(
-  ...params: (RequestParametersInit | undefined)[]
-): NormalizedRequestParameters {
-  const normalized: NormalizedRequestParameters = [];
+  ...params: (UrlParamsInit | undefined)[]
+): NormalizedUrlParams {
+  const normalized: NormalizedUrlParams = [];
 
   for (const init of params) {
     if (init === undefined) {
@@ -32,9 +32,7 @@ export function normalizeParams(
   return normalized;
 }
 
-export function paramsEntries(
-  params: RequestParametersInit
-): NormalizedRequestParameters {
+export function paramsEntries(params: UrlParamsInit): NormalizedUrlParams {
   if (P.isNullish(params)) {
     return [];
   }
