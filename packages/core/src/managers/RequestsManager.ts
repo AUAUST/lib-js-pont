@@ -22,8 +22,10 @@ export class RequestsManager {
 
   public constructor(public readonly pont: Pont) {}
 
-  public init({ baseUrl }: RequestManagerInit) {
+  public init({ baseUrl }: RequestManagerInit): this {
     this.baseUrl = S.trim(baseUrl) || undefined;
+
+    return this;
   }
 
   public async send(request: Request): Promise<Response> {

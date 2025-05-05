@@ -21,11 +21,13 @@ export class StateManager {
 
   public constructor(public readonly pont: Pont) {}
 
-  public init({ initialState }: StateManagerInit = {}) {
+  public init({ initialState }: StateManagerInit = {}): this {
     this.url = initialState?.url!;
     this.component = initialState?.component!;
     this.props = initialState?.props!;
     this.title = initialState?.title!;
+
+    return this;
   }
 
   public getComponent(): string {

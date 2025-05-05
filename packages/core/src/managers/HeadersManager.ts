@@ -17,8 +17,10 @@ export class HeadersManager {
 
   public constructor(public readonly pont: Pont) {}
 
-  public init(init?: HeadersManagerInit) {
+  public init(init?: HeadersManagerInit): this {
     this.defaultHeaders = parseHeaders(init?.defaultHeaders);
+
+    return this;
   }
 
   /**
@@ -39,18 +41,22 @@ export class HeadersManager {
   /**
    * Merges the default headers with the provided headers.
    */
-  public setDefaultHeaders(headers: RequestHeadersInit): void {
+  public setDefaultHeaders(headers: RequestHeadersInit): this {
     for (const [name, value] of O.entries(parseHeaders(headers))) {
       this.setDefaultHeader(name, value);
     }
+
+    return this;
   }
 
-  public setDefaultHeader(name: string, value: string | null): void {
+  public setDefaultHeader(name: string, value: string | null): this {
     if (!value) {
       this.removeDefaultHeader(name);
     } else {
       this.defaultHeaders[name] = value;
     }
+
+    return this;
   }
 
   public removeDefaultHeader(name: string): void {
