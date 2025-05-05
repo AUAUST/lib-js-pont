@@ -1,11 +1,12 @@
 import { Pont } from "@auaust/pont";
+import { EmptyResponse } from "src/classes/Responses/EmptyResponse.js";
 import type { Transporter } from "src/services/Transporter.js";
 import { expect, test, vitest } from "vitest";
 
 test("Pont sends requests using the transporter", () => {
   const transporter: Transporter = {
     handle: vitest.fn(async (options) => {
-      return new Response();
+      return new EmptyResponse({});
     }),
   };
 

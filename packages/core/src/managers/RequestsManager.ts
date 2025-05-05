@@ -2,6 +2,7 @@ import { S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { Request, type RequestInit } from "src/classes/Request.js";
 import type { RequestDataInit } from "src/classes/RequestData.js";
+import type { Response } from "src/classes/Responses/Response.js";
 
 export type RequestManagerInit = {
   /**

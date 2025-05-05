@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { Pont } from "src/classes/Pont.js";
+import type { Response } from "src/classes/Responses/Response.js";
 import type { RequestOptions } from "src/types/requests.js";
 import type { Service } from "./index.js";
 
