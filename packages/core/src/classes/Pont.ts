@@ -1,15 +1,16 @@
 import { O } from "@auaust/primitive-kit";
-import { HeadersManager } from "src/managers/HeadersManager.js";
-import { RequestsManager } from "src/managers/RequestsManager.js";
-import { StateManager } from "src/managers/StateManager.js";
+import {
+  HeadersManager,
+  RequestsManager,
+  StateManager,
+} from "src/managers/index.js";
 import {
   createDefaultParamsSerializer,
-  type ParamsSerializer,
-} from "src/services/ParamsSerializer.js";
-import {
   createDefaultTransporter,
+  type ParamsSerializer,
+  type PartialServicesMap,
   type Transporter,
-} from "src/services/Transporter.js";
+} from "src/services/index.js";
 import type { PontAppStateInit } from "src/types/app.js";
 import { forwardCalls } from "src/utils/forwardsCalls.js";
 
@@ -17,10 +18,7 @@ export type PontInit = {
   baseUrl?: string;
   defaultHeaders?: Record<string, string>;
   initialState?: PontAppStateInit;
-  services?: {
-    transporter?: Transporter;
-    paramsSerializer?: ParamsSerializer;
-  };
+  services?: PartialServicesMap;
 };
 
 interface Pont

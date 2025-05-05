@@ -1,4 +1,4 @@
-import type { RequestsManager } from "src/managers/RequestsManager.js";
+import type { RequestsManager } from "src/managers/index.js";
 import type { RequestOptions } from "src/types/requests.js";
 import type { Method, Url } from "src/types/utils.js";
 import { forwardCalls } from "src/utils/forwardsCalls.js";
