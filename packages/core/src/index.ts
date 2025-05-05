@@ -1,14 +1,18 @@
+import { Pont } from "./classes/Pont.js";
+
+const pont = Pont.getInstance();
+
+export { pont, Pont };
+
 export type {
+  ComponentName,
   PontAppState,
-  PontAppStateInit as PontAppStateInitializer,
-} from "./types/app.js";
-export type { ComponentName } from "./types/index.js";
+  PontAppStateInit,
+} from "./types/index.js";
 export {
   getElement,
   getInitialState,
+  getTitleTransformer,
+  type NormalizedUrlParams,
   type RootElement,
-} from "./utils/bootstrap.js";
-export { type NormalizedUrlParams } from "./utils/params.js";
-export { getTitleTransformer } from "./utils/title.js";
-
-export { pont, Pont } from "./classes/Pont.js";
+} from "./utils/index.js";

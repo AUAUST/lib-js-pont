@@ -179,6 +179,4 @@ class Pont implements WithPont {
   }
 }
 
-const pont = Pont.getInstance();
-
-export { pont, Pont };
+export { Pont };

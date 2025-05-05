@@ -3,7 +3,7 @@ import {
   getInitialState,
   getTitleTransformer,
   type ComponentName,
-  type PontAppStateInitializer,
+  type PontAppStateInit,
   type RootElement,
 } from "@auaust/pont";
 import type { Component } from "solid-js";
@@ -52,7 +52,7 @@ export type PontAppOptions = {
    * It is useful if the server doesn't set the initial state as
    * the `data-props` attribute of the root element.
    */
-  initialState?: PontAppStateInitializer;
+  initialState?: PontAppStateInit;
 
   /**
    * The function that will be called with the initial state of the application.

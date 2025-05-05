@@ -1,3 +1,4 @@
+export type { PontAppState, PontAppStateInit } from "./app.js";
 export type {
   DataResponse,
   EmptyResponse,
