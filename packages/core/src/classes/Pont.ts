@@ -27,6 +27,12 @@ interface Pont
     "getBaseUrl" | "visit" | "get" | "post" | "put" | "delete" | "patch"
   > {}
 
+interface Pont
+  extends Pick<
+    StateManager,
+    "getComponent" | "getUrl" | "getPageProps" | "getGlobalProps"
+  > {}
+
 class Pont {
   protected static instance: Pont;
 
@@ -62,6 +68,13 @@ class Pont {
       "put",
       "delete",
       "patch",
+    ]);
+
+    forwardCalls(this.managers.state, this, [
+      "getComponent",
+      "getUrl",
+      "getPageProps",
+      "getGlobalProps",
     ]);
   }
 

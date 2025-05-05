@@ -80,7 +80,7 @@ export class HeadersManager {
   }
 
   /**
-   * Retrieves the encrypted CSRF token from the cookie, commonly set by Laravel.
+   * Retrieves the encrypted CSRF token from the `XSRF-TOKEN` cookie.
    */
   public getXsrfToken(): string | null {
     if (typeof document === "undefined") {
@@ -101,7 +101,7 @@ export class HeadersManager {
   }
 
   /**
-   * Retrieves the CSRF token from the meta tag, commonly set by Laravel.
+   * Retrieves the CSRF token from the `meta[name="csrf-token"]` tag.
    */
   public getCsrfToken(): string | null {
     if (typeof document === "undefined") {
