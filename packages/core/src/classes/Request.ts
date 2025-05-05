@@ -79,7 +79,7 @@ export class Request {
   public getUrl(): Url {
     const url = new URL(this.url);
 
-    url.search = this.params.toString();
+    url.search = this.params.getParams();
 
     return url.toString();
   }

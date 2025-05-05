@@ -1,17 +1,55 @@
-import { A, O, S } from "@auaust/primitive-kit";
+import { A, O, P, S } from "@auaust/primitive-kit";
 import type { RequestParametersInit } from "src/classes/RequestParameters.js";
 
-export function getParamsEntries(params: RequestParametersInit): string[][] {
+/**
+ * The result of basic pre-processing of request parameters.
+ * The values might still be arrays or other complex types,
+ * and it's up to the params serializer to handle them.
+ *
+ * Specifically, based on the user input, a single set might
+ * include duplicate keys, duplicate bracketed keys,
+ * non-bracketed keys holding arrays, etc.
+ *
+ * It's up to the params serializer service to handle these cases.
+ */
+export type NormalizedRequestParameters = [string, unknown][];
+
+export function normalizeParams(
+  ...params: (RequestParametersInit | undefined)[]
+): NormalizedRequestParameters {
+  const normalized: NormalizedRequestParameters = [];
+
+  for (const init of params) {
+    if (init === undefined) {
+      continue;
+    }
+
+    for (const [key, value] of paramsEntries(init)) {
+      normalized.push([key, value]);
+    }
+  }
+
+  return normalized;
+}
+
+export function paramsEntries(
+  params: RequestParametersInit
+): NormalizedRequestParameters {
+  if (P.isNullish(params)) {
+    return [];
+  }
+
+  if (S.is(params)) {
+    params = new URLSearchParams(params);
+  }
+
   if (params instanceof URLSearchParams) {
     return A(params.entries());
   }
 
   if (A.is(params)) {
+    // @ts-expect-error
     return params;
-  }
-
-  if (S.is(params)) {
-    return A(new URLSearchParams(params).entries());
   }
 
   if (O.is(params)) {
@@ -28,30 +66,4 @@ export function getParamsEntries(params: RequestParametersInit): string[][] {
  */
 export function shouldAppend(key: string): boolean {
   return /\[\w*\]$/.test(key);
-}
-
-/**
- * Merges multiple request parameters into the first one.
- */
-export function mergeParams(
-  params: URLSearchParams,
-  ...inits: (RequestParametersInit | undefined)[]
-): URLSearchParams {
-  for (const init of inits) {
-    if (init === undefined) {
-      continue;
-    }
-
-    const entries = getParamsEntries(init);
-
-    for (const [key, value] of entries) {
-      if (shouldAppend(key)) {
-        params.append(key, value);
-      } else {
-        params.set(key, value);
-      }
-    }
-  }
-
-  return params;
 }

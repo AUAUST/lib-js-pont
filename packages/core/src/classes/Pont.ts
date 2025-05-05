@@ -1,6 +1,11 @@
+import { O } from "@auaust/primitive-kit";
 import { HeadersManager } from "src/managers/HeadersManager.js";
 import { RequestsManager } from "src/managers/RequestsManager.js";
 import { StateManager } from "src/managers/StateManager.js";
+import {
+  createDefaultParamsSerializer,
+  type ParamsSerializer,
+} from "src/services/ParamsSerializer.js";
 import {
   createDefaultTransporter,
   type Transporter,
@@ -12,7 +17,10 @@ export type PontInit = {
   baseUrl?: string;
   defaultHeaders?: Record<string, string>;
   initialState?: PontAppStateInit;
-  services?: { transporter?: Transporter };
+  services?: {
+    transporter?: Transporter;
+    paramsSerializer?: ParamsSerializer;
+  };
 };
 
 interface Pont
@@ -38,6 +46,7 @@ class Pont {
 
   protected readonly services: {
     transporter?: Transporter;
+    paramsSerializer?: ParamsSerializer;
   } = {};
 
   public constructor() {
@@ -72,8 +81,10 @@ class Pont {
     this.managers.requests.init({ baseUrl });
     this.managers.headers.init({ defaultHeaders });
 
-    this.services.transporter =
-      services?.transporter ?? createDefaultTransporter(this);
+    this.registerServices(services, [
+      ["transporter", createDefaultTransporter],
+      ["paramsSerializer", createDefaultParamsSerializer],
+    ]);
 
     this.initialized = true;
 
@@ -96,6 +107,34 @@ class Pont {
     return this.managers.headers;
   }
 
+  protected registerServices(
+    services: PontInit["services"],
+    config: NonNullable<
+      {
+        [K in keyof Pont["services"]]: [
+          name: K,
+          factory: (pont: Pont) => NonNullable<Pont["services"][K]>
+        ];
+      }[keyof Pont["services"]]
+    >[]
+  ): this {
+    if (this.initialized) {
+      throw new Error("Pont is already initialized");
+    }
+
+    for (const [name, factory] of config) {
+      if (services && O.is(services[name])) {
+        // @ts-expect-error - TS is not able to infer that the pairs are always of the same type
+        this.services[name] = services[name];
+      } else {
+        // @ts-expect-error
+        this.services[name] = factory(this);
+      }
+    }
+
+    return this;
+  }
+
   public getService<T extends keyof Pont["services"]>(
     name: T
   ): NonNullable<Pont["services"][T]> {
@@ -110,6 +149,10 @@ class Pont {
 
   public getTransporter(): Transporter {
     return this.getService("transporter");
+  }
+
+  public getParamsSerializer(): ParamsSerializer {
+    return this.getService("paramsSerializer");
   }
 }
 
