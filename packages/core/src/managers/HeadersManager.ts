@@ -1,4 +1,4 @@
-import { O } from "@auaust/primitive-kit";
+import { O, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import type { RequestHeadersInit } from "src/classes/RequestHeaders.js";
 import { parseHeaders } from "src/utils/headers.js";
@@ -50,6 +50,8 @@ export class HeadersManager {
   }
 
   public setDefaultHeader(name: string, value: string | null): this {
+    name = S.lower(name);
+
     if (!value) {
       this.removeDefaultHeader(name);
     } else {
@@ -60,7 +62,7 @@ export class HeadersManager {
   }
 
   public removeDefaultHeader(name: string): void {
-    delete this.defaultHeaders[name];
+    delete this.defaultHeaders[S.lower(name)];
   }
 
   public getDefaultHeaders(): Record<string, string> {
@@ -69,9 +71,9 @@ export class HeadersManager {
     let token: string | null;
 
     if ((token = this.getXsrfToken())) {
-      headers["X-XSRF-TOKEN"] = token;
+      headers["x-xsrf-token"] = token;
     } else if ((token = this.getCsrfToken())) {
-      headers["X-CSRF-TOKEN"] = token;
+      headers["x-csrf-token"] = token;
     }
 
     return headers;
@@ -90,7 +92,7 @@ export class HeadersManager {
     for (const cookie of cookies) {
       const [name, value] = cookie.split("=");
 
-      if (name === "XSRF-TOKEN") {
+      if (S.lower(name) === "xsrf-token") {
         return decodeURIComponent(value || "");
       }
     }
