@@ -1,5 +1,6 @@
 import { A, B, N, O, P, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
+import type { Primitive } from "src/types/utils.js";
 import {
   shouldAppend,
   type NormalizedRequestParameters,
@@ -16,45 +17,46 @@ export interface ParamsSerializer {
   serialize(options: NormalizedRequestParameters): URLSearchParams | string;
 }
 
-export function createDefaultParamsSerializer(pont: Pont): ParamsSerializer {
-  function getValue(
-    value: unknown
-  ): (undefined | string)[] | string | undefined;
-  function getValue(value: unknown, preserveArrays: false): string | undefined;
-  function getValue(
-    value: unknown,
-    preserveArrays: boolean = true
-  ): (undefined | string)[] | string | undefined {
-    // null, undefined and NaN should be ignored
-    if (P.isNullish(value)) {
-      return undefined;
-    }
-
-    // Strings and numbers are returned as is
-    if (S.is(value) || N.is(value)) {
-      return S(value);
-    }
-
-    // Boolean values are converted to `"true"` or `"false"`
-    if (B.is(value)) {
-      return B.toString(value);
-    }
-
-    // Objects are converted to JSON strings.
-    // If arrays are not preserved, they are also converted to JSON strings.
-    if (O.is(value, !preserveArrays)) {
-      return JSON.stringify(value);
-    }
-
-    // Arrays are preserved, but entries are converted.
-    if (A.is(value)) {
-      return value.map((v) => getValue(v, false));
-    }
-
-    // Any other value is stringified.
-    return S(value);
+function getValue(
+  value: unknown
+): (Primitive | undefined[]) | Primitive | undefined;
+function getValue(value: unknown, preserveArrays: false): Primitive | undefined;
+function getValue(
+  value: unknown,
+  preserveArrays = true
+): (Primitive | undefined)[] | Primitive | undefined {
+  // null, undefined and NaN should be ignored
+  if (P.isNullish(value)) {
+    return undefined;
   }
 
+  // Strings and numbers are returned as is, stringified,
+  // except for empty strings, which are ignored.
+  if (S.is(value) || N.is(value)) {
+    return S(value) || undefined;
+  }
+
+  // Booleans are returned as `"true"` or `"false"`.
+  if (B.is(value)) {
+    return B.toString(value);
+  }
+
+  // Objects are converted to JSON strings.
+  // If arrays are not preserved, they are also converted to JSON strings.
+  if (O.is(value, !preserveArrays)) {
+    return JSON.stringify(value);
+  }
+
+  // Arrays are preserved, but entries are converted.
+  if (A.is(value)) {
+    return value.map((v) => getValue(v, false));
+  }
+
+  // Any other value is stringified.
+  return S(value);
+}
+
+export function createDefaultParamsSerializer(pont: Pont): ParamsSerializer {
   return {
     serialize: (options) => {
       const params = new URLSearchParams();

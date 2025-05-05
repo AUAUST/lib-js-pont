@@ -55,7 +55,7 @@ export class Request {
     this.url = `${parsed.origin}${parsed.pathname}${parsed.hash}`;
     this.method = toMethod(method, "get");
     this.data = new RequestData(this, data);
-    this.params = new RequestParameters(this, params, parsed.searchParams);
+    this.params = new RequestParameters(this, parsed.searchParams, params);
     this.headers = new RequestHeaders(this, headers);
 
     forwardCalls(this.data, this, ["getContentType", "getData"]);

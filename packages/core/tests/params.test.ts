@@ -1,5 +1,7 @@
-import { Pont } from "@auaust/pont-core";
-import { describe, expect, test } from "vitest";
+import { NormalizedRequestParameters, Pont } from "@auaust/pont-core";
+import { O } from "@auaust/primitive-kit";
+import { ParamsSerializer } from "src/services/ParamsSerializer.js";
+import { describe, expect, test, vitest } from "vitest";
 
 describe("Url parameters", async () => {
   const pont = new Pont().init({
@@ -24,7 +26,7 @@ describe("Url parameters", async () => {
     });
 
     expect(request.getUrl()).toBe(
-      encodeURI("https://example.com/users?page=4&limit=10")
+      encodeURI("https://example.com/users?limit=10&page=4")
     );
   });
 
@@ -39,4 +41,39 @@ describe("Url parameters", async () => {
       encodeURI("https://example.com/users?ids[]=1&ids[]=2&ids[]=3")
     );
   });
+});
+
+test("Pont can use a custom params serializer", () => {
+  const paramsSerializer: ParamsSerializer = {
+    serialize: vitest.fn((options: NormalizedRequestParameters) => {
+      const params: Record<string, string> = {};
+
+      for (const [key, value] of options) {
+        params[key] = JSON.stringify(value);
+      }
+
+      return O.entries(params)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("&");
+    }),
+  };
+
+  const pont = new Pont().init({
+    baseUrl: "https://example.com",
+    services: {
+      paramsSerializer,
+    },
+  });
+
+  const url = pont
+    .getRequestsManager()
+    .createRequest("/users?page=3", {
+      params: {
+        ids: [1, 2, 3],
+      },
+    })
+    .getUrl();
+
+  expect(paramsSerializer.serialize).toHaveBeenCalled();
+  expect(url).toBe("https://example.com/users?page=3&ids=[1,2,3]");
 });
