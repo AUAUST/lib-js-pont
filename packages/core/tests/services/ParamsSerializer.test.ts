@@ -1,6 +1,6 @@
-import { NormalizedRequestParameters, Pont } from "@auaust/pont-core";
+import { type NormalizedRequestParameters, Pont } from "@auaust/pont-core";
 import { O, P, S } from "@auaust/primitive-kit";
-import { ParamsSerializer } from "src/services/ParamsSerializer.js";
+import type { ParamsSerializer } from "src/services/ParamsSerializer.js";
 import { describe, expect, test, vitest } from "vitest";
 
 describe("Url parameters", async () => {
