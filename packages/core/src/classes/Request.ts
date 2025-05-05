@@ -3,7 +3,6 @@ import type { RequestOptions } from "src/types/requests.js";
 import type { Method, Url } from "src/types/utils.js";
 import { forwardCalls } from "src/utils/forwardsCalls.js";
 import { toMethod } from "src/utils/methods.js";
-import { EventsEmitter } from "./EventsEmitter.js";
 import { RequestData, type RequestDataInit } from "./RequestData.js";
 import { RequestHeaders, type RequestHeadersInit } from "./RequestHeaders.js";
 import {
@@ -19,19 +18,6 @@ export type RequestInit = {
   headers?: RequestHeadersInit;
 };
 
-export type RequestEvents = {
-  /** The request is being sent. */
-  start: () => void;
-  /** The request was successful. */
-  success: () => void;
-  /** The request failed. */
-  error: (error: Error) => void;
-  /** The request is finished, regardless of success or failure. */
-  finish: () => void;
-  /** The request is being canceled. */
-  cancel: () => void;
-};
-
 export interface Request
   extends Pick<RequestData, "getContentType" | "getData"> {}
 export interface Request extends Pick<RequestParameters, "getParams"> {}
@@ -41,7 +27,7 @@ export interface Request extends Pick<RequestHeaders, "getHeaders"> {}
  * A request object contains all the information needed to process a request.
  * It includes the URL, the method, the body, the headers.
  */
-export class Request extends EventsEmitter<Request, RequestEvents> {
+export class Request {
   protected readonly url: Url;
   protected readonly method: Method;
   protected readonly data: RequestData;
@@ -63,8 +49,6 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
     public readonly requestsManager: RequestsManager,
     { url, method, data, params, headers }: RequestInit
   ) {
-    super(["start", "success", "error", "finish", "cancel"]);
-
     this.url = url;
     this.method = toMethod(method, "get");
     this.data = new RequestData(this, data);
@@ -79,12 +63,6 @@ export class Request extends EventsEmitter<Request, RequestEvents> {
   public get pont() {
     return this.requestsManager.pont;
   }
-
-  public onStart = this.eventSetter("start");
-  public onSuccess = this.eventSetter("success");
-  public onError = this.eventSetter("error");
-  public onFinish = this.eventSetter("finish");
-  public onCancel = this.eventSetter("cancel");
 
   public getOptions(): RequestOptions {
     return {
