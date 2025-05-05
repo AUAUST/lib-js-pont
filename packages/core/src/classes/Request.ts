@@ -49,10 +49,13 @@ export class Request {
     public readonly requestsManager: RequestsManager,
     { url, method, data, params, headers }: RequestInit
   ) {
-    this.url = url;
+    const parsed = this.requestsManager.getUrl(url);
+
+    // Omit the search params from the URL, which are passed to the RequestParameters below
+    this.url = `${parsed.origin}${parsed.pathname}${parsed.hash}`;
     this.method = toMethod(method, "get");
     this.data = new RequestData(this, data);
-    this.params = new RequestParameters(this, params);
+    this.params = new RequestParameters(this, params, parsed.searchParams);
     this.headers = new RequestHeaders(this, headers);
 
     forwardCalls(this.data, this, ["getContentType", "getData"]);
@@ -74,7 +77,11 @@ export class Request {
   }
 
   public getUrl(): Url {
-    return this.requestsManager.getUrl(this.url);
+    const url = new URL(this.url);
+
+    url.search = this.params.toString();
+
+    return url.toString();
   }
 
   public getMethod(): Method {

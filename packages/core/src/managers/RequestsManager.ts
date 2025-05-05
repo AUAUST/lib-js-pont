@@ -80,8 +80,8 @@ export class RequestsManager {
     return this.baseUrl;
   }
 
-  public getUrl(url: Url): Url {
-    return new URL(url, this.getBaseUrl()).toString();
+  public getUrl(url: Url): URL {
+    return new URL(url, this.getBaseUrl());
   }
 
   /**
