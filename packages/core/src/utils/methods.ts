@@ -1,10 +1,24 @@
 import { S } from "@auaust/primitive-kit";
 
+/**
+ * A valid HTTP method for standard user-defined requests.
+ */
+export type Method = "get" | "post" | "put" | "delete" | "patch";
+
+/**
+ * Methods that are safe to use without side effects.
+ */
 export type SafeMethod = "get" | "head" | "options";
 
+/**
+ * Methods that can be safely retried without side effects.
+ */
 export type IdempotentMethod = "get" | "head" | "options" | "put" | "delete";
 
-export type Method =
+/**
+ * All HTTP methods, including ones that are unnecessary for standard user-defined requests.
+ */
+export type AnyMethod =
   | "get"
   | "head"
   | "options"
@@ -12,8 +26,6 @@ export type Method =
   | "delete"
   | "post"
   | "patch";
-
-export type RequestMethod = "get" | "post" | "put" | "delete" | "patch";
 
 export function toMethod(
   method: string | undefined | null,
@@ -23,6 +35,21 @@ export function toMethod(
 }
 
 export function isMethod(method: string | undefined | null): method is Method {
+  switch (S.lower(method)) {
+    case "get":
+    case "post":
+    case "put":
+    case "delete":
+    case "patch":
+      return true;
+    default:
+      return false;
+  }
+}
+
+export function isAnyMethod(
+  method: string | undefined | null
+): method is AnyMethod {
   switch (S.lower(method)) {
     case "get":
     case "post":
@@ -65,7 +92,10 @@ export function isIdempotentMethod(
   }
 }
 
-export function supportsData(method: string | undefined | null): boolean {
+/**
+ * Whether requests sent with the given method include a body.
+ */
+export function hasBody(method: string | undefined | null): boolean {
   switch (S.lower(method)) {
     case "get":
     case "head":

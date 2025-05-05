@@ -1,7 +1,6 @@
 import type { RequestOptions } from "src/types/requests.js";
 import type { Method } from "src/types/utils.js";
-import { forwardCalls } from "src/utils/forwardsCalls.js";
-import { toMethod } from "src/utils/methods.js";
+import { forwardCalls, toMethod } from "src/utils/index.js";
 import type { WithPont } from "./Pont.js";
 import { RequestData, type RequestDataInit } from "./RequestData.js";
 import { RequestHeaders, type RequestHeadersInit } from "./RequestHeaders.js";

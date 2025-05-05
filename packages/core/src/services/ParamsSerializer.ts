@@ -1,7 +1,7 @@
 import { A, B, N, O, P, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import type { Primitive } from "src/types/utils.js";
-import { shouldAppend, type NormalizedUrlParams } from "src/utils/params.js";
+import { shouldAppend, type NormalizedUrlParams } from "src/utils/index.js";
 import type { Service } from "./index.js";
 
 /**

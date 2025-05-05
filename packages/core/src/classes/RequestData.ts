@@ -1,4 +1,4 @@
-import { supportsData } from "src/utils/methods.js";
+import { hasBody } from "src/utils/index.js";
 import type Stream from "stream";
 import type { Request } from "./Request.js";
 
@@ -31,7 +31,7 @@ export class RequestData {
   }
 
   public getData(): unknown {
-    if (!supportsData(this.request.getMethod())) {
+    if (!hasBody(this.request.getMethod())) {
       return undefined;
     }
 

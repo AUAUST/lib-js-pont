@@ -14,10 +14,10 @@ import {
   type ServiceReturnType,
   type Transporter,
 } from "src/services/index.js";
-import type { PontAppStateInit } from "src/types/app.js";
-import { forwardCalls } from "src/utils/forwardsCalls.js";
+import type { PontAppStateInit } from "src/types/index.js";
+import { forwardCalls } from "src/utils/index.js";
 import { Url } from "./Url.js";
-import { UrlParamsInit } from "./UrlParams.js";
+import type { UrlParamsInit } from "./UrlParams.js";
 
 export interface WithPont {
   readonly pont: Pont;
