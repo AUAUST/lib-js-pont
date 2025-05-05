@@ -1,5 +1,5 @@
 import { NormalizedRequestParameters, Pont } from "@auaust/pont-core";
-import { O } from "@auaust/primitive-kit";
+import { O, P, S } from "@auaust/primitive-kit";
 import { ParamsSerializer } from "src/services/ParamsSerializer.js";
 import { describe, expect, test, vitest } from "vitest";
 
@@ -49,7 +49,7 @@ test("Pont can use a custom params serializer", () => {
       const params: Record<string, string> = {};
 
       for (const [key, value] of options) {
-        params[key] = JSON.stringify(value);
+        params[key] = P.isPrimitive(value) ? S(value) : JSON.stringify(value);
       }
 
       return O.entries(params)
