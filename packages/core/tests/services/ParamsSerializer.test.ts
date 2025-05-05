@@ -1,6 +1,5 @@
 import { type NormalizedRequestParameters, Pont } from "@auaust/pont-core";
 import { O, P, S } from "@auaust/primitive-kit";
-import type { ParamsSerializer } from "src/services/ParamsSerializer.js";
 import { describe, expect, test, vitest } from "vitest";
 
 describe("Url parameters", async () => {
@@ -44,7 +43,7 @@ describe("Url parameters", async () => {
 });
 
 test("Pont can use a custom params serializer", () => {
-  const paramsSerializer: ParamsSerializer = {
+  const paramsSerializer = {
     serialize: vitest.fn((options: NormalizedRequestParameters) => {
       const params: Record<string, string> = {};
 
@@ -65,15 +64,21 @@ test("Pont can use a custom params serializer", () => {
     },
   });
 
-  const url = pont
+  const request = pont
     .getRequestsManager()
-    .createRequest("/users?page=3", {
+    .createRequest("/users?page=3#fragment", {
       params: {
         ids: [1, 2, 3],
       },
-    })
-    .getUrl();
+    });
 
+  expect(request.getUrl()).toBe(
+    "https://example.com/users?page=3&ids=[1,2,3]#fragment"
+  );
   expect(paramsSerializer.serialize).toHaveBeenCalled();
-  expect(url).toBe("https://example.com/users?page=3&ids=[1,2,3]");
+  expect(paramsSerializer.serialize).toHaveReturnedWith("page=3&ids=[1,2,3]");
+
+  paramsSerializer.serialize.mockReturnValueOnce("");
+
+  expect(request.getUrl()).toBe("https://example.com/users#fragment");
 });
