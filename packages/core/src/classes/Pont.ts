@@ -6,9 +6,11 @@ import {
 } from "src/managers/index.js";
 import {
   createDefaultParamsSerializer,
+  createDefaultResponseHandler,
   createDefaultTransporter,
   type ParamsSerializer,
   type PartialServicesMap,
+  type ResponseHandler,
   type ServiceName,
   type ServiceParameters,
   type ServiceReturnType,
@@ -60,6 +62,7 @@ class Pont implements WithPont {
   protected readonly services: {
     transporter?: Transporter;
     paramsSerializer?: ParamsSerializer;
+    responseHandler?: ResponseHandler;
   } = {};
 
   public constructor() {
@@ -104,6 +107,7 @@ class Pont implements WithPont {
     this.registerServices(services, [
       ["transporter", createDefaultTransporter],
       ["paramsSerializer", createDefaultParamsSerializer],
+      ["responseHandler", createDefaultResponseHandler],
     ]);
 
     this.initialized = true;
@@ -159,6 +163,10 @@ class Pont implements WithPont {
     return this;
   }
 
+  public createUrl(url: string, params?: UrlParamsInit) {
+    return new Url(this, url, params);
+  }
+
   public getService<T extends keyof Pont["services"]>(name: T) {
     const service = this.services[name];
 
@@ -167,18 +175,6 @@ class Pont implements WithPont {
     }
 
     return service;
-  }
-
-  public getTransporter(): Transporter {
-    return this.getService("transporter");
-  }
-
-  public getParamsSerializer(): ParamsSerializer {
-    return this.getService("paramsSerializer");
-  }
-
-  public createUrl(url: string, params?: UrlParamsInit) {
-    return new Url(this, url, params);
   }
 
   /**

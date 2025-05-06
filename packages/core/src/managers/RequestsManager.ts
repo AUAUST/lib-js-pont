@@ -29,7 +29,12 @@ export class RequestsManager {
   }
 
   public async send(request: Request): Promise<Response> {
-    const response = await this.pont.use("transporter", request.getOptions());
+    const rawResponse = await this.pont.use(
+      "transporter",
+      request.getOptions()
+    );
+
+    const response = this.pont.use("responseHandler", rawResponse);
 
     return response;
   }
@@ -89,12 +94,6 @@ export class RequestsManager {
     url: string,
     options: Omit<RequestInit, "url">
   ): Request {
-    return new Request(this, {
-      url: url,
-      method: options.method,
-      data: options.data,
-      params: options.params,
-      headers: options.headers,
-    });
+    return new Request(this, { ...options, url });
   }
 }

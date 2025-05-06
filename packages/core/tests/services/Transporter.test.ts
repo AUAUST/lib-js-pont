@@ -1,14 +1,14 @@
 import { Pont } from "@auaust/pont";
-import { AmbientResponse } from "src/classes/Responses/AmbientResponse.js";
+import { RawResponse } from "src/classes/Responses/RawResponse.js";
 import type { Transporter } from "src/services/Transporter.js";
 import { expect, test, vitest } from "vitest";
 
 test("Pont sends requests using the transporter", () => {
-  const transporter: Transporter = {
+  const transporter = {
     handle: vitest.fn(async (options) => {
-      return new AmbientResponse({});
+      return new RawResponse({});
     }),
-  };
+  } satisfies Transporter;
 
   const pont = new Pont().init({
     services: {

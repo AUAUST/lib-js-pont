@@ -30,4 +30,8 @@ export {
   createDefaultParamsSerializer,
   type ParamsSerializer,
 } from "./ParamsSerializer.js";
+export {
+  createDefaultResponseHandler,
+  type ResponseHandler,
+} from "./ResponseHandler.js";
 export { createDefaultTransporter, type Transporter } from "./Transporter.js";
