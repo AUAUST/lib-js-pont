@@ -8,6 +8,8 @@ import type {
   FragmentResponse,
   FragmentResponseInit,
 } from "./FragmentResponse.js";
+import type { RawResponse } from "./RawResponse.js";
+import { UnhandledResponse } from "./UnhandledResponse.js";
 import type { VisitResponse, VisitResponseInit } from "./VisitResponse.js";
 
 export type ResponseType = "visit" | "fragment" | "ambient" | "data";
@@ -33,7 +35,27 @@ export type ResponseInit<T extends ResponseType = ResponseType> =
   ResponsesMap[T][2];
 
 export abstract class Response<T extends ResponseType = ResponseType> {
-  protected readonly type: T;
+  public static isValidType(type: unknown): type is ResponseType {
+    if (!S.is(type)) {
+      return false;
+    }
+
+    switch (S.lower(type)) {
+      case "visit":
+      case "fragment":
+      case "ambient":
+      case "data":
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public static unhandled(raw: RawResponse): UnhandledResponse {
+    return new UnhandledResponse(raw);
+  }
+
+  public readonly type: T;
 
   public constructor({ type }: BaseResponseInit) {
     this.type = <T>S.lower(type);

@@ -1,5 +1,12 @@
 import { F, N, O, P, S } from "@auaust/primitive-kit";
 
+export interface RawResponseInit {
+  status?: number;
+  url?: string;
+  headers?: Headers | Record<string, string>;
+  data?: string | object;
+}
+
 /**
  * The RawResponse class is a standardized way of
  * representing HTTP responses. It encapsulates the
@@ -9,15 +16,22 @@ import { F, N, O, P, S } from "@auaust/primitive-kit";
  * across different services.
  */
 export class RawResponse {
+  public static ok(init: Omit<RawResponseInit, "status"> = {}) {
+    return new RawResponse(init).withStatus(200);
+  }
+
+  public static notFound(init: Omit<RawResponseInit, "status"> = {}) {
+    return new RawResponse(init).withStatus(404);
+  }
+
+  public static serverError(init: Omit<RawResponseInit, "status"> = {}) {
+    return new RawResponse(init).withStatus(500);
+  }
+
   /**
    * The HTTP status code of the response.
    */
   protected status?: number;
-
-  /**
-   * The HTTP status text of the response.
-   */
-  protected statusText?: string;
 
   /**
    * The URL of the response.
@@ -35,25 +49,9 @@ export class RawResponse {
    */
   protected data?: string | object;
 
-  public constructor({
-    status,
-    statusText,
-    url,
-    headers,
-    data,
-  }: {
-    status?: number;
-    statusText?: string;
-    url?: string;
-    headers?: Headers | Record<string, string>;
-    data?: string | object;
-  } = {}) {
+  public constructor({ status, url, headers, data }: RawResponseInit = {}) {
     if (P.isSet(status)) {
       this.withStatus(status);
-    }
-
-    if (P.isSet(statusText)) {
-      this.withStatusText(statusText);
     }
 
     if (P.isSet(url)) {
@@ -69,18 +67,8 @@ export class RawResponse {
     }
   }
 
-  public withStatus(status: number, statusText?: string): this {
+  public withStatus(status: number): this {
     this.status = N(status);
-
-    if (S.is(statusText)) {
-      this.withStatusText(statusText);
-    }
-
-    return this;
-  }
-
-  public withStatusText(statusText: string): this {
-    this.statusText = S(statusText);
 
     return this;
   }
@@ -111,10 +99,6 @@ export class RawResponse {
     return this.status;
   }
 
-  public getStatusText(): string | undefined {
-    return this.statusText;
-  }
-
   public getUrl(): string | undefined {
     return this.url;
   }
@@ -125,6 +109,10 @@ export class RawResponse {
 
   public getHeader(name: string): string | null {
     return this.headers?.get(name) ?? null;
+  }
+
+  public hasHeader(name: string): boolean {
+    return this.headers?.has(name) ?? false;
   }
 
   public getData(): string | object | undefined {

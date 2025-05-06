@@ -25,7 +25,6 @@ export function createDefaultTransporter(pont: Pont): Transporter {
         return new RawResponse()
           .withStatus(response.status)
           .withUrl(response.config.url)
-          .withStatusText(response.statusText)
           .withHeaders(<any>response.headers)
           .withData(response.data)
           .freeze();
