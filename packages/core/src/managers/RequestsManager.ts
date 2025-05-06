@@ -39,7 +39,10 @@ export class RequestsManager {
     return response;
   }
 
-  public async visit(url: string, options: VisitOptions): Promise<Response> {
+  public async visit(
+    url: string,
+    options: VisitOptions = {}
+  ): Promise<Response> {
     const request = this.createRequest(url, options);
     const response = await this.send(request);
     return response;
@@ -47,38 +50,38 @@ export class RequestsManager {
 
   public async get(
     url: string,
-    options: Omit<VisitOptions, "method">
+    options: Omit<VisitOptions, "method"> = {}
   ): Promise<Response> {
     return this.visit(url, { ...options, method: "get" });
   }
 
   public async post(
     url: string,
-    data: RequestDataInit,
-    options: Omit<VisitOptions, "method" | "data">
+    data: RequestDataInit = {},
+    options: Omit<VisitOptions, "method" | "data"> = {}
   ): Promise<Response> {
     return this.visit(url, { ...options, data, method: "post" });
   }
 
   public async put(
     url: string,
-    data: RequestDataInit,
-    options: Omit<VisitOptions, "method" | "data">
+    data: RequestDataInit = {},
+    options: Omit<VisitOptions, "method" | "data"> = {}
   ): Promise<Response> {
     return this.visit(url, { ...options, data, method: "put" });
   }
 
   public async delete(
     url: string,
-    options: Omit<VisitOptions, "method">
+    options: Omit<VisitOptions, "method"> = {}
   ): Promise<Response> {
     return this.visit(url, { ...options, method: "delete" });
   }
 
   public async patch(
     url: string,
-    data: RequestDataInit,
-    options: Omit<VisitOptions, "method" | "data">
+    data: RequestDataInit = {},
+    options: Omit<VisitOptions, "method" | "data"> = {}
   ): Promise<Response> {
     return this.visit(url, { ...options, data, method: "patch" });
   }
