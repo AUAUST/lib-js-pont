@@ -1,5 +1,4 @@
 import { Pont } from "@auaust/pont";
-import { A } from "@auaust/primitive-kit";
 import { AmbientResponse } from "src/classes/Responses/AmbientResponse.js";
 import { RawResponse } from "src/classes/Responses/RawResponse.js";
 import type { ResponseHandler } from "src/services/ResponseHandler.js";
@@ -8,7 +7,7 @@ import { expect, test, vitest } from "vitest";
 
 test("Pont handles response using the response handler", async () => {
   const responseHandler = {
-    handle: vitest.fn((response) => {
+    handle: vitest.fn((pont, response) => {
       return new AmbientResponse(response);
     }),
   } satisfies ResponseHandler;
@@ -24,14 +23,10 @@ test("Pont handles response using the response handler", async () => {
   await pont.visit("/");
 
   expect(responseHandler.handle).toHaveBeenCalledOnce();
-  expect(A.first(responseHandler.handle.mock.lastCall)).toBeInstanceOf(
-    RawResponse
-  );
+  expect(responseHandler.handle.mock.lastCall![1]).toBeInstanceOf(RawResponse);
 
   await pont.post("/invalid");
 
   expect(responseHandler.handle).toHaveBeenCalledTimes(2);
-  expect(A.first(responseHandler.handle.mock.lastCall)).toBeInstanceOf(
-    RawResponse
-  );
+  expect(responseHandler.handle.mock.lastCall![1]).toBeInstanceOf(RawResponse);
 });

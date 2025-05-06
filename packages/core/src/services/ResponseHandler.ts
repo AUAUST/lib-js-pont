@@ -15,17 +15,33 @@ export interface ResponseHandler extends Service {
    * It is responsible for composing the fragment responses, extracting the
    * various data parts, and returning a standardized response object.
    */
-  handle(this: Pont, response: RawResponse): Response | UnhandledResponse;
+  handle(pont: Pont, response: RawResponse): Response | UnhandledResponse;
 }
 
-export function createDefaultResponseHandler(pont: Pont): ResponseHandler {
+export function createDefaultResponseHandler() {
   return {
-    handle: (response) => {
+    handle(pont: Pont, response: RawResponse) {
+      const data = this.data(response);
+
+      if (!data) {
+        return Response.unhandled(response);
+      }
+
+      return new AmbientResponse({});
+    },
+
+    /**
+     * Handle the general response from the server,
+     * ensuring it has the correct headers and a body.
+     * It either returns the parsed JSON data,
+     * or null if the response is not valid.
+     */
+    data(response: RawResponse) {
       // If the header "x-pont" is not set, this means the response
       // is not a Pont response. Returning an UnhandledResponse
       // ensures the response is forwarded to the unhandled response service.
       if (!response.hasHeader("x-pont")) {
-        return Response.unhandled(response);
+        return null;
       }
 
       const json = response.getJson();
@@ -33,19 +49,17 @@ export function createDefaultResponseHandler(pont: Pont): ResponseHandler {
       // If the response has no JSON data, it is not valid.
       // The JSON data is required to include the response type, props and such.
       if (!O.is(json)) {
-        return Response.unhandled(response);
+        return null;
       }
 
       // If the response type is not set, it is not valid.
       // It is required for the server to specify the response type
       // otherwise the client cannot know how to handle it.
       if (!Response.isValidType(json.type)) {
-        return Response.unhandled(response);
+        return null;
       }
 
-      // Here, we extract the general response data shared by all
-
-      return new AmbientResponse({});
+      return json;
     },
   };
 }

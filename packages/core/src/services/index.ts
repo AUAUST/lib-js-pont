@@ -4,7 +4,7 @@ export interface Service {
   /**
    * Handles the service's logic.
    */
-  handle(this: Pont, ...args: unknown[]): unknown;
+  handle(this: Service, pont: Pont, ...args: unknown[]): unknown;
 }
 
 export type ServiceName = keyof Pont["services"];
@@ -20,7 +20,9 @@ export type ServiceHandler<T extends ServiceName = ServiceName> =
 
 export type ServiceParameters<T extends ServiceName> = Parameters<
   ServiceHandler<T>
->;
+> extends [Pont, ...infer U]
+  ? U
+  : never;
 
 export type ServiceReturnType<T extends ServiceName> = ReturnType<
   ServiceHandler<T>

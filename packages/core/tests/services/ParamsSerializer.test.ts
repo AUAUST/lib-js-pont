@@ -44,7 +44,7 @@ describe("Url parameters", async () => {
 
 test("Pont can use a custom params serializer", () => {
   const paramsSerializer = {
-    handle: vitest.fn((options: NormalizedUrlParams) => {
+    handle: vitest.fn((pont, options: NormalizedUrlParams) => {
       const params: Record<string, string> = {};
 
       for (const [key, value] of options) {

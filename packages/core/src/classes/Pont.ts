@@ -181,11 +181,13 @@ class Pont implements WithPont {
    * Calls the specified service with the given arguments.
    */
   public use<T extends ServiceName>(
-    service: T,
+    serviceName: T,
     ...args: ServiceParameters<T>
   ): ServiceReturnType<T> {
+    const service = this.getService(serviceName);
+
     // @ts-expect-error - The unions are converted to intersections by `ReturnType` and `Parameters` thus the types can no longer be satisfied
-    return this.getService(service).handle.call(this, ...args);
+    return service.handle.call(service, this, ...args);
   }
 }
 

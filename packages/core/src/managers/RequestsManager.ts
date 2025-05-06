@@ -28,13 +28,17 @@ export class RequestsManager {
     return this;
   }
 
-  public async send(request: Request): Promise<Response> {
+  public async execute(request: Request): Promise<Response> {
     const rawResponse = await this.pont.use(
       "transporter",
       request.getOptions()
     );
 
     const response = this.pont.use("responseHandler", rawResponse);
+
+    // if (response.type === "unhandled") {
+    //   return this.pont.use("unhandledResponseHandler", response.response);
+    // }
 
     return response;
   }
@@ -44,7 +48,7 @@ export class RequestsManager {
     options: VisitOptions = {}
   ): Promise<Response> {
     const request = this.createRequest(url, options);
-    const response = await this.send(request);
+    const response = await this.execute(request);
     return response;
   }
 

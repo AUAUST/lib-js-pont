@@ -23,7 +23,7 @@ function parseOptions(options: RequestOptions) {
 }
 
 export const transporter = {
-  handle: vitest.fn(async function (options) {
+  handle: vitest.fn(async function (pont, options) {
     const { url, path, method } = parseOptions(options);
 
     switch (`${method} ${path}`) {

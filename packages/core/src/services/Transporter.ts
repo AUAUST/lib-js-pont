@@ -11,7 +11,7 @@ export interface Transporter extends Service {
   /**
    * Sends a request to the server.
    */
-  handle(this: Pont, options: RequestOptions): Promise<RawResponse>;
+  handle(pont: Pont, options: RequestOptions): Promise<RawResponse>;
 }
 
 export function createDefaultTransporter(pont: Pont): Transporter {
@@ -20,7 +20,7 @@ export function createDefaultTransporter(pont: Pont): Transporter {
   });
 
   return {
-    async handle(options: RequestOptions) {
+    async handle(pont, options: RequestOptions) {
       return await instance.request(options).then((response) => {
         return new RawResponse()
           .withStatus(response.status)
@@ -30,9 +30,5 @@ export function createDefaultTransporter(pont: Pont): Transporter {
           .freeze();
       });
     },
-  };
-
-  return {
-    handle: instance.request.bind(instance),
   };
 }

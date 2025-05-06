@@ -12,7 +12,7 @@ export interface ParamsSerializer extends Service {
    * Serializes the request parameters into a format suitable for sending in a request.
    * The resulting string **MUST NOT** include the leading `?` character.
    */
-  handle(this: Pont, options: NormalizedUrlParams): URLSearchParams | string;
+  handle(pont: Pont, options: NormalizedUrlParams): URLSearchParams | string;
 }
 
 function getValue(
@@ -56,7 +56,7 @@ function getValue(
 
 export function createDefaultParamsSerializer(pont: Pont): ParamsSerializer {
   return {
-    handle: (options) => {
+    handle: (pont, options) => {
       const params = new URLSearchParams();
 
       for (const [key, value] of options) {
