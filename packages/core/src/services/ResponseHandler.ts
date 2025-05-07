@@ -37,14 +37,27 @@ type ResponseContext = {
 export function createDefaultResponseHandler() {
   return {
     handle(pont: Pont, response: RawResponse) {
+      // If the header "x-pont" is not set, this means the response
+      // is not a Pont response.
+      if (!response.hasHeader("x-pont")) {
+        return Response.unhandled(response);
+      }
+
+      const url = response.getUrl();
       const payload = this.payload(response);
 
       if (!payload) {
+        // If there is no payload but the response is ok,
+        // we return an AmbientResponse. It simply means the
+        // request was successful, but there is nothing to do.
+        if (response.isOk()) {
+          return new AmbientResponse({ url });
+        }
+
         return Response.unhandled(response);
       }
 
       const type = payload.type;
-      const url = response.getUrl();
       const title = this.title(payload);
       const errors = this.errors(payload);
       const effects = this.effects(payload);
@@ -115,9 +128,7 @@ export function createDefaultResponseHandler() {
       response: RawResponse,
       context: ResponseContext
     ): AmbientResponse {
-      return new AmbientResponse({
-        ...context,
-      });
+      return new AmbientResponse(context);
     },
 
     createFragmentResponse(
@@ -151,8 +162,6 @@ export function createDefaultResponseHandler() {
     },
 
     /**
-     * Validates the raw response from the server,
-     * ensuring it has the correct headers and a body.
      * It either returns the raw parsed JSON payload,
      * or undefined if the response is not valid.
      */
@@ -162,13 +171,6 @@ export function createDefaultResponseHandler() {
           [key: string]: unknown;
         }
       | undefined {
-      // If the header "x-pont" is not set, this means the response
-      // is not a Pont response. Returning an UnhandledResponse
-      // ensures the response is forwarded to the unhandled response service.
-      if (!response.hasHeader("x-pont")) {
-        return;
-      }
-
       const json = response.getJson();
 
       // If the response has no JSON data, it is not valid.

@@ -30,9 +30,6 @@ export class RequestsManager {
     return this;
   }
 
-  /**
-   * Executes the request and returns the response.
-   */
   public async execute(request: Request): Promise<Response> {
     const rawResponse = await this.pont.use(
       "transporter",

@@ -141,6 +141,22 @@ export class RawResponse {
     return;
   }
 
+  public isOk(): boolean {
+    return N.isBetween(this.status, 200, 299);
+  }
+
+  public isNotFound(): boolean {
+    return this.status === 404;
+  }
+
+  public isClientError(): boolean {
+    return N.isBetween(this.status, 400, 499);
+  }
+
+  public isServerError(): boolean {
+    return N.isBetween(this.status, 500, 599);
+  }
+
   /**
    * Make the object read-only once the fields are set.
    */

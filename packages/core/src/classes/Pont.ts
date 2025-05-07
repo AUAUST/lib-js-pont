@@ -55,6 +55,7 @@ class Pont implements WithPont {
     return (this.instance ??= new this());
   }
 
+  public readonly pont: Pont;
   protected initialized: boolean = false;
 
   protected readonly managers: {
@@ -72,6 +73,8 @@ class Pont implements WithPont {
   } = {};
 
   public constructor() {
+    this.pont = this;
+
     this.managers = {
       headers: new HeadersManager(this),
       requests: new RequestsManager(this),
@@ -120,10 +123,6 @@ class Pont implements WithPont {
 
     this.initialized = true;
 
-    return this;
-  }
-
-  public get pont(): Pont {
     return this;
   }
 
