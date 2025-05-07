@@ -28,9 +28,9 @@ type ResponseContext = {
     [key: string]: unknown;
   };
   url: string;
-  title: string | null;
-  errors: ErrorBag | null;
-  effects: Effects | null;
+  title?: string;
+  errors?: ErrorBag;
+  effects?: Effects;
   propsGroups: Partial<PropsGroups>;
 };
 
@@ -86,13 +86,13 @@ export function createDefaultResponseHandler() {
     ): VisitResponse | UnhandledResponse {
       const { payload, propsGroups } = context;
 
-      const component = S.is(payload.component) ? payload.component : null;
+      const component = S.is(payload.component) ? payload.component : undefined;
 
       if (!component) {
         return Response.unhandled(response);
       }
 
-      const url = S.is(payload.url) ? payload.url : null;
+      const url = S.is(payload.url) ? payload.url : undefined;
 
       if (!url) {
         return Response.unhandled(response);
@@ -128,7 +128,7 @@ export function createDefaultResponseHandler() {
 
       const intendedComponent = S.is(payload.component)
         ? payload.component
-        : null;
+        : undefined;
 
       if (!intendedComponent) {
         return Response.unhandled(response);
@@ -154,17 +154,19 @@ export function createDefaultResponseHandler() {
      * Validates the raw response from the server,
      * ensuring it has the correct headers and a body.
      * It either returns the raw parsed JSON payload,
-     * or null if the response is not valid.
+     * or undefined if the response is not valid.
      */
-    payload(response: RawResponse): {
-      type: ResponseType;
-      [key: string]: unknown;
-    } | null {
+    payload(response: RawResponse):
+      | {
+          type: ResponseType;
+          [key: string]: unknown;
+        }
+      | undefined {
       // If the header "x-pont" is not set, this means the response
       // is not a Pont response. Returning an UnhandledResponse
       // ensures the response is forwarded to the unhandled response service.
       if (!response.hasHeader("x-pont")) {
-        return null;
+        return;
       }
 
       const json = response.getJson();
@@ -172,14 +174,14 @@ export function createDefaultResponseHandler() {
       // If the response has no JSON data, it is not valid.
       // The JSON data is required to include the response type, props and such.
       if (!O.is(json)) {
-        return null;
+        return;
       }
 
       // If the response type is not set, it is not valid.
       // It is required for the server to specify the response type
       // otherwise the client cannot know how to handle it.
       if (!Response.isValidType(json.type)) {
-        return null;
+        return;
       }
 
       // @ts-expect-error - The type is not inferred correctly
@@ -189,16 +191,16 @@ export function createDefaultResponseHandler() {
     /**
      * Tries extracting the title from the response data.
      */
-    title(data: Record<string, unknown>): string | null {
-      return S.is(data.title) ? data.title : null;
+    title(data: Record<string, unknown>): string | undefined {
+      return S.is(data.title) ? data.title : undefined;
     },
 
     /**
      * Tries extracting the errors from the response data.
      */
-    errors(data: Record<string, unknown>): ErrorBag | null {
+    errors(data: Record<string, unknown>): ErrorBag | undefined {
       if (!O.is(data.errors)) {
-        return null;
+        return;
       }
 
       const errorBag: ErrorBag = {};
@@ -215,9 +217,9 @@ export function createDefaultResponseHandler() {
     /**
      * Tries extracting the effects from the response data.
      */
-    effects(data: Record<string, unknown>): Effects | null {
+    effects(data: Record<string, unknown>): Effects | undefined {
       if (!A.is(data.effects)) {
-        return null;
+        return;
       }
 
       const effects: Effects = [];

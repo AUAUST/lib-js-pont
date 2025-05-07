@@ -111,8 +111,8 @@ export class RawResponse {
     return this.headers;
   }
 
-  public getHeader(name: string): string | null {
-    return this.headers?.get(name) ?? null;
+  public getHeader(name: string): string | undefined {
+    return this.headers?.get(name) ?? undefined;
   }
 
   public hasHeader(name: string): boolean {
@@ -123,22 +123,22 @@ export class RawResponse {
     return this.data;
   }
 
-  public getJson(): object | null {
+  public getJson(): object | undefined {
     const data = this.getData();
 
     if (!data) {
-      return null;
+      return;
     }
 
     if (S.is(data)) {
-      return F.try(JSON.parse, null, data);
+      return F.try(JSON.parse, undefined, data);
     }
 
     if (O.is(data)) {
       return data;
     }
 
-    return null;
+    return;
   }
 
   /**

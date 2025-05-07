@@ -1,4 +1,4 @@
-import { O, S } from "@auaust/primitive-kit";
+import { O, P, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import type { RequestHeadersInit } from "src/classes/RequestHeaders.js";
 import { parseHeaders } from "src/utils/index.js";
@@ -49,10 +49,10 @@ export class HeadersManager {
     return this;
   }
 
-  public setDefaultHeader(name: string, value: string | null): this {
+  public setDefaultHeader(name: string, value: string | undefined): this {
     name = S.lower(name);
 
-    if (!value) {
+    if (P.isNullish(value)) {
       this.removeDefaultHeader(name);
     } else {
       this.defaultHeaders[name] = value;
@@ -68,7 +68,7 @@ export class HeadersManager {
   public getDefaultHeaders(): Record<string, string> {
     const headers = { ...this.defaultHeaders };
 
-    let token: string | null;
+    let token: string | undefined;
 
     if ((token = this.getXsrfToken())) {
       headers["x-xsrf-token"] = token;
@@ -82,9 +82,9 @@ export class HeadersManager {
   /**
    * Retrieves the encrypted CSRF token from the `XSRF-TOKEN` cookie.
    */
-  public getXsrfToken(): string | null {
+  public getXsrfToken(): string | undefined {
     if (typeof document === "undefined") {
-      return null;
+      return;
     }
 
     const cookies = document.cookie.split("; ");
@@ -97,23 +97,23 @@ export class HeadersManager {
       }
     }
 
-    return null;
+    return;
   }
 
   /**
    * Retrieves the CSRF token from the `meta[name="csrf-token"]` tag.
    */
-  public getCsrfToken(): string | null {
+  public getCsrfToken(): string | undefined {
     if (typeof document === "undefined") {
-      return null;
+      return;
     }
 
     const meta = document.querySelector('meta[name="csrf-token"]');
 
     if (meta) {
-      return meta.getAttribute("content") || null;
+      return meta.getAttribute("content") || undefined;
     }
 
-    return null;
+    return;
   }
 }

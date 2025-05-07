@@ -20,9 +20,9 @@ export interface BaseResponseInit {
   type: ResponseType;
   url: string;
   propsGroups?: Partial<Pick<PropsGroups, "global">>;
-  title?: string | null;
-  errors?: ErrorBag | null;
-  effects?: Effects | null;
+  title?: string;
+  errors?: ErrorBag;
+  effects?: Effects;
 }
 
 export type ResponsesMap = {
@@ -92,9 +92,9 @@ export abstract class Response<
   public readonly type: T;
   protected readonly url: string;
   protected readonly propsGroups: Partial<PropsGroups>;
-  protected readonly title: string | null;
-  protected readonly errors: ErrorBag | null;
-  protected readonly effects: Effects | null;
+  protected readonly title?: string;
+  protected readonly errors?: ErrorBag;
+  protected readonly effects?: Effects;
 
   public constructor({
     url,
@@ -107,8 +107,8 @@ export abstract class Response<
     this.type = <T>S.lower(type);
     this.url = S(url);
     this.propsGroups = O.is(propsGroups) ? propsGroups : {};
-    this.title = S.is(title) ? title : null;
-    this.errors = O.is(errors) ? errors : null;
+    this.title = S.is(title) ? title : undefined;
+    this.errors = O.is(errors) ? errors : undefined;
     this.effects = A.wrap(effects);
   }
 
@@ -116,19 +116,19 @@ export abstract class Response<
     return this.url;
   }
 
-  public getGlobalProps(): PropsGroups["global"] | null {
-    return this.propsGroups.global ?? null;
+  public getGlobalProps(): PropsGroups["global"] | undefined {
+    return this.propsGroups.global;
   }
 
-  public getTitle(): string | null {
+  public getTitle(): string | undefined {
     return this.title;
   }
 
-  public getErrors(): ErrorBag | null {
+  public getErrors(): ErrorBag | undefined {
     return this.errors;
   }
 
-  public getEffects(): Effects | null {
+  public getEffects(): Effects | undefined {
     return this.effects;
   }
 }

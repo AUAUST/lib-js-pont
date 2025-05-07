@@ -17,6 +17,7 @@ export type RequestDataInit =
   | string
   | number
   | boolean
+  | undefined
   | null;
 
 export class RequestData {

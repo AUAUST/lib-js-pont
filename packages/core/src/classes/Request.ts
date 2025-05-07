@@ -44,7 +44,7 @@ export class Request implements WithPont {
    * The response received from the server.
    * Only available after the request is finished.
    */
-  protected response: unknown | null = null;
+  protected response: unknown;
 
   public constructor(
     public readonly context: WithPont,
