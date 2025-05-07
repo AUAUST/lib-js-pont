@@ -1,4 +1,4 @@
-import { S } from "@auaust/primitive-kit";
+import { s } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { Request, type RequestInit } from "src/classes/Request.js";
 import type { RequestDataInit } from "src/classes/RequestData.js";
@@ -24,7 +24,7 @@ export class RequestsManager {
   public constructor(public readonly pont: Pont) {}
 
   public init({ baseUrl }: RequestManagerInit): this {
-    this.baseUrl = S.trim(baseUrl) || undefined;
+    this.baseUrl = s(baseUrl).trim().ensureEnd("/").toString() || undefined;
 
     return this;
   }
@@ -49,8 +49,7 @@ export class RequestsManager {
     options: VisitOptions = {}
   ): Promise<Response> {
     const request = this.createRequest(url, options);
-    const response = await this.execute(request);
-    return response;
+    return await this.execute(request);
   }
 
   public async get(

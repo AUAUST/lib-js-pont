@@ -3,9 +3,6 @@ import type { Pont } from "src/classes/Pont.js";
 import { shouldAppend, type NormalizedUrlParams } from "src/utils/index.js";
 import type { Service } from "./index.js";
 
-/**
- * This contract defines the structure of the params serializer service.
- */
 export interface ParamsSerializer extends Service {
   /**
    * Serializes the request parameters into a format suitable for sending in a request.

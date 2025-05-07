@@ -37,4 +37,8 @@ export class Url implements WithPont {
 
     return this.url.toString();
   }
+
+  public toString(): string {
+    return this.getUrl();
+  }
 }

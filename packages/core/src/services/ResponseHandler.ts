@@ -13,9 +13,6 @@ import type { Effects } from "src/types/effects.js";
 import type { ErrorBag } from "src/types/errors.js";
 import type { Service } from "./index.js";
 
-/**
- * This contract defines the structure of the response handler service.
- */
 export interface ResponseHandler extends Service {
   /**
    * Handles a raw response from the server and converts it into a usable format.

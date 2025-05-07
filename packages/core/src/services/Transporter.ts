@@ -4,9 +4,6 @@ import { RawResponse } from "src/classes/Responses/RawResponse.js";
 import type { RequestOptions } from "src/types/requests.js";
 import type { Service } from "./index.js";
 
-/**
- * This contract defines the structure of the transporter service.
- */
 export interface Transporter extends Service {
   /**
    * Sends a request to the server.
