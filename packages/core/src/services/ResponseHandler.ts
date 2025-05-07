@@ -25,7 +25,7 @@ export interface ResponseHandler extends Service {
 }
 
 type ResponseContext = {
-  data: {
+  payload: {
     type: ResponseType;
     [key: string]: unknown;
   };
@@ -38,20 +38,20 @@ type ResponseContext = {
 export function createDefaultResponseHandler() {
   return {
     handle(pont: Pont, response: RawResponse) {
-      const data = this.data(response);
+      const payload = this.payload(response);
 
-      if (!data) {
+      if (!payload) {
         return Response.unhandled(response);
       }
 
-      const type = data.type;
-      const title = this.title(data);
-      const errors = this.errors(data);
-      const effects = this.effects(data);
-      const propsGroups = this.propsGroups(data);
+      const type = payload.type;
+      const title = this.title(payload);
+      const errors = this.errors(payload);
+      const effects = this.effects(payload);
+      const propsGroups = this.propsGroups(payload);
 
       return this.createResponse(type, response, {
-        data,
+        payload,
         title,
         errors,
         effects,
@@ -83,27 +83,25 @@ export function createDefaultResponseHandler() {
       response: RawResponse,
       context: ResponseContext
     ): VisitResponse | UnhandledResponse {
-      const component = S.is(context.data.component)
-        ? context.data.component
-        : null;
+      const { payload, propsGroups } = context;
+
+      const component = S.is(payload.component) ? payload.component : null;
 
       if (!component) {
         return Response.unhandled(response);
       }
 
-      const url = S.is(context.data.url) ? context.data.url : null;
+      const url = S.is(payload.url) ? payload.url : null;
 
       if (!url) {
         return Response.unhandled(response);
       }
 
-      if (!O.is(context.data.props)) {
+      if (!O.is(payload.props)) {
         return Response.unhandled(response);
       }
 
-      context.propsGroups.page = O.is(context.data.props.page)
-        ? context.data.props.page
-        : {};
+      propsGroups.page = O.is(payload.props.page) ? payload.props.page : {};
 
       return new VisitResponse({
         ...context,
@@ -125,8 +123,10 @@ export function createDefaultResponseHandler() {
       response: RawResponse,
       context: ResponseContext
     ): FragmentResponse | UnhandledResponse {
-      const intendedComponent = S.is(context.data.component)
-        ? context.data.component
+      const { payload } = context;
+
+      const intendedComponent = S.is(payload.component)
+        ? payload.component
         : null;
 
       if (!intendedComponent) {
@@ -145,16 +145,17 @@ export function createDefaultResponseHandler() {
     ): DataResponse {
       return new DataResponse({
         ...context,
+        data: context.payload.data,
       });
     },
 
     /**
-     * Handle the general response from the server,
+     * Validates the raw response from the server,
      * ensuring it has the correct headers and a body.
-     * It either returns the parsed JSON data,
+     * It either returns the raw parsed JSON payload,
      * or null if the response is not valid.
      */
-    data(response: RawResponse): {
+    payload(response: RawResponse): {
       type: ResponseType;
       [key: string]: unknown;
     } | null {
