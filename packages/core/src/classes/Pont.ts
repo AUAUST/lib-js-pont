@@ -6,24 +6,20 @@ import {
 } from "src/managers/index.js";
 import {
   createDefaultParamsSerializer,
+  createDefaultPropsReconciler,
   createDefaultResponseHandler,
   createDefaultTransporter,
+  createDefaultUnhandledResponseHandler,
   type ParamsSerializer,
   type PartialServicesMap,
+  type PropsReconciler,
   type ResponseHandler,
   type ServiceName,
   type ServiceParameters,
   type ServiceReturnType,
   type Transporter,
+  type UnhandledResponseHandler,
 } from "src/services/index.js";
-import {
-  createDefaultPropsReconciler,
-  PropsReconciler,
-} from "src/services/PropsReconciler.js";
-import {
-  createDefaultUnhandledResponseHandler,
-  UnhandledResponseHandler,
-} from "src/services/UnhandledResponseHandler.js";
 import type { StateInit } from "src/types/index.js";
 import { forwardCalls } from "src/utils/index.js";
 import { Url } from "./Url.js";
@@ -68,11 +64,11 @@ class Pont implements WithPont {
   };
 
   protected readonly services: {
-    transporter?: Transporter;
     paramsSerializer?: ParamsSerializer;
-    responseHandler?: ResponseHandler;
-    unhandledResponseHandler?: UnhandledResponseHandler;
     propsReconciler?: PropsReconciler;
+    responseHandler?: ResponseHandler;
+    transporter?: Transporter;
+    unhandledResponseHandler?: UnhandledResponseHandler;
   } = {};
 
   public constructor() {
@@ -94,9 +90,9 @@ class Pont implements WithPont {
 
     forwardCalls(this.managers.state, this, [
       "getComponent",
-      "getUrl",
-      "getPageProps",
       "getGlobalProps",
+      "getPageProps",
+      "getUrl",
     ]);
   }
 
@@ -115,11 +111,11 @@ class Pont implements WithPont {
     this.managers.headers.init({ defaultHeaders });
 
     this.registerServices(services, [
-      ["transporter", createDefaultTransporter],
       ["paramsSerializer", createDefaultParamsSerializer],
-      ["responseHandler", createDefaultResponseHandler],
-      ["unhandledResponseHandler", createDefaultUnhandledResponseHandler],
       ["propsReconciler", createDefaultPropsReconciler],
+      ["responseHandler", createDefaultResponseHandler],
+      ["transporter", createDefaultTransporter],
+      ["unhandledResponseHandler", createDefaultUnhandledResponseHandler],
     ]);
 
     this.initialized = true;

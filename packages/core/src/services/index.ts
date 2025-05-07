@@ -33,7 +33,15 @@ export {
   type ParamsSerializer,
 } from "./ParamsSerializer.js";
 export {
+  createDefaultPropsReconciler,
+  type PropsReconciler,
+} from "./PropsReconciler.js";
+export {
   createDefaultResponseHandler,
   type ResponseHandler,
 } from "./ResponseHandler.js";
 export { createDefaultTransporter, type Transporter } from "./Transporter.js";
+export {
+  createDefaultUnhandledResponseHandler,
+  type UnhandledResponseHandler,
+} from "./UnhandledResponseHandler.js";
