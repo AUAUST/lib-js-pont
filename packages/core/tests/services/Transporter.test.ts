@@ -6,11 +6,16 @@ import { expect, test, vitest } from "vitest";
 test("Pont sends requests using the transporter", () => {
   const transporter = {
     handle: vitest.fn(async (pont, options) => {
-      return new RawResponse({});
+      return RawResponse.ok()
+        .withHeaders({
+          "x-pont": "true",
+        })
+        .withUrl(options.url);
     }),
   } satisfies Transporter;
 
   const pont = new Pont().init({
+    baseUrl: "https://example.com",
     services: {
       transporter,
     },
