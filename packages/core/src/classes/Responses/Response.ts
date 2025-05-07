@@ -85,8 +85,11 @@ export abstract class Response<
     }
   }
 
-  public static unhandled(raw: RawResponse): UnhandledResponse {
-    return new UnhandledResponse(raw);
+  public static unhandled(
+    raw: RawResponse,
+    reason?: string
+  ): UnhandledResponse {
+    return new UnhandledResponse(raw, reason);
   }
 
   public readonly type: T;

@@ -10,5 +10,14 @@ import type { RawResponse } from "./RawResponse.js";
 export class UnhandledResponse {
   public readonly type = ResponseType.UNHANDLED;
 
-  public constructor(public readonly response: RawResponse) {}
+  public constructor(
+    public readonly response: RawResponse,
+    protected reason?: string
+  ) {}
+
+  public withReason(reason: string): this {
+    this.reason = reason;
+
+    return this;
+  }
 }

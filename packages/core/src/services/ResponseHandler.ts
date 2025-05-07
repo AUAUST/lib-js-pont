@@ -40,7 +40,7 @@ export function createDefaultResponseHandler() {
       // If the header "x-pont" is not set, this means the response
       // is not a Pont response.
       if (!response.hasHeader("x-pont")) {
-        return Response.unhandled(response);
+        return Response.unhandled(response, "Missing x-pont header");
       }
 
       const url = response.getUrl();
@@ -54,7 +54,7 @@ export function createDefaultResponseHandler() {
           return new AmbientResponse({ url });
         }
 
-        return Response.unhandled(response);
+        return Response.unhandled(response, "Invalid payload");
       }
 
       const type = payload.type;
@@ -89,7 +89,7 @@ export function createDefaultResponseHandler() {
           return this.createDataResponse(response, context);
         // Should never happen, but just in case
         default:
-          return Response.unhandled(response);
+          return Response.unhandled(response, "Invalid response type");
       }
     },
 
@@ -102,17 +102,17 @@ export function createDefaultResponseHandler() {
       const component = S.is(payload.component) ? payload.component : undefined;
 
       if (!component) {
-        return Response.unhandled(response);
+        return Response.unhandled(response, "Missing component");
       }
 
       const url = S.is(payload.url) ? payload.url : undefined;
 
       if (!url) {
-        return Response.unhandled(response);
+        return Response.unhandled(response, "Missing URL");
       }
 
       if (!O.is(payload.props)) {
-        return Response.unhandled(response);
+        return Response.unhandled(response, "Missing props");
       }
 
       propsGroups.page = O.is(payload.props.page) ? payload.props.page : {};
@@ -142,7 +142,7 @@ export function createDefaultResponseHandler() {
         : undefined;
 
       if (!intendedComponent) {
-        return Response.unhandled(response);
+        return Response.unhandled(response, "Missing intended component");
       }
 
       return new FragmentResponse({
