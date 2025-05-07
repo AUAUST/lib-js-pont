@@ -16,6 +16,10 @@ import {
   type ServiceReturnType,
   type Transporter,
 } from "src/services/index.js";
+import {
+  createDefaultUnhandledResponseHandler,
+  UnhandledResponseHandler,
+} from "src/services/UnhandledResponseHandler.js";
 import type { PontAppStateInit } from "src/types/index.js";
 import { forwardCalls } from "src/utils/index.js";
 import { Url } from "./Url.js";
@@ -63,6 +67,7 @@ class Pont implements WithPont {
     transporter?: Transporter;
     paramsSerializer?: ParamsSerializer;
     responseHandler?: ResponseHandler;
+    unhandledResponseHandler?: UnhandledResponseHandler;
   } = {};
 
   public constructor() {
@@ -108,6 +113,7 @@ class Pont implements WithPont {
       ["transporter", createDefaultTransporter],
       ["paramsSerializer", createDefaultParamsSerializer],
       ["responseHandler", createDefaultResponseHandler],
+      ["unhandledResponseHandler", createDefaultUnhandledResponseHandler],
     ]);
 
     this.initialized = true;
