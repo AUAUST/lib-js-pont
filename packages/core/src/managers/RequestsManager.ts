@@ -3,6 +3,7 @@ import type { Pont } from "src/classes/Pont.js";
 import { Request, type RequestInit } from "src/classes/Request.js";
 import type { RequestDataInit } from "src/classes/RequestData.js";
 import type { Response } from "src/classes/Responses/Response.js";
+import { Method } from "src/enums/Method.js";
 
 export type RequestManagerInit = {
   /**
@@ -56,7 +57,7 @@ export class RequestsManager {
     url: string,
     options: Omit<VisitOptions, "method"> = {}
   ): Promise<Response> {
-    return this.visit(url, { ...options, method: "get" });
+    return this.visit(url, { ...options, method: Method.GET });
   }
 
   public async post(
@@ -64,7 +65,7 @@ export class RequestsManager {
     data: RequestDataInit = {},
     options: Omit<VisitOptions, "method" | "data"> = {}
   ): Promise<Response> {
-    return this.visit(url, { ...options, data, method: "post" });
+    return this.visit(url, { ...options, data, method: Method.POST });
   }
 
   public async put(
@@ -72,14 +73,14 @@ export class RequestsManager {
     data: RequestDataInit = {},
     options: Omit<VisitOptions, "method" | "data"> = {}
   ): Promise<Response> {
-    return this.visit(url, { ...options, data, method: "put" });
+    return this.visit(url, { ...options, data, method: Method.PUT });
   }
 
   public async delete(
     url: string,
     options: Omit<VisitOptions, "method"> = {}
   ): Promise<Response> {
-    return this.visit(url, { ...options, method: "delete" });
+    return this.visit(url, { ...options, method: Method.DELETE });
   }
 
   public async patch(
@@ -87,7 +88,7 @@ export class RequestsManager {
     data: RequestDataInit = {},
     options: Omit<VisitOptions, "method" | "data"> = {}
   ): Promise<Response> {
-    return this.visit(url, { ...options, data, method: "patch" });
+    return this.visit(url, { ...options, data, method: Method.PATCH });
   }
 
   public getBaseUrl(): string | undefined {

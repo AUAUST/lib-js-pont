@@ -1,6 +1,11 @@
 import type { RequestOptions } from "src/types/requests.js";
-import type { Method } from "src/types/utils.js";
-import { forwardCalls, toMethod } from "src/utils/index.js";
+import {
+  forwardCalls,
+  Method,
+  toMethod,
+  type MethodString,
+} from "src/utils/index.js";
+import {} from "src/utils/methods.js";
 import type { WithPont } from "./Pont.js";
 import { RequestData, type RequestDataInit } from "./RequestData.js";
 import { RequestHeaders, type RequestHeadersInit } from "./RequestHeaders.js";
@@ -9,7 +14,7 @@ import type { UrlParamsInit } from "./UrlParams.js";
 
 export type RequestInit = {
   url: string;
-  method?: Method;
+  method?: Method | MethodString;
   data?: RequestDataInit;
   params?: UrlParamsInit;
   headers?: RequestHeadersInit;
@@ -46,7 +51,7 @@ export class Request implements WithPont {
     { url, method, data, params, headers }: RequestInit
   ) {
     // Omit the search params from the URL, which are passed to the RequestParameters below
-    this.method = toMethod(method, "get");
+    this.method = toMethod(method, Method.GET);
     this.url = this.pont.createUrl(url, params);
     this.data = new RequestData(this, data);
     this.headers = new RequestHeaders(this, headers);

@@ -3,14 +3,13 @@ export { forwardCalls } from "./forwardCalls.js";
 export { parseHeaders } from "./headers.js";
 export {
   hasBody,
-  isAnyMethod,
   isIdempotentMethod,
   isMethod,
   isSafeMethod,
+  Method,
   toMethod,
-  type AnyMethod,
   type IdempotentMethod,
-  type Method,
+  type MethodString,
   type SafeMethod,
 } from "./methods.js";
 export {
