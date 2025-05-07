@@ -1,9 +1,14 @@
-import { O } from "@auaust/primitive-kit";
+import { A, O, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { AmbientResponse } from "src/classes/Responses/AmbientResponse.js";
+import { DataResponse } from "src/classes/Responses/DataResponse.js";
+import { FragmentResponse } from "src/classes/Responses/FragmentResponse.js";
 import type { RawResponse } from "src/classes/Responses/RawResponse.js";
-import { Response } from "src/classes/Responses/Response.js";
+import { Response, type ResponseType } from "src/classes/Responses/Response.js";
 import { UnhandledResponse } from "src/classes/Responses/UnhandledResponse.js";
+import { VisitResponse } from "src/classes/Responses/VisitResponse.js";
+import type { Effects } from "src/types/effects.js";
+import type { ErrorBag } from "src/types/errors.js";
 import type { Service } from "./index.js";
 
 /**
@@ -18,6 +23,16 @@ export interface ResponseHandler extends Service {
   handle(pont: Pont, response: RawResponse): Response | UnhandledResponse;
 }
 
+type ResponseContext = {
+  data: {
+    type: ResponseType;
+    [key: string]: unknown;
+  };
+  title: string | null;
+  errors: ErrorBag | null;
+  effects: Effects | null;
+};
+
 export function createDefaultResponseHandler() {
   return {
     handle(pont: Pont, response: RawResponse) {
@@ -27,7 +42,73 @@ export function createDefaultResponseHandler() {
         return Response.unhandled(response);
       }
 
-      return new AmbientResponse({});
+      const type = data.type;
+      const title = this.title(data);
+      const errors = this.errors(data);
+      const effects = this.effects(data);
+
+      return this.createResponse(type, response, {
+        data,
+        title,
+        errors,
+        effects,
+      });
+    },
+
+    createResponse(
+      type: ResponseType,
+      response: RawResponse,
+      context: ResponseContext
+    ) {
+      switch (S.lower(type)) {
+        case "visit":
+          return this.createVisitResponse(response, context);
+        case "fragment":
+          return this.createFragmentResponse(response, context);
+        case "ambient":
+          return this.createAmbientResponse(response, context);
+        case "data":
+          return this.createDataResponse(response, context);
+        // Should never happen, but just in case
+        default:
+          return Response.unhandled(response);
+      }
+    },
+
+    createVisitResponse(
+      response: RawResponse,
+      context: ResponseContext
+    ): VisitResponse {
+      return new VisitResponse({
+        ...context,
+      });
+    },
+
+    createAmbientResponse(
+      response: RawResponse,
+      context: ResponseContext
+    ): AmbientResponse {
+      return new AmbientResponse({
+        ...context,
+      });
+    },
+
+    createFragmentResponse(
+      response: RawResponse,
+      context: ResponseContext
+    ): FragmentResponse {
+      return new FragmentResponse({
+        ...context,
+      });
+    },
+
+    createDataResponse(
+      response: RawResponse,
+      context: ResponseContext
+    ): DataResponse {
+      return new DataResponse({
+        ...context,
+      });
     },
 
     /**
@@ -36,7 +117,10 @@ export function createDefaultResponseHandler() {
      * It either returns the parsed JSON data,
      * or null if the response is not valid.
      */
-    data(response: RawResponse) {
+    data(response: RawResponse): {
+      type: ResponseType;
+      [key: string]: unknown;
+    } | null {
       // If the header "x-pont" is not set, this means the response
       // is not a Pont response. Returning an UnhandledResponse
       // ensures the response is forwarded to the unhandled response service.
@@ -59,7 +143,58 @@ export function createDefaultResponseHandler() {
         return null;
       }
 
+      // @ts-expect-error - The type is not inferred correctly
       return json;
+    },
+
+    /**
+     * Tries extracting the title from the response data.
+     */
+    title(data: Record<string, unknown>): string | null {
+      return S.is(data.title) ? data.title : null;
+    },
+
+    /**
+     * Tries extracting the errors from the response data.
+     */
+    errors(data: Record<string, unknown>): ErrorBag | null {
+      if (!O.is(data.errors)) {
+        return null;
+      }
+
+      const errorBag: ErrorBag = {};
+
+      for (const [field, errors] of O.entries(data.errors)) {
+        if (S.is(field)) {
+          errorBag[field] = A.wrap(errors).map(S).filter(Boolean);
+        }
+      }
+
+      return errorBag;
+    },
+
+    /**
+     * Tries extracting the effects from the response data.
+     */
+    effects(data: Record<string, unknown>): Effects | null {
+      if (!A.is(data.effects)) {
+        return null;
+      }
+
+      const effects: Effects = [];
+
+      for (const effect of data.effects) {
+        if (O.is(effect)) {
+          if (S.is(effect.type)) {
+            // @ts-expect-error - The type is not inferred correctly
+            effects.push(effect);
+          }
+        } else if (S.is(effect)) {
+          effects.push({ type: effect });
+        }
+      }
+
+      return effects;
     },
   };
 }

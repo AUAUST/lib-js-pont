@@ -15,4 +15,4 @@ export type ErrorBag = {
 /**
  * A single error message or an array of error messages.
  */
-export type Errors = string | string[];
+export type Errors = string[];

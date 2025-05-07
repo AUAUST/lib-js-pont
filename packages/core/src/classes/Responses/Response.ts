@@ -1,4 +1,6 @@
 import { S } from "@auaust/primitive-kit";
+import type { Effects } from "src/types/effects.js";
+import type { ErrorBag } from "src/types/errors.js";
 import type {
   AmbientResponse,
   AmbientResponseInit,
@@ -16,6 +18,9 @@ export type ResponseType = "visit" | "fragment" | "ambient" | "data";
 
 export interface BaseResponseInit {
   type: ResponseType;
+  title?: string | null;
+  errors?: ErrorBag | null;
+  effects?: Effects | null;
 }
 
 export type ResponsesMap = {
