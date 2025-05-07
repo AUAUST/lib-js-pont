@@ -16,7 +16,7 @@ export type StateManagerInit = {
 export class StateManager {
   protected component!: string;
   protected url!: string;
-  protected props!: PropsGroups;
+  protected propsGroups!: PropsGroups;
   protected title!: string;
 
   public constructor(public readonly pont: Pont) {}
@@ -24,7 +24,7 @@ export class StateManager {
   public init({ initialState }: StateManagerInit = {}): this {
     this.url = initialState?.url!;
     this.component = initialState?.component!;
-    this.props = initialState?.props!;
+    this.propsGroups = initialState?.propsGroups!;
     this.title = initialState?.title!;
 
     return this;
@@ -39,10 +39,10 @@ export class StateManager {
   }
 
   public getPageProps(): PageProps {
-    return this.props.page;
+    return this.propsGroups.page;
   }
 
   public getGlobalProps(): GlobalProps {
-    return this.props.global;
+    return this.propsGroups.global;
   }
 }

@@ -26,7 +26,7 @@ export interface PontAppState {
   /**
    * The props groups.
    */
-  props: PropsGroups;
+  propsGroups: PropsGroups;
 
   /**
    * The errors that occurred during form validation, if any.
@@ -47,7 +47,7 @@ export interface PontAppStateInit {
   url: string;
   component: ComponentName;
   title: string;
-  props: PropsGroups;
+  propsGroups: PropsGroups;
   errors: Errors;
   effects: Effects;
 }

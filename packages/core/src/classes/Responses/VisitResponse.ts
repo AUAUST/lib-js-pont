@@ -1,3 +1,4 @@
+import type { PropsGroups } from "src/types/app.js";
 import type { ComponentName } from "src/types/utils.js";
 import { Response } from "./Response.js";
 
@@ -8,7 +9,7 @@ export interface VisitResponseInit {
   /** The new URL that the browser should display. */
   url: string;
   /** The page props to pass to the component. */
-  props: Record<string, unknown>;
+  propsGroups: Partial<PropsGroups>;
 }
 
 export class VisitResponse extends Response<"visit"> {

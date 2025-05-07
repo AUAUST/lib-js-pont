@@ -23,7 +23,7 @@ export type SetupOptions = {
   /**
    * The props to pass to the App component.
    */
-  props: Record<string, unknown>;
+  propsGroups: Record<string, unknown>;
 };
 
 export type PontAppOptions = {
@@ -78,6 +78,6 @@ export async function createPontApp({
   setup({
     App,
     element,
-    props: state.props,
+    propsGroups: state.propsGroups,
   });
 }

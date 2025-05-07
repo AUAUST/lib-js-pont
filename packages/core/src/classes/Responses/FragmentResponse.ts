@@ -1,3 +1,4 @@
+import type { PropsGroups } from "src/types/app.js";
 import type { ComponentName } from "src/types/utils.js";
 import { type BaseResponseInit, Response } from "./Response.js";
 
@@ -6,7 +7,7 @@ export interface FragmentResponseInit extends BaseResponseInit {
   /** The component name this response is intended for. */
   intendedComponent: ComponentName;
   /** The partial page props to update the frontend state. */
-  props: Record<string, unknown>;
+  propsGroups: Partial<PropsGroups>;
 }
 
 export class FragmentResponse extends Response<"fragment"> {

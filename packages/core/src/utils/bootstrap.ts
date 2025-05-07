@@ -45,10 +45,10 @@ export function getInitialState(
   mustRunOnClient();
 
   if (O.is(initialState)) {
-    return initialState;
+    return <any>initialState;
   }
 
-  const dataProps = element.dataset.props;
+  const dataProps = element.dataset.propsGroups || element.dataset.props;
 
   if (!dataProps) {
     return <PontAppState>{};
