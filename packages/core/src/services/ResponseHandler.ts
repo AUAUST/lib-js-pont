@@ -7,6 +7,7 @@ import type { RawResponse } from "src/classes/Responses/RawResponse.js";
 import { Response, type ResponseType } from "src/classes/Responses/Response.js";
 import { UnhandledResponse } from "src/classes/Responses/UnhandledResponse.js";
 import { VisitResponse } from "src/classes/Responses/VisitResponse.js";
+import type { PropsGroups } from "src/types/app.js";
 import type { Effects } from "src/types/effects.js";
 import type { ErrorBag } from "src/types/errors.js";
 import type { Service } from "./index.js";
@@ -31,6 +32,7 @@ type ResponseContext = {
   title: string | null;
   errors: ErrorBag | null;
   effects: Effects | null;
+  propsGroups: Partial<PropsGroups>;
 };
 
 export function createDefaultResponseHandler() {
@@ -46,12 +48,14 @@ export function createDefaultResponseHandler() {
       const title = this.title(data);
       const errors = this.errors(data);
       const effects = this.effects(data);
+      const propsGroups = this.propsGroups(data);
 
       return this.createResponse(type, response, {
         data,
         title,
         errors,
         effects,
+        propsGroups,
       });
     },
 
@@ -78,9 +82,33 @@ export function createDefaultResponseHandler() {
     createVisitResponse(
       response: RawResponse,
       context: ResponseContext
-    ): VisitResponse {
+    ): VisitResponse | UnhandledResponse {
+      const component = S.is(context.data.component)
+        ? context.data.component
+        : null;
+
+      if (!component) {
+        return Response.unhandled(response);
+      }
+
+      const url = S.is(context.data.url) ? context.data.url : null;
+
+      if (!url) {
+        return Response.unhandled(response);
+      }
+
+      if (!O.is(context.data.props)) {
+        return Response.unhandled(response);
+      }
+
+      context.propsGroups.page = O.is(context.data.props.page)
+        ? context.data.props.page
+        : {};
+
       return new VisitResponse({
         ...context,
+        component,
+        url,
       });
     },
 
@@ -96,9 +124,18 @@ export function createDefaultResponseHandler() {
     createFragmentResponse(
       response: RawResponse,
       context: ResponseContext
-    ): FragmentResponse {
+    ): FragmentResponse | UnhandledResponse {
+      const intendedComponent = S.is(context.data.component)
+        ? context.data.component
+        : null;
+
+      if (!intendedComponent) {
+        return Response.unhandled(response);
+      }
+
       return new FragmentResponse({
         ...context,
+        intendedComponent,
       });
     },
 
@@ -195,6 +232,23 @@ export function createDefaultResponseHandler() {
       }
 
       return effects;
+    },
+
+    /**
+     * Tries extracting the global props groups from the response data.
+     */
+    propsGroups(data: Record<string, unknown>): Partial<PropsGroups> {
+      const propsGroups: Partial<PropsGroups> = {};
+
+      if (!O.is(data.propsGroups)) {
+        return propsGroups;
+      }
+
+      if (O.is(data.propsGroups.global)) {
+        propsGroups.global = data.propsGroups.global;
+      }
+
+      return propsGroups;
     },
   };
 }
