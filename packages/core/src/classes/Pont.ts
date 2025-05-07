@@ -147,11 +147,11 @@ class Pont implements WithPont {
     services: PontInit["services"],
     config: NonNullable<
       {
-        [K in keyof Pont["services"]]: [
+        [K in ServiceName]: [
           name: K,
           factory: (pont: Pont) => NonNullable<Pont["services"][K]>
         ];
-      }[keyof Pont["services"]]
+      }[ServiceName]
     >[]
   ): this {
     if (this.initialized) {
