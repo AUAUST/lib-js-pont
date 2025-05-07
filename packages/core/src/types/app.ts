@@ -67,6 +67,10 @@ export type PropsGroups = {
   global: GlobalProps;
 };
 
-export interface PageProps {}
+export interface PageProps {
+  [key: string]: unknown;
+}
 
-export interface GlobalProps {}
+export interface GlobalProps {
+  [key: string]: unknown;
+}

@@ -17,6 +17,10 @@ import {
   type Transporter,
 } from "src/services/index.js";
 import {
+  createDefaultPropsReconciler,
+  PropsReconciler,
+} from "src/services/PropsReconciler.js";
+import {
   createDefaultUnhandledResponseHandler,
   UnhandledResponseHandler,
 } from "src/services/UnhandledResponseHandler.js";
@@ -68,6 +72,7 @@ class Pont implements WithPont {
     paramsSerializer?: ParamsSerializer;
     responseHandler?: ResponseHandler;
     unhandledResponseHandler?: UnhandledResponseHandler;
+    propsReconciler?: PropsReconciler;
   } = {};
 
   public constructor() {
@@ -114,6 +119,7 @@ class Pont implements WithPont {
       ["paramsSerializer", createDefaultParamsSerializer],
       ["responseHandler", createDefaultResponseHandler],
       ["unhandledResponseHandler", createDefaultUnhandledResponseHandler],
+      ["propsReconciler", createDefaultPropsReconciler],
     ]);
 
     this.initialized = true;

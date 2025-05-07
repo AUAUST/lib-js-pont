@@ -99,7 +99,11 @@ export class RawResponse {
     return this.status;
   }
 
-  public getUrl(): string | undefined {
+  public getUrl(): string {
+    if (this.url === undefined) {
+      throw new Error("URL is not set");
+    }
+
     return this.url;
   }
 

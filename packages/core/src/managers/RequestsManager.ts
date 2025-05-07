@@ -4,6 +4,7 @@ import { Request, type RequestInit } from "src/classes/Request.js";
 import type { RequestDataInit } from "src/classes/RequestData.js";
 import type { Response } from "src/classes/Responses/Response.js";
 import { Method } from "src/enums/Method.js";
+import { ResponseType } from "src/enums/ResponseType.js";
 
 export type RequestManagerInit = {
   /**
@@ -29,6 +30,9 @@ export class RequestsManager {
     return this;
   }
 
+  /**
+   * Executes the request and returns the response.
+   */
   public async execute(request: Request): Promise<Response> {
     const rawResponse = await this.pont.use(
       "transporter",
@@ -37,25 +41,46 @@ export class RequestsManager {
 
     const response = this.pont.use("responseHandler", rawResponse);
 
-    // if (response.type === "unhandled") {
-    //   return this.pont.use("unhandledResponseHandler", response.response);
-    // }
+    if (response.type === ResponseType.UNHANDLED) {
+      throw this.pont.use("unhandledResponseHandler", response);
+    }
 
     return response;
   }
 
-  public async visit(
+  public async data(
     url: string,
-    options: VisitOptions = {}
+    options: Omit<VisitOptions, "method"> = {}
   ): Promise<Response> {
     const request = this.createRequest(url, options);
-    return await this.execute(request);
+    const response = await this.execute(request);
+
+    if (response.type !== ResponseType.DATA) {
+      throw new Error(
+        `Expected a data response, but got ${response.type} instead.`
+      );
+    }
+
+    return response;
+  }
+
+  public async visit(url: string, options: VisitOptions = {}): Promise<void> {
+    const request = this.createRequest(url, options);
+    const response = await this.execute(request);
+
+    if (response.type === ResponseType.DATA) {
+      throw new Error(
+        `Expected a visit response, but got ${response.type} instead.`
+      );
+    }
+
+    this.pont.getStateManager().updateState(response);
   }
 
   public async get(
     url: string,
     options: Omit<VisitOptions, "method"> = {}
-  ): Promise<Response> {
+  ): Promise<void> {
     return this.visit(url, { ...options, method: Method.GET });
   }
 
@@ -63,7 +88,7 @@ export class RequestsManager {
     url: string,
     data: RequestDataInit = {},
     options: Omit<VisitOptions, "method" | "data"> = {}
-  ): Promise<Response> {
+  ): Promise<void> {
     return this.visit(url, { ...options, data, method: Method.POST });
   }
 
@@ -71,14 +96,14 @@ export class RequestsManager {
     url: string,
     data: RequestDataInit = {},
     options: Omit<VisitOptions, "method" | "data"> = {}
-  ): Promise<Response> {
+  ): Promise<void> {
     return this.visit(url, { ...options, data, method: Method.PUT });
   }
 
   public async delete(
     url: string,
     options: Omit<VisitOptions, "method"> = {}
-  ): Promise<Response> {
+  ): Promise<void> {
     return this.visit(url, { ...options, method: Method.DELETE });
   }
 
@@ -86,7 +111,7 @@ export class RequestsManager {
     url: string,
     data: RequestDataInit = {},
     options: Omit<VisitOptions, "method" | "data"> = {}
-  ): Promise<Response> {
+  ): Promise<void> {
     return this.visit(url, { ...options, data, method: Method.PATCH });
   }
 
