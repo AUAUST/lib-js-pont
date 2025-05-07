@@ -14,7 +14,19 @@ export interface VisitResponseInit {
 }
 
 export class VisitResponse extends Response<ResponseType.VISIT> {
-  public constructor({}: Omit<VisitResponseInit, "type">) {
-    super({ type: ResponseType.VISIT });
+  protected readonly component: ComponentName;
+
+  public constructor(init: Omit<VisitResponseInit, "type">) {
+    super({ ...init, type: ResponseType.VISIT });
+
+    this.component = init.component;
+  }
+
+  public getComponent(): ComponentName {
+    return this.component;
+  }
+
+  public getPageProps(): PropsGroups["page"] | undefined {
+    return this.propsGroups.page;
   }
 }

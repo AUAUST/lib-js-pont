@@ -27,6 +27,7 @@ type ResponseContext = {
     type: ResponseType;
     [key: string]: unknown;
   };
+  url: string;
   title: string | null;
   errors: ErrorBag | null;
   effects: Effects | null;
@@ -43,6 +44,7 @@ export function createDefaultResponseHandler() {
       }
 
       const type = payload.type;
+      const url = response.getUrl();
       const title = this.title(payload);
       const errors = this.errors(payload);
       const effects = this.effects(payload);
@@ -50,6 +52,7 @@ export function createDefaultResponseHandler() {
 
       return this.createResponse(type, response, {
         payload,
+        url,
         title,
         errors,
         effects,

@@ -6,7 +6,7 @@ export interface AmbientResponseInit extends BaseResponseInit {
 }
 
 export class AmbientResponse extends Response<ResponseType.AMBIENT> {
-  public constructor({}: Omit<AmbientResponseInit, "type">) {
-    super({ type: ResponseType.AMBIENT });
+  public constructor(init: Omit<AmbientResponseInit, "type">) {
+    super({ ...init, type: ResponseType.AMBIENT });
   }
 }

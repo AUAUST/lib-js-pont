@@ -1,5 +1,6 @@
-import { S } from "@auaust/primitive-kit";
+import { A, O, S } from "@auaust/primitive-kit";
 import { ResponseType } from "src/enums/ResponseType.js";
+import type { PropsGroups } from "src/types/app.js";
 import type { Effects } from "src/types/effects.js";
 import type { ErrorBag } from "src/types/errors.js";
 import type {
@@ -17,6 +18,8 @@ import type { VisitResponse, VisitResponseInit } from "./VisitResponse.js";
 
 export interface BaseResponseInit {
   type: ResponseType;
+  url: string;
+  propsGroups?: Partial<Pick<PropsGroups, "global">>;
   title?: string | null;
   errors?: ErrorBag | null;
   effects?: Effects | null;
@@ -55,12 +58,22 @@ export type ResponseInstance<T extends ResponseType = ResponseType> =
 export type ResponseInit<T extends ResponseType = ResponseType> =
   ResponsesMap[T][2];
 
-export abstract class Response<T extends ResponseType = ResponseType> {
-  public static isValidType(type: unknown): type is ResponseType {
-    if (!S.is(type)) {
-      return false;
-    }
+/**
+ * Any of the response types that cause a state change.
+ * This includes all response types except for `ResponseType.DATA` and `ResponseType.UNHANDLED`.
+ */
+export type StateChangingResponseType = ResponsesMap[
+  | ResponseType.VISIT
+  | ResponseType.FRAGMENT
+  | ResponseType.AMBIENT][1];
 
+export abstract class Response<
+  T extends Exclude<ResponseType, ResponseType.UNHANDLED> = Exclude<
+    ResponseType,
+    ResponseType.UNHANDLED
+  >
+> {
+  public static isValidType(type: unknown): type is ResponseType {
     switch (S.lower(type)) {
       case ResponseType.VISIT:
       case ResponseType.FRAGMENT:
@@ -77,8 +90,45 @@ export abstract class Response<T extends ResponseType = ResponseType> {
   }
 
   public readonly type: T;
+  protected readonly url: string;
+  protected readonly propsGroups: Partial<PropsGroups>;
+  protected readonly title: string | null;
+  protected readonly errors: ErrorBag | null;
+  protected readonly effects: Effects | null;
 
-  public constructor({ type }: BaseResponseInit) {
+  public constructor({
+    url,
+    type,
+    propsGroups,
+    title,
+    effects,
+    errors,
+  }: BaseResponseInit) {
     this.type = <T>S.lower(type);
+    this.url = S(url);
+    this.propsGroups = O.is(propsGroups) ? propsGroups : {};
+    this.title = S.is(title) ? title : null;
+    this.errors = O.is(errors) ? errors : null;
+    this.effects = A.wrap(effects);
+  }
+
+  public getUrl(): string {
+    return this.url;
+  }
+
+  public getGlobalProps(): PropsGroups["global"] | null {
+    return this.propsGroups.global ?? null;
+  }
+
+  public getTitle(): string | null {
+    return this.title;
+  }
+
+  public getErrors(): ErrorBag | null {
+    return this.errors;
+  }
+
+  public getEffects(): Effects | null {
+    return this.effects;
   }
 }

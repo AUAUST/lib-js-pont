@@ -8,7 +8,7 @@ export interface DataResponseInit<T = unknown> extends BaseResponseInit {
 }
 
 export class DataResponse extends Response<ResponseType.DATA> {
-  public constructor({}: Omit<DataResponseInit, "type">) {
-    super({ type: ResponseType.DATA });
+  public constructor(init: Omit<DataResponseInit, "type">) {
+    super({ ...init, type: ResponseType.DATA });
   }
 }
