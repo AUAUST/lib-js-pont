@@ -1,9 +1,10 @@
+import { ResponseType } from "src/enums/ResponseType.js";
 import type { PropsGroups } from "src/types/app.js";
 import type { ComponentName } from "src/types/utils.js";
 import { Response } from "./Response.js";
 
 export interface VisitResponseInit {
-  type: "visit";
+  type: ResponseType.VISIT;
   /** The component name to render. */
   component: ComponentName;
   /** The new URL that the browser should display. */
@@ -12,8 +13,8 @@ export interface VisitResponseInit {
   propsGroups: Partial<PropsGroups>;
 }
 
-export class VisitResponse extends Response<"visit"> {
+export class VisitResponse extends Response<ResponseType.VISIT> {
   public constructor({}: Omit<VisitResponseInit, "type">) {
-    super({ type: "visit" });
+    super({ type: ResponseType.VISIT });
   }
 }

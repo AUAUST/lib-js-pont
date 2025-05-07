@@ -1,13 +1,14 @@
+import { ResponseType } from "src/enums/ResponseType.js";
 import { type BaseResponseInit, Response } from "./Response.js";
 
 export interface DataResponseInit<T = unknown> extends BaseResponseInit {
-  type: "data";
+  type: ResponseType.DATA;
   /** The raw data to be sent to the client. */
   data: T;
 }
 
-export class DataResponse extends Response<"data"> {
+export class DataResponse extends Response<ResponseType.DATA> {
   public constructor({}: Omit<DataResponseInit, "type">) {
-    super({ type: "data" });
+    super({ type: ResponseType.DATA });
   }
 }

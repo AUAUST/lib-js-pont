@@ -1,4 +1,5 @@
 import { S } from "@auaust/primitive-kit";
+import { ResponseType } from "src/enums/ResponseType.js";
 import type { Effects } from "src/types/effects.js";
 import type { ErrorBag } from "src/types/errors.js";
 import type {
@@ -14,8 +15,6 @@ import type { RawResponse } from "./RawResponse.js";
 import { UnhandledResponse } from "./UnhandledResponse.js";
 import type { VisitResponse, VisitResponseInit } from "./VisitResponse.js";
 
-export type ResponseType = "visit" | "fragment" | "ambient" | "data";
-
 export interface BaseResponseInit {
   type: ResponseType;
   title?: string | null;
@@ -24,10 +23,27 @@ export interface BaseResponseInit {
 }
 
 export type ResponsesMap = {
-  visit: [typeof VisitResponse, VisitResponse, VisitResponseInit];
-  fragment: [typeof FragmentResponse, FragmentResponse, FragmentResponseInit];
-  ambient: [typeof AmbientResponse, AmbientResponse, AmbientResponseInit];
-  data: [typeof DataResponse, DataResponse, DataResponseInit];
+  [ResponseType.VISIT]: [
+    typeof VisitResponse,
+    VisitResponse,
+    VisitResponseInit
+  ];
+  [ResponseType.FRAGMENT]: [
+    typeof FragmentResponse,
+    FragmentResponse,
+    FragmentResponseInit
+  ];
+  [ResponseType.AMBIENT]: [
+    typeof AmbientResponse,
+    AmbientResponse,
+    AmbientResponseInit
+  ];
+  [ResponseType.DATA]: [typeof DataResponse, DataResponse, DataResponseInit];
+  [ResponseType.UNHANDLED]: [
+    typeof UnhandledResponse,
+    UnhandledResponse,
+    never
+  ];
 };
 
 export type ResponseConstructor<T extends ResponseType = ResponseType> =
@@ -46,10 +62,10 @@ export abstract class Response<T extends ResponseType = ResponseType> {
     }
 
     switch (S.lower(type)) {
-      case "visit":
-      case "fragment":
-      case "ambient":
-      case "data":
+      case ResponseType.VISIT:
+      case ResponseType.FRAGMENT:
+      case ResponseType.AMBIENT:
+      case ResponseType.DATA:
         return true;
       default:
         return false;

@@ -1,3 +1,4 @@
+import { ResponseType } from "src/enums/ResponseType.js";
 import type { RawResponse } from "./RawResponse.js";
 
 /**
@@ -7,7 +8,7 @@ import type { RawResponse } from "./RawResponse.js";
  * the response not being a Pont response.
  */
 export class UnhandledResponse {
-  public readonly type = "unhandled";
+  public readonly type = ResponseType.UNHANDLED;
 
   public constructor(public readonly response: RawResponse) {}
 }

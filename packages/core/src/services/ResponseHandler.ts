@@ -4,9 +4,10 @@ import { AmbientResponse } from "src/classes/Responses/AmbientResponse.js";
 import { DataResponse } from "src/classes/Responses/DataResponse.js";
 import { FragmentResponse } from "src/classes/Responses/FragmentResponse.js";
 import type { RawResponse } from "src/classes/Responses/RawResponse.js";
-import { Response, type ResponseType } from "src/classes/Responses/Response.js";
+import { Response } from "src/classes/Responses/Response.js";
 import { UnhandledResponse } from "src/classes/Responses/UnhandledResponse.js";
 import { VisitResponse } from "src/classes/Responses/VisitResponse.js";
+import { ResponseType } from "src/enums/ResponseType.js";
 import type { PropsGroups } from "src/types/app.js";
 import type { Effects } from "src/types/effects.js";
 import type { ErrorBag } from "src/types/errors.js";
@@ -65,13 +66,13 @@ export function createDefaultResponseHandler() {
       context: ResponseContext
     ) {
       switch (S.lower(type)) {
-        case "visit":
+        case ResponseType.VISIT:
           return this.createVisitResponse(response, context);
-        case "fragment":
+        case ResponseType.FRAGMENT:
           return this.createFragmentResponse(response, context);
-        case "ambient":
+        case ResponseType.AMBIENT:
           return this.createAmbientResponse(response, context);
-        case "data":
+        case ResponseType.DATA:
           return this.createDataResponse(response, context);
         // Should never happen, but just in case
         default:
