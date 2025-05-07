@@ -20,7 +20,7 @@ import {
   createDefaultUnhandledResponseHandler,
   UnhandledResponseHandler,
 } from "src/services/UnhandledResponseHandler.js";
-import type { PontAppStateInit } from "src/types/index.js";
+import type { StateInit } from "src/types/index.js";
 import { forwardCalls } from "src/utils/index.js";
 import { Url } from "./Url.js";
 import type { UrlParamsInit } from "./UrlParams.js";
@@ -32,7 +32,7 @@ export interface WithPont {
 export type PontInit = {
   baseUrl?: string;
   defaultHeaders?: Record<string, string>;
-  initialState?: PontAppStateInit;
+  initialState?: StateInit;
   services?: PartialServicesMap;
 };
 

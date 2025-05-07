@@ -2,12 +2,12 @@ import type { Pont } from "src/classes/Pont.js";
 import type {
   GlobalProps,
   PageProps,
-  PontAppStateInit,
   PropsGroups,
+  StateInit,
 } from "src/types/app.js";
 
 export type StateManagerInit = {
-  initialState?: PontAppStateInit;
+  initialState?: StateInit;
 };
 
 /**

@@ -43,11 +43,11 @@ export interface PontAppState {
 /**
  * The initial state of the app as received from the server.
  */
-export interface PontAppStateInit {
+export interface StateInit {
   url: string;
   component: ComponentName;
-  title: string;
   propsGroups: PropsGroups;
+  title: string;
   errors: Errors;
   effects: Effects;
 }

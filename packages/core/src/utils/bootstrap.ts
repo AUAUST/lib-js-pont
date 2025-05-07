@@ -1,5 +1,5 @@
 import { O, S } from "@auaust/primitive-kit";
-import type { PontAppState, PontAppStateInit } from "src/types/app.js";
+import type { PontAppState, StateInit } from "src/types/app.js";
 import { mustRunOnClient } from "./environment.js";
 
 /**
@@ -39,7 +39,7 @@ export function getElement(root: RootElement): HTMLElement {
  * Retrieves the initial state of the application from the root element.
  */
 export function getInitialState(
-  initialState: PontAppStateInit,
+  initialState: StateInit,
   element: HTMLElement
 ): PontAppState {
   mustRunOnClient();
