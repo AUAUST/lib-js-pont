@@ -120,44 +120,43 @@ export class ServicesManager {
     throw new Error(`Service ${name} is not a valid service`);
   }
 
+  protected registerServiceAs<
+    N extends ServiceName,
+    T extends ServiceHandlerType
+  >(type: T, name: N, service: ServiceHandlerTypesMap<N>[T]): this {
+    this.servicesTypes[name] = type;
+    // @ts-expect-error – TS isn't able properly narrow down the type
+    this.services[name] = service;
+
+    return this;
+  }
+
   protected registerServiceConstructor<T extends ServiceName>(
     name: T,
     service: ServiceClass<T>
   ): this {
-    this.servicesTypes[name] = "constructor";
-    this.services[name] = service;
-
-    return this;
+    return this.registerServiceAs("constructor", name, service);
   }
 
   protected registerServiceInstance<T extends ServiceName>(
     name: T,
     service: ServiceInstance<T>
   ): this {
-    this.servicesTypes[name] = "instance";
-    this.services[name] = service;
-
-    return this;
+    return this.registerServiceAs("instance", name, service);
   }
 
   protected registerServiceFunction<T extends ServiceName>(
     name: T,
     service: ServiceFunction<T>
   ): this {
-    this.servicesTypes[name] = "function";
-    this.services[name] = service;
-
-    return this;
+    return this.registerServiceAs("function", name, service);
   }
 
   protected registerServiceObject<T extends ServiceName>(
     name: T,
     service: ServiceObject<T>
   ): this {
-    this.servicesTypes[name] = "object";
-    this.services[name] = service;
-
-    return this;
+    return this.registerServiceAs("object", name, service);
   }
 
   public getService<
