@@ -1,6 +1,6 @@
 import { F, O } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
-import { Service } from "src/classes/Service.js";
+import { Service, ServiceMarker } from "src/classes/Service.js";
 import {
   createDefaultPropsReconciler,
   createDefaultResponseHandler,
@@ -86,18 +86,13 @@ export class ServicesManager {
       throw new Error(`Service ${name} already exists`);
     }
 
+    if (F.isConstructible(init) && ServiceMarker in init) {
+      return this.registerServiceConstructor(name, init);
+    }
+
     let service: ResolvedService<T>;
 
-    // If the service init is a function, is might either be
-    // a Service class constructor or a factory function.
     if (F.is(init)) {
-      // If the function is a constructor that instanciates
-      // a Service, we store it as a constructor.
-      if (F.isConstructible(init) && init.prototype instanceof Service) {
-        return this.registerServiceConstructor(name, init);
-      }
-
-      // Otherwise, we consider it a factory function.
       service = init(this.pont);
     } else {
       service = init;
