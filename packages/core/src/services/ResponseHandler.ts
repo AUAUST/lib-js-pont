@@ -11,9 +11,9 @@ import { ResponseType } from "src/enums/ResponseType.js";
 import type { PropsGroups } from "src/types/app.js";
 import type { Effects } from "src/types/effects.js";
 import type { ErrorBag } from "src/types/errors.js";
-import type { Service } from "./index.js";
+import type { ServiceObject } from "./index.js";
 
-export interface ResponseHandler extends Service {
+export interface ResponseHandler extends ServiceObject {
   /**
    * Handles a raw response from the server and converts it into a usable format.
    * It is responsible for composing the fragment responses, extracting the

@@ -1,8 +1,8 @@
 import type { Pont } from "src/classes/Pont.js";
 import { UnhandledResponse } from "src/classes/Responses/UnhandledResponse.js";
-import type { Service } from "./index.js";
+import type { ServiceObject } from "./index.js";
 
-export interface UnhandledResponseHandler extends Service {
+export interface UnhandledResponseHandler extends ServiceObject {
   /**
    * Handles a raw response from the server which the response handler
    * was unable to process. This is typically due to the response

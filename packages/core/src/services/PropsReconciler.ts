@@ -1,8 +1,8 @@
 import { A, O } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
-import type { Service } from "./index.js";
+import type { ServiceObject } from "./index.js";
 
-export interface PropsReconciler extends Service {
+export interface PropsReconciler extends ServiceObject {
   /**
    * Merges two sets of props. The first set is the default props,
    * and the second set is a partial set of props to merge with the default props.

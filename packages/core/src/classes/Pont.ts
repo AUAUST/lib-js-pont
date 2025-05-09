@@ -5,7 +5,7 @@ import {
   StateManager,
 } from "src/managers/index.js";
 import {
-  createDefaultParamsSerializer,
+  ParamsSerializerService,
   createDefaultPropsReconciler,
   createDefaultResponseHandler,
   createDefaultTransporter,
@@ -114,7 +114,7 @@ class Pont implements WithPont {
     this.managers.headers.init({ defaultHeaders });
 
     this.registerServices(services, [
-      ["paramsSerializer", createDefaultParamsSerializer],
+      ["paramsSerializer", (pont) => new ParamsSerializerService(pont)],
       ["propsReconciler", createDefaultPropsReconciler],
       ["responseHandler", createDefaultResponseHandler],
       ["transporter", createDefaultTransporter],

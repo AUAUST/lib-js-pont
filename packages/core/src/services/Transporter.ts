@@ -2,9 +2,9 @@ import axios from "axios";
 import type { Pont } from "src/classes/Pont.js";
 import { RawResponse } from "src/classes/Responses/RawResponse.js";
 import type { RequestOptions } from "src/types/requests.js";
-import type { Service } from "./index.js";
+import type { ServiceObject } from "./index.js";
 
-export interface Transporter extends Service {
+export interface Transporter extends ServiceObject {
   /**
    * Sends a request to the server.
    */
