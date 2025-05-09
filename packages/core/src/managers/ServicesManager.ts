@@ -200,30 +200,25 @@ export class ServicesManager {
   ): ServiceReturnType<T> {
     const type = this.getServiceType(serviceName);
 
-    if (type === "constructor") {
-      return this.useConstructor(serviceName, args);
+    switch (type) {
+      case "constructor":
+        return this.handleWithConstructor(serviceName, args);
+      case "instance":
+        return this.handleWithInstance(serviceName, args);
+      case "function":
+        return this.handleWithFunction(serviceName, args);
+      case "object":
+        return this.handleWithObject(serviceName, args);
+      default:
+        throw new Error(`Service ${serviceName} is not a valid service`);
     }
-
-    if (type === "instance") {
-      return this.useInstance(serviceName, args);
-    }
-
-    if (type === "function") {
-      return this.useFunction(serviceName, args);
-    }
-
-    if (type === "object") {
-      return this.useObject(serviceName, args);
-    }
-
-    throw new Error(`Service ${serviceName} is not a valid service`);
   }
 
   /**
    * If the service is a constructor, it will be instantiated
    * for each call with Pont and its handle method will be called.
    */
-  protected useConstructor<T extends ServiceName>(
+  protected handleWithConstructor<T extends ServiceName>(
     serviceName: T,
     args: ServiceParameters<T>
   ): ServiceReturnType<T> {
@@ -237,7 +232,7 @@ export class ServicesManager {
    * If the service is a service instance, its handle method will
    * be called without instanciating it again.
    */
-  protected useInstance<T extends ServiceName>(
+  protected handleWithInstance<T extends ServiceName>(
     serviceName: T,
     args: ServiceParameters<T>
   ): ServiceReturnType<T> {
@@ -250,7 +245,7 @@ export class ServicesManager {
    * If the service is a function, it will be called with Pont
    * as `this` and the given arguments.
    */
-  protected useFunction<T extends ServiceName>(
+  protected handleWithFunction<T extends ServiceName>(
     serviceName: T,
     args: ServiceParameters<T>
   ): ServiceReturnType<T> {
@@ -263,7 +258,7 @@ export class ServicesManager {
    * If the service is an object, its handle method will be called
    * with Pont as the first argument and the given arguments.
    */
-  protected useObject<T extends ServiceName>(
+  protected handleWithObject<T extends ServiceName>(
     serviceName: T,
     args: ServiceParameters<T>
   ): ServiceReturnType<T> {
