@@ -87,7 +87,7 @@ class Pont implements WithPont {
     defaultHeaders,
     initialState,
     services,
-  }: PontInit): this {
+  }: PontInit = {}): this {
     if (this.initialized) {
       throw new Error("Pont is already initialized");
     }
