@@ -33,7 +33,7 @@ export class Url implements WithPont {
   }
 
   public getUrl(): string {
-    this.url.search = this.params.getParams();
+    this.url.search = this.getParams();
 
     return this.url.toString();
   }

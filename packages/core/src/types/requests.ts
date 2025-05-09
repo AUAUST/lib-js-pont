@@ -7,6 +7,5 @@ export type RequestOptions = {
   url: string;
   method: Method;
   data?: unknown;
-  params?: Record<string, unknown>;
   headers?: Record<string, string>;
 };
