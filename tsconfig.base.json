@@ -11,6 +11,7 @@
     "types": ["node"],
     "isolatedModules": true,
     "skipLibCheck": true,
-    "noImplicitThis": true
+    "noImplicitThis": true,
+    "noImplicitOverride": true
   }
 }
