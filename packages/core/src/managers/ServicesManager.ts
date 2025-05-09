@@ -50,10 +50,8 @@ export type ServiceHandlerType = keyof ServiceHandlerTypesMap;
  * The state manager holds the state of the app, including the URL, component name, props, and other data.
  */
 export class ServicesManager {
-  protected services!: {
-    [K in ServiceName]: ResolvedService<K>;
-  };
-  protected servicesTypes!: Record<ServiceName, ServiceHandlerType>;
+  protected services: { [K in ServiceName]: ResolvedService<K> } = <any>{};
+  protected servicesTypes: Record<ServiceName, ServiceHandlerType> = <any>{};
 
   public constructor(public readonly pont: Pont) {}
 
