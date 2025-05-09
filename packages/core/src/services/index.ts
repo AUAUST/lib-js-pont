@@ -1,4 +1,5 @@
 import type { Pont } from "src/classes/Pont.js";
+import type { ServiceName, ServicesMap } from "src/managers/ServicesManager.js";
 
 export interface ServiceObject<N extends ServiceName = ServiceName> {
   /**
@@ -27,24 +28,25 @@ export interface ServiceFunction<N extends ServiceName = ServiceName> {
   (this: Pont, ...args: ServiceParameters<N>): ServiceReturnType<N>;
 }
 
+export type ServicesInit = {
+  [K in ServiceName]?: ServiceInit<K>;
+};
+
 export type ServiceInit<N extends ServiceName = ServiceName> =
-  | ServiceObject<N>
   | ServiceClass<N>
   | ServiceInstance<N>
-  | ((pont: Pont) => ServiceObject<N>)
-  | ((pont: Pont) => ServiceClass<N>)
+  | ServiceObject<N>
   | ((pont: Pont) => ServiceInstance<N>)
+  | ((pont: Pont) => ServiceObject<N>)
   // Factory functions can't be distinguished from service functions
   // thus a ServiceFunction is required to be returned by another function.
   | ((pont: Pont) => ServiceFunction<N>);
 
-export type ServiceName = keyof Pont["services"];
-
-export type ServicesMap = {
-  [K in ServiceName]: NonNullable<Pont["services"][K]>;
-};
-
-export type PartialServicesMap = Partial<ServicesMap>;
+export type ResolvedService<N extends ServiceName = ServiceName> =
+  | ServiceClass<N>
+  | ServiceInstance<N>
+  | ServiceObject<N>
+  | ServiceFunction<N>;
 
 export type ServiceHandler<T extends ServiceName = ServiceName> =
   ServicesMap[T]["handle"];
@@ -58,6 +60,8 @@ export type ServiceParameters<T extends ServiceName> = Parameters<
 export type ServiceReturnType<T extends ServiceName> = ReturnType<
   ServiceHandler<T>
 >;
+
+export type { ServiceName, ServicesMap };
 
 export {
   ParamsSerializerService,

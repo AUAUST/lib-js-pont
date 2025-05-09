@@ -1,26 +1,12 @@
-import { O } from "@auaust/primitive-kit";
 import {
   HeadersManager,
   RequestsManager,
+  ServicesManager,
   StateManager,
+  type HeadersManagerInit,
+  type ServicesManagerInit,
+  type StateManagerInit,
 } from "src/managers/index.js";
-import {
-  ParamsSerializerService,
-  createDefaultPropsReconciler,
-  createDefaultResponseHandler,
-  createDefaultTransporter,
-  createDefaultUnhandledResponseHandler,
-  type ParamsSerializer,
-  type PartialServicesMap,
-  type PropsReconciler,
-  type ResponseHandler,
-  type ServiceName,
-  type ServiceParameters,
-  type ServiceReturnType,
-  type Transporter,
-  type UnhandledResponseHandler,
-} from "src/services/index.js";
-import type { StateInit } from "src/types/index.js";
 import { forwardCalls } from "src/utils/index.js";
 import { Url } from "./Url.js";
 import type { UrlParamsInit } from "./UrlParams.js";
@@ -31,10 +17,9 @@ export interface WithPont {
 
 export type PontInit = {
   baseUrl?: string;
-  defaultHeaders?: Record<string, string>;
-  initialState?: StateInit;
-  services?: PartialServicesMap;
-};
+} & HeadersManagerInit &
+  StateManagerInit &
+  ServicesManagerInit;
 
 interface Pont
   extends Pick<
@@ -47,6 +32,8 @@ interface Pont
     StateManager,
     "getComponent" | "getUrl" | "getPageProps" | "getGlobalProps"
   > {}
+
+interface Pont extends Pick<ServicesManager, "use"> {}
 
 class Pont implements WithPont {
   protected static instance: Pont;
@@ -61,16 +48,9 @@ class Pont implements WithPont {
   protected readonly managers: {
     headers: HeadersManager;
     requests: RequestsManager;
+    services: ServicesManager;
     state: StateManager;
   };
-
-  protected readonly services: {
-    paramsSerializer?: ParamsSerializer;
-    propsReconciler?: PropsReconciler;
-    responseHandler?: ResponseHandler;
-    transporter?: Transporter;
-    unhandledResponseHandler?: UnhandledResponseHandler;
-  } = {};
 
   public constructor() {
     this.pont = this;
@@ -78,6 +58,7 @@ class Pont implements WithPont {
     this.managers = {
       headers: new HeadersManager(this),
       requests: new RequestsManager(this),
+      services: new ServicesManager(this),
       state: new StateManager(this),
     };
 
@@ -97,6 +78,8 @@ class Pont implements WithPont {
       "getPageProps",
       "getUrl",
     ]);
+
+    forwardCalls(this.managers.services, this, ["use"]);
   }
 
   public init({
@@ -112,14 +95,7 @@ class Pont implements WithPont {
     this.managers.state.init({ initialState });
     this.managers.requests.init({ baseUrl });
     this.managers.headers.init({ defaultHeaders });
-
-    this.registerServices(services, [
-      ["paramsSerializer", (pont) => new ParamsSerializerService(pont)],
-      ["propsReconciler", createDefaultPropsReconciler],
-      ["responseHandler", createDefaultResponseHandler],
-      ["transporter", createDefaultTransporter],
-      ["unhandledResponseHandler", createDefaultUnhandledResponseHandler],
-    ]);
+    this.managers.services.init({ services });
 
     this.initialized = true;
 
@@ -142,59 +118,12 @@ class Pont implements WithPont {
     return this.managers.headers;
   }
 
-  protected registerServices(
-    services: PontInit["services"],
-    config: NonNullable<
-      {
-        [K in ServiceName]: [
-          name: K,
-          factory: (pont: Pont) => NonNullable<Pont["services"][K]>
-        ];
-      }[ServiceName]
-    >[]
-  ): this {
-    if (this.initialized) {
-      throw new Error("Pont is already initialized");
-    }
-
-    for (const [name, factory] of config) {
-      if (services && O.is(services[name])) {
-        // @ts-expect-error - TS is not able to infer that the pairs are always of the same type
-        this.services[name] = services[name];
-      } else {
-        // @ts-expect-error
-        this.services[name] = factory(this);
-      }
-    }
-
-    return this;
+  public getServicesManager() {
+    return this.managers.services;
   }
 
   public createUrl(url: string, params?: UrlParamsInit) {
     return new Url(this, url, params);
-  }
-
-  public getService<T extends keyof Pont["services"]>(name: T) {
-    const service = this.services[name];
-
-    if (!service) {
-      throw new Error(`Service ${name} does not exist`);
-    }
-
-    return service;
-  }
-
-  /**
-   * Calls the specified service with the given arguments.
-   */
-  public use<T extends ServiceName>(
-    serviceName: T,
-    ...args: ServiceParameters<T>
-  ): ServiceReturnType<T> {
-    const service = this.getService(serviceName);
-
-    // @ts-expect-error - The unions are converted to intersections by `ReturnType` and `Parameters` thus the types can no longer be satisfied
-    return service.handle.call(service, this, ...args);
   }
 }
 
