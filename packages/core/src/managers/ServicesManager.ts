@@ -6,7 +6,6 @@ import {
   PropsReconcilerService,
   ResponseHandlerService,
   TransporterService,
-  UnhandledResponseHandlerService,
   type ParamsSerializer,
   type PropsReconciler,
   type ResolvedService,
@@ -20,7 +19,6 @@ import {
   type ServiceReturnType,
   type ServicesInit,
   type Transporter,
-  type UnhandledResponseHandler,
 } from "src/services/index.js";
 
 export type ServicesManagerInit = {
@@ -32,7 +30,6 @@ export type ServicesMap = {
   propsReconciler: PropsReconciler;
   responseHandler: ResponseHandler;
   transporter: Transporter;
-  unhandledResponseHandler: UnhandledResponseHandler;
 };
 
 export type ServiceName = keyof ServicesMap;
@@ -61,10 +58,6 @@ export class ServicesManager {
       ["propsReconciler", (pont) => new PropsReconcilerService(pont)],
       ["responseHandler", ResponseHandlerService],
       ["transporter", (pont) => new TransporterService(pont)],
-      [
-        "unhandledResponseHandler",
-        (pont) => new UnhandledResponseHandlerService(pont),
-      ],
     ]);
 
     return this;

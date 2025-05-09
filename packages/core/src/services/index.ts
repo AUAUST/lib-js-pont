@@ -76,7 +76,3 @@ export {
   type ResponseHandler,
 } from "./ResponseHandler.js";
 export { TransporterService, type Transporter } from "./Transporter.js";
-export {
-  UnhandledResponseHandlerService,
-  type UnhandledResponseHandler,
-} from "./UnhandledResponseHandler.js";

@@ -39,7 +39,9 @@ export class RequestsManager {
     const response = this.pont.use("responseHandler", rawResponse);
 
     if (response.type === ResponseType.UNHANDLED) {
-      throw this.pont.use("unhandledResponseHandler", response);
+      throw new Error(
+        `A response could not be handled. Please check the response type: ${response.type}.`
+      );
     }
 
     return response;
