@@ -39,8 +39,8 @@ importers:
         specifier: workspace:*
         version: link:../core
       '@auaust/primitive-kit':
-        specifier: ^0.41.3
-        version: 0.41.3
+        specifier: ^0.41.5
+        version: 0.41.5
       '@solidjs/meta':
         specifier: ^0.29.0
         version: 0.29.4(solid-js@1.9.6)
@@ -55,8 +55,8 @@ importers:
   packages/core:
     dependencies:
       '@auaust/primitive-kit':
-        specifier: ^0.41.3
-        version: 0.41.3
+        specifier: ^0.41.5
+        version: 0.41.5
       axios:
         specifier: ^1.9.0
         version: 1.9.0
@@ -67,8 +67,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@auaust/primitive-kit@0.41.3':
-    resolution: {integrity: sha512-B6uJwUq2m5H19fZfhAmaCwjGbHz927xxg/2TUNikTh0lW3GUZCPISiimhPLrKotvrfvx9+BQJD+pFtkwkE6Oiw==}
+  '@auaust/primitive-kit@0.41.5':
+    resolution: {integrity: sha512-/L3rPLH8UYI5s012IazDHdBM6plaLV626176ba8NynxMJk3sPcQmAn+vYU2eJ+Jsc0rAaJ8yicD/LY03dhGVDQ==}
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -1631,7 +1631,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@auaust/primitive-kit@0.41.3':
+  '@auaust/primitive-kit@0.41.5':
     dependencies:
       type-fest: 4.40.1
 
