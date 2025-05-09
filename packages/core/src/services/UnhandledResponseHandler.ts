@@ -1,5 +1,6 @@
 import type { Pont } from "src/classes/Pont.js";
 import { UnhandledResponse } from "src/classes/Responses/UnhandledResponse.js";
+import { Service } from "src/classes/Service.js";
 import type { ServiceObject } from "./index.js";
 
 export interface UnhandledResponseHandler extends ServiceObject {
@@ -11,17 +12,15 @@ export interface UnhandledResponseHandler extends ServiceObject {
   handle(pont: Pont, response: UnhandledResponse): void;
 }
 
-export function createDefaultUnhandledResponseHandler() {
-  return {
-    handle(pont: Pont, response: UnhandledResponse) {
-      console.error(
-        `Pont received an unhandled response. This is typically due to the response not being a Pont response or data being malformed.`,
-        response
-      );
+export class UnhandledResponseHandlerService extends Service<"unhandledResponseHandler"> {
+  public override handle(response: UnhandledResponse) {
+    console.error(
+      `Pont received an unhandled response. This is typically due to the response not being a Pont response or data being malformed.`,
+      response
+    );
 
-      throw new Error(
-        `Pont received an unhandled response. This is typically due to the response not being a Pont response or data being malformed.`
-      );
-    },
-  };
+    throw new Error(
+      `Pont received an unhandled response. This is typically due to the response not being a Pont response or data being malformed.`
+    );
+  }
 }

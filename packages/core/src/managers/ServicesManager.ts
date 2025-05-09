@@ -2,11 +2,11 @@ import { F, O } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { Service, ServiceMarker } from "src/classes/Service.js";
 import {
-  createDefaultPropsReconciler,
-  createDefaultResponseHandler,
-  createDefaultTransporter,
-  createDefaultUnhandledResponseHandler,
   ParamsSerializerService,
+  PropsReconcilerService,
+  ResponseHandlerService,
+  TransporterService,
+  UnhandledResponseHandlerService,
   type ParamsSerializer,
   type PropsReconciler,
   type ResolvedService,
@@ -58,10 +58,13 @@ export class ServicesManager {
   public init({ services }: ServicesManagerInit = {}): this {
     this.registerServices(services, [
       ["paramsSerializer", (pont) => new ParamsSerializerService(pont)],
-      ["propsReconciler", createDefaultPropsReconciler],
-      ["responseHandler", createDefaultResponseHandler],
-      ["transporter", createDefaultTransporter],
-      ["unhandledResponseHandler", createDefaultUnhandledResponseHandler],
+      ["propsReconciler", (pont) => new PropsReconcilerService(pont)],
+      ["responseHandler", ResponseHandlerService],
+      ["transporter", (pont) => new TransporterService(pont)],
+      [
+        "unhandledResponseHandler",
+        (pont) => new UnhandledResponseHandlerService(pont),
+      ],
     ]);
 
     return this;

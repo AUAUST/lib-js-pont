@@ -1,5 +1,6 @@
 import { A, O } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
+import { Service } from "src/classes/Service.js";
 import type { ServiceObject } from "./index.js";
 
 export interface PropsReconciler extends ServiceObject {
@@ -14,64 +15,61 @@ export interface PropsReconciler extends ServiceObject {
   ): Record<string, unknown>;
 }
 
-export function createDefaultPropsReconciler(pont: Pont) {
-  return {
-    handle(
-      pont: Pont,
-      base: Record<string, unknown>,
-      fragment: Record<string, unknown>
-    ): Record<string, unknown> {
-      return this.mergeObjects(base, fragment);
-    },
+export class PropsReconcilerService extends Service<"propsReconciler"> {
+  public override handle(
+    base: Record<string, unknown>,
+    fragment: Record<string, unknown>
+  ) {
+    return this.mergeObjects(base, fragment);
+  }
 
-    mergeObjects(
-      base: Record<string, unknown>,
-      frament: Record<string, unknown>
-    ): Record<string, unknown> {
-      const mergedProps = { ...base };
+  mergeObjects(
+    base: Record<string, unknown>,
+    frament: Record<string, unknown>
+  ): Record<string, unknown> {
+    const mergedProps = { ...base };
 
-      iteration: for (const [key, value] of O.entries(frament)) {
-        if (!(key in mergedProps)) {
-          mergedProps[key] = value;
-          continue;
-        }
-
-        // 99% of the time, the fragment will be the result of
-        // parsing a JSON string. This means `undefined` values
-        // should theoretically never be present. We still
-        // use the explicit presence of `undefined` to delete
-        // properties from the merged object.
-        if (value === undefined) {
-          delete mergedProps[key];
-          continue;
-        }
-
-        if (value === null) {
-          mergedProps[key] = null;
-          continue;
-        }
-
-        switch (typeof value) {
-          case "string":
-          case "number":
-          case "boolean":
-          case "undefined":
-            mergedProps[key] = value;
-            continue iteration;
-        }
-
-        if (A.is(value)) {
-          mergedProps[key] = this.mergeArrays(mergedProps[key], value);
-
-          continue;
-        }
+    iteration: for (const [key, value] of O.entries(frament)) {
+      if (!(key in mergedProps)) {
+        mergedProps[key] = value;
+        continue;
       }
 
-      return mergedProps;
-    },
+      // 99% of the time, the fragment will be the result of
+      // parsing a JSON string. This means `undefined` values
+      // should theoretically never be present. We still
+      // use the explicit presence of `undefined` to delete
+      // properties from the merged object.
+      if (value === undefined) {
+        delete mergedProps[key];
+        continue;
+      }
 
-    mergeArrays(base: unknown, fragment: unknown[]): unknown {
-      return fragment;
-    },
-  };
+      if (value === null) {
+        mergedProps[key] = null;
+        continue;
+      }
+
+      switch (typeof value) {
+        case "string":
+        case "number":
+        case "boolean":
+        case "undefined":
+          mergedProps[key] = value;
+          continue iteration;
+      }
+
+      if (A.is(value)) {
+        mergedProps[key] = this.mergeArrays(mergedProps[key], value);
+
+        continue;
+      }
+    }
+
+    return mergedProps;
+  }
+
+  mergeArrays(base: unknown, fragment: unknown[]): unknown {
+    return fragment;
+  }
 }
