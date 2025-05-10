@@ -23,7 +23,8 @@ export type RequestInit = {
 export interface Request
   extends Pick<RequestData, "getContentType" | "getData"> {}
 export interface Request extends Pick<Url, "getParams" | "getUrl"> {}
-export interface Request extends Pick<RequestHeaders, "getHeaders"> {}
+export interface Request
+  extends Pick<RequestHeaders, "getHeaders" | "setHeader"> {}
 
 /**
  * A request object contains all the information needed to process a request.
@@ -58,7 +59,7 @@ export class Request implements WithPont {
 
     forwardCalls(this.data, this, ["getContentType", "getData"]);
     forwardCalls(this.url, this, ["getParams", "getUrl"]);
-    forwardCalls(this.headers, this, ["getHeaders"]);
+    forwardCalls(this.headers, this, ["getHeaders", "setHeader"]);
   }
 
   public get pont() {

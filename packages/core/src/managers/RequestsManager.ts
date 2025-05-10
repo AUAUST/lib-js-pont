@@ -1,7 +1,8 @@
-import { s } from "@auaust/primitive-kit";
+import { ObjectType, s } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { Request, type RequestInit } from "src/classes/Request.js";
 import type { RequestDataInit } from "src/classes/RequestData.js";
+import { DataResponse } from "src/classes/Responses/DataResponse.js";
 import type { Response } from "src/classes/Responses/Response.js";
 import { Method } from "src/enums/Method.js";
 import { ResponseType } from "src/enums/ResponseType.js";
@@ -30,12 +31,11 @@ export class RequestsManager {
     return this;
   }
 
-  public async execute(request: Request): Promise<Response> {
-    const rawResponse = await this.pont.use(
-      "transporter",
-      request.getOptions()
-    );
-
+  public async execute<R extends Response = Response>(
+    request: Request
+  ): Promise<R> {
+    const options = request.getOptions();
+    const rawResponse = await this.pont.use("transporter", options);
     const response = this.pont.use("responseHandler", rawResponse);
 
     if (response.type === ResponseType.UNHANDLED) {
@@ -44,15 +44,18 @@ export class RequestsManager {
       );
     }
 
-    return response;
+    return <R>response;
   }
 
-  public async data(
+  public async data<T = ObjectType>(
     url: string,
-    options: Omit<VisitOptions, "method"> = {}
-  ): Promise<Response> {
+    options: VisitOptions = {}
+  ): Promise<T> {
     const request = this.createRequest(url, options);
-    const response = await this.execute(request);
+
+    request.setHeader("x-pont-type", "data");
+
+    const response = await this.execute<DataResponse>(request);
 
     if (response.type !== ResponseType.DATA) {
       throw new Error(
@@ -60,20 +63,42 @@ export class RequestsManager {
       );
     }
 
-    return response;
+    this.pont.getStateManager().applySideEffects(response);
+
+    return <T>response.getData();
   }
 
   public async visit(url: string, options: VisitOptions = {}): Promise<void> {
     const request = this.createRequest(url, options);
-    const response = await this.execute(request);
 
-    if (response.type === ResponseType.DATA) {
-      throw new Error(
-        `Expected a visit response, but got ${response.type} instead.`
-      );
+    request.setHeader("x-pont-type", "visit");
+
+    // this.pont.emit("start");
+
+    let response: Response;
+    let error: unknown;
+
+    try {
+      response = await this.execute(request);
+
+      if (response.type === ResponseType.DATA) {
+        // this.pont.emit("invalid");
+
+        throw new Error(
+          `Expected a visit response, but got ${response.type} instead.`
+        );
+      }
+
+      this.pont.getStateManager().applySideEffects(response);
+      this.pont.getStateManager().updateState(response);
+      // this.pont.emit("success");
+    } catch (error) {
+      // this.pont.emit("error");
+
+      throw error;
+    } finally {
+      // this.pont.emit("finish");
     }
-
-    this.pont.getStateManager().updateState(response);
   }
 
   public async get(

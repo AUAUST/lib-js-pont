@@ -1,3 +1,4 @@
+import { S } from "@auaust/primitive-kit";
 import { parseHeaders } from "src/utils/index.js";
 import type { WithPont } from "./Pont.js";
 /**
@@ -6,7 +7,7 @@ import type { WithPont } from "./Pont.js";
 export type RequestHeadersInit = HeadersInit;
 
 export class RequestHeaders implements WithPont {
-  protected readonly headers: RequestHeadersInit = {};
+  protected readonly headers: Record<string, string> = {};
 
   public constructor(
     protected readonly context: WithPont,
@@ -24,5 +25,11 @@ export class RequestHeaders implements WithPont {
    */
   public getHeaders(): Record<string, string> {
     return this.pont.getHeadersManager().getHeaders(this.headers);
+  }
+
+  public setHeader(key: string, value: string): this {
+    this.headers[S.lower(key)] = value;
+
+    return this;
   }
 }

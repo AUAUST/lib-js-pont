@@ -24,7 +24,14 @@ export type PontInit = {
 interface Pont
   extends Pick<
     RequestsManager,
-    "getBaseUrl" | "visit" | "get" | "post" | "put" | "delete" | "patch"
+    | "getBaseUrl"
+    | "data"
+    | "visit"
+    | "get"
+    | "post"
+    | "put"
+    | "delete"
+    | "patch"
   > {}
 
 interface Pont
@@ -64,6 +71,7 @@ class Pont implements WithPont {
 
     forwardCalls(this.managers.requests, this, [
       "getBaseUrl",
+      "data",
       "visit",
       "get",
       "post",

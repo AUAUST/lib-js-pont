@@ -57,6 +57,32 @@ export class StateManager {
     return this.propsGroups.global;
   }
 
+  public applySideEffects(response: Response): void {
+    const title = response.getTitle();
+
+    if (title) {
+      this.applyTitle(title);
+    }
+
+    const errors = response.getErrors();
+
+    if (errors) {
+      this.applyErrors(errors);
+    }
+
+    const effects = response.getEffects();
+
+    if (effects) {
+      this.applyEffects(effects);
+    }
+  }
+
+  public applyTitle(title: string): void {}
+
+  public applyErrors(errors: unknown): void {}
+
+  public applyEffects(effects: unknown): void {}
+
   public updateState(response: Response, options: StateUpdateOptions = {}) {
     // switch (response.type) {
     //   case ResponseType.VISIT:
