@@ -1,5 +1,5 @@
 import { Pont } from "@auaust/pont";
-import { AmbientResponse } from "src/classes/Responses/AmbientResponse.js";
+import { EmptyResponse } from "src/classes/Responses/EmptyResponse.js";
 import { RawResponse } from "src/classes/Responses/RawResponse.js";
 import type { ResponseHandler } from "src/services/ResponseHandler.js";
 import { transporter } from "tests/mocks/Transporter.js";
@@ -8,7 +8,7 @@ import { expect, test, vitest } from "vitest";
 test("Pont handles response using the response handler", async () => {
   const responseHandler = {
     handle: vitest.fn((pont, response) => {
-      return new AmbientResponse(response);
+      return new EmptyResponse(response);
     }),
   } satisfies ResponseHandler;
 

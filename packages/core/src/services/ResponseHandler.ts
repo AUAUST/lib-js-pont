@@ -1,7 +1,7 @@
 import { A, O, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
-import { AmbientResponse } from "src/classes/Responses/AmbientResponse.js";
 import { DataResponse } from "src/classes/Responses/DataResponse.js";
+import { EmptyResponse } from "src/classes/Responses/EmptyResponse.js";
 import { PartialResponse } from "src/classes/Responses/PartialResponse.js";
 import type { RawResponse } from "src/classes/Responses/RawResponse.js";
 import { Response } from "src/classes/Responses/Response.js";
@@ -51,10 +51,10 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
 
     if (!payload) {
       // If there is no payload but the response is ok,
-      // we return an AmbientResponse. It simply means the
+      // we return an EmptyResponse. It simply means the
       // request was successful, but there is nothing to do.
       if (response.isOk()) {
-        return new AmbientResponse({ url });
+        return new EmptyResponse({ url });
       }
 
       return Response.unhandled(response, "Invalid payload");
@@ -93,8 +93,8 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
         return this.createVisitResponse(response, context);
       case ResponseType.PARTIAL:
         return this.createPartialResponse(response, context);
-      case ResponseType.AMBIENT:
-        return this.createAmbientResponse(response, context);
+      case ResponseType.EMPTY:
+        return this.createEmptyResponse(response, context);
       case ResponseType.DATA:
         return this.createDataResponse(response, context);
       // Should never happen, but just in case
@@ -134,11 +134,11 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     });
   }
 
-  createAmbientResponse(
+  createEmptyResponse(
     response: RawResponse,
     context: ResponseContext
-  ): AmbientResponse {
-    return new AmbientResponse(context);
+  ): EmptyResponse {
+    return new EmptyResponse(context);
   }
 
   createPartialResponse(

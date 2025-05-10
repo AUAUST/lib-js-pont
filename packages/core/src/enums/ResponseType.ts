@@ -1,7 +1,7 @@
 export enum ResponseType {
   VISIT = "visit",
   PARTIAL = "partial",
-  AMBIENT = "ambient",
+  EMPTY = "empty",
   DATA = "data",
   UNHANDLED = "unhandled",
 }

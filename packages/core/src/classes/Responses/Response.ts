@@ -3,11 +3,8 @@ import { ResponseType } from "src/enums/ResponseType.js";
 import type { PropsGroups } from "src/types/app.js";
 import type { Effects } from "src/types/effects.js";
 import type { ErrorBag } from "src/types/errors.js";
-import type {
-  AmbientResponse,
-  AmbientResponseInit,
-} from "./AmbientResponse.js";
 import type { DataResponse, DataResponseInit } from "./DataResponse.js";
+import type { EmptyResponse, EmptyResponseInit } from "./EmptyResponse.js";
 import type {
   PartialResponse,
   PartialResponseInit,
@@ -36,10 +33,10 @@ export type ResponsesMap = {
     PartialResponse,
     PartialResponseInit
   ];
-  [ResponseType.AMBIENT]: [
-    typeof AmbientResponse,
-    AmbientResponse,
-    AmbientResponseInit
+  [ResponseType.EMPTY]: [
+    typeof EmptyResponse,
+    EmptyResponse,
+    EmptyResponseInit
   ];
   [ResponseType.DATA]: [typeof DataResponse, DataResponse, DataResponseInit];
   [ResponseType.UNHANDLED]: [
@@ -65,7 +62,7 @@ export type ResponseInit<T extends ResponseType = ResponseType> =
 export type StateChangingResponseType = ResponsesMap[
   | ResponseType.VISIT
   | ResponseType.PARTIAL
-  | ResponseType.AMBIENT][1];
+  | ResponseType.EMPTY][1];
 
 export abstract class Response<
   T extends Exclude<ResponseType, ResponseType.UNHANDLED> = Exclude<
@@ -77,7 +74,7 @@ export abstract class Response<
     switch (S.lower(type)) {
       case ResponseType.VISIT:
       case ResponseType.PARTIAL:
-      case ResponseType.AMBIENT:
+      case ResponseType.EMPTY:
       case ResponseType.DATA:
         return true;
       default:
