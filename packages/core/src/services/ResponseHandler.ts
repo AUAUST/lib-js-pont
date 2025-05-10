@@ -2,7 +2,7 @@ import { A, O, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { AmbientResponse } from "src/classes/Responses/AmbientResponse.js";
 import { DataResponse } from "src/classes/Responses/DataResponse.js";
-import { FragmentResponse } from "src/classes/Responses/FragmentResponse.js";
+import { PartialResponse } from "src/classes/Responses/PartialResponse.js";
 import type { RawResponse } from "src/classes/Responses/RawResponse.js";
 import { Response } from "src/classes/Responses/Response.js";
 import { UnhandledResponse } from "src/classes/Responses/UnhandledResponse.js";
@@ -17,7 +17,7 @@ import type { ServiceObject } from "./index.js";
 export interface ResponseHandler extends ServiceObject {
   /**
    * Handles a raw response from the server and converts it into a usable format.
-   * It is responsible for composing the fragment responses, extracting the
+   * It is responsible for composing the partial responses, extracting the
    * various data parts, and returning a standardized response object.
    */
   handle(pont: Pont, response: RawResponse): Response | UnhandledResponse;
@@ -91,8 +91,8 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     switch (S.lower(type)) {
       case ResponseType.VISIT:
         return this.createVisitResponse(response, context);
-      case ResponseType.FRAGMENT:
-        return this.createFragmentResponse(response, context);
+      case ResponseType.PARTIAL:
+        return this.createPartialResponse(response, context);
       case ResponseType.AMBIENT:
         return this.createAmbientResponse(response, context);
       case ResponseType.DATA:
@@ -141,10 +141,10 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     return new AmbientResponse(context);
   }
 
-  createFragmentResponse(
+  createPartialResponse(
     response: RawResponse,
     context: ResponseContext
-  ): FragmentResponse | UnhandledResponse {
+  ): PartialResponse | UnhandledResponse {
     const { payload } = context;
 
     const intendedComponent = S.is(payload.component)
@@ -155,7 +155,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       return Response.unhandled(response, "Missing intended component");
     }
 
-    return new FragmentResponse({
+    return new PartialResponse({
       ...context,
       intendedComponent,
     });

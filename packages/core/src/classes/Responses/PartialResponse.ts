@@ -3,17 +3,17 @@ import type { PageProps, PropsGroups } from "src/types/app.js";
 import type { ComponentName } from "src/types/utils.js";
 import { type BaseResponseInit, Response } from "./Response.js";
 
-export interface FragmentResponseInit extends BaseResponseInit {
-  type: ResponseType.FRAGMENT;
+export interface PartialResponseInit extends BaseResponseInit {
+  type: ResponseType.PARTIAL;
   intendedComponent: ComponentName;
   propsGroups: Partial<PropsGroups>;
 }
 
-export class FragmentResponse extends Response<ResponseType.FRAGMENT> {
+export class PartialResponse extends Response<ResponseType.PARTIAL> {
   protected readonly intendedComponent: ComponentName;
 
-  public constructor(init: Omit<FragmentResponseInit, "type">) {
-    super({ ...init, type: ResponseType.FRAGMENT });
+  public constructor(init: Omit<PartialResponseInit, "type">) {
+    super({ ...init, type: ResponseType.PARTIAL });
 
     this.intendedComponent = init.intendedComponent;
   }

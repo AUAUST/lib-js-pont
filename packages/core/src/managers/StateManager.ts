@@ -116,10 +116,10 @@ export class StateManager {
       };
     }
 
-    if (response.type === ResponseType.FRAGMENT) {
+    if (response.type === ResponseType.PARTIAL) {
       if (response.getIntendedComponent() !== this.component) {
         throw new Error(
-          "The intended component does not match the current component. The fragment response cannot be applied."
+          "The intended component does not match the current component. The partial response cannot be applied."
         );
       }
 

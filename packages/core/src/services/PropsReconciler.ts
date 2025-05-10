@@ -18,24 +18,24 @@ export interface PropsReconciler extends ServiceObject {
 export class PropsReconcilerService extends Service<"propsReconciler"> {
   public override handle(
     base: Record<string, unknown>,
-    fragment: Record<string, unknown>
+    partial: Record<string, unknown>
   ) {
-    return this.mergeObjects(base, fragment);
+    return this.mergeObjects(base, partial);
   }
 
   mergeObjects(
     base: Record<string, unknown>,
-    frament: Record<string, unknown>
+    partial: Record<string, unknown>
   ): Record<string, unknown> {
     const mergedProps = { ...base };
 
-    iteration: for (const [key, value] of O.entries(frament)) {
+    iteration: for (const [key, value] of O.entries(partial)) {
       if (!(key in mergedProps)) {
         mergedProps[key] = value;
         continue;
       }
 
-      // 99% of the time, the fragment will be the result of
+      // 99% of the time, the partial will be the result of
       // parsing a JSON string. This means `undefined` values
       // should theoretically never be present. We still
       // use the explicit presence of `undefined` to delete
@@ -69,7 +69,7 @@ export class PropsReconcilerService extends Service<"propsReconciler"> {
     return mergedProps;
   }
 
-  mergeArrays(base: unknown, fragment: unknown[]): unknown {
-    return fragment;
+  mergeArrays(base: unknown, partial: unknown[]): unknown {
+    return partial;
   }
 }

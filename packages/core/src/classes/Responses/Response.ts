@@ -9,9 +9,9 @@ import type {
 } from "./AmbientResponse.js";
 import type { DataResponse, DataResponseInit } from "./DataResponse.js";
 import type {
-  FragmentResponse,
-  FragmentResponseInit,
-} from "./FragmentResponse.js";
+  PartialResponse,
+  PartialResponseInit,
+} from "./PartialResponse.js";
 import type { RawResponse } from "./RawResponse.js";
 import { UnhandledResponse } from "./UnhandledResponse.js";
 import type { VisitResponse, VisitResponseInit } from "./VisitResponse.js";
@@ -31,10 +31,10 @@ export type ResponsesMap = {
     VisitResponse,
     VisitResponseInit
   ];
-  [ResponseType.FRAGMENT]: [
-    typeof FragmentResponse,
-    FragmentResponse,
-    FragmentResponseInit
+  [ResponseType.PARTIAL]: [
+    typeof PartialResponse,
+    PartialResponse,
+    PartialResponseInit
   ];
   [ResponseType.AMBIENT]: [
     typeof AmbientResponse,
@@ -64,7 +64,7 @@ export type ResponseInit<T extends ResponseType = ResponseType> =
  */
 export type StateChangingResponseType = ResponsesMap[
   | ResponseType.VISIT
-  | ResponseType.FRAGMENT
+  | ResponseType.PARTIAL
   | ResponseType.AMBIENT][1];
 
 export abstract class Response<
@@ -76,7 +76,7 @@ export abstract class Response<
   public static isValidType(type: unknown): type is ResponseType {
     switch (S.lower(type)) {
       case ResponseType.VISIT:
-      case ResponseType.FRAGMENT:
+      case ResponseType.PARTIAL:
       case ResponseType.AMBIENT:
       case ResponseType.DATA:
         return true;
