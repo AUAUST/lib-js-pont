@@ -7,8 +7,9 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@auaust/pont": ["../core/src/index.js"],
-      "@auaust/pont-adapter-solid": ["./src/index.js"]
+      "@auaust/pont-adapter-solid": ["./src/index.js"],
+      "@auaust/pont/toolkit": ["../core/src/toolkit.js"],
+      "@auaust/pont": ["../core/src/index.js"]
     }
   },
   "exclude": ["node_modules", "dist"]

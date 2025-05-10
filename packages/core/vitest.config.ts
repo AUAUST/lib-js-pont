@@ -7,6 +7,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      "@auaust/pont/toolkit": path.resolve(__dirname, "src/toolkit"),
       "@auaust/pont": path.resolve(__dirname, "src"),
     },
   },

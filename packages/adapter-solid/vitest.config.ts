@@ -15,6 +15,10 @@ export default defineConfig(({ mode }) => {
   };
 
   if (!shouldTestDist) {
+    alias["@auaust/pont/toolkit"] = path.resolve(
+      __dirname,
+      "../core/src/toolkit"
+    );
     alias["@auaust/pont"] = path.resolve(__dirname, "../core/src");
   }
 
