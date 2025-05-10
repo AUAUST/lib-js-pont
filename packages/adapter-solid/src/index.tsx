@@ -1,1 +1,1 @@
-export default "@auaust/pont-adapter-solid";
+export { createPontApp } from "./createPontApp.jsx";

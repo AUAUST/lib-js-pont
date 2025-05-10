@@ -1,8 +1,7 @@
 import { expect, test } from "vitest";
 
-import adapter from "@auaust/pont-adapter-solid";
+import { createPontApp } from "@auaust/pont-adapter-solid";
 
 test("test", () => {
-  expect(adapter).toBeDefined();
-  expect(adapter).toBe("@auaust/pont-adapter-solid");
+  expect(createPontApp).toBeTypeOf("function");
 });
