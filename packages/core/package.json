@@ -29,7 +29,7 @@
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "build": "pnpm test && pnpm run build:clean && pnpm run build:js",
+    "build": "pnpm run build:clean && pnpm run build:js",
     "build:clean": "rimraf dist",
     "build:js": "tsup",
     "test": "vitest run --config vitest.config.ts --typecheck -- && pnpm typecheck",

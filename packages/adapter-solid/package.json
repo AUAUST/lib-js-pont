@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "build": "pnpm test && pnpm run build:clean && pnpm run build:js",
+    "build": "pnpm run build:clean && pnpm run build:js",
     "build:clean": "rimraf dist",
     "build:js": "tsup",
     "test": "pnpm test:dev && pnpm typecheck",
