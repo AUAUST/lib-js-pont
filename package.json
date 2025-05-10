@@ -10,6 +10,7 @@
     "build:clean": "pnpm -r build:clean",
     "test": "pnpm -r test",
     "test:build": "pnpm -r test:build",
+    "test:app:solid": "PACKAGE=solid pnpm exec playwright test",
     "watch": "pnpm -r watch",
     "coverage": "pnpm -r coverage",
     "typecheck": "pnpm -r typecheck"

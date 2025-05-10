@@ -13,25 +13,31 @@ function resolveAdapter(name) {
     );
   }
 
-  const testAppDirectory = resolve(directory, "test-app");
-
-  if (!existsSync(testAppDirectory)) {
-    throw new Error(`Test app directory does not exist for package ${name}.`);
-  }
-
-  const testAppDistDirectory = resolve(testAppDirectory, "dist");
-
-  if (!existsSync(testAppDistDirectory)) {
-    throw new Error(
-      `The adapter ${name} must be built before running the tests.`
-    );
-  }
-
   return {
     name,
     directory,
-    testAppDirectory,
-    testAppDistDirectory,
+    get testAppDirectory() {
+      const testAppDirectory = resolve(directory, "test-app");
+
+      if (!existsSync(testAppDirectory)) {
+        throw new Error(
+          `Test app directory does not exist for package ${name}.`
+        );
+      }
+
+      return testAppDirectory;
+    },
+    get testAppDistDirectory() {
+      const testAppDistDirectory = resolve(this.testAppDirectory, "dist");
+
+      if (!existsSync(testAppDistDirectory)) {
+        throw new Error(
+          `The adapter ${name} must be built before running the tests.`
+        );
+      }
+
+      return testAppDistDirectory;
+    },
     port: 13717,
   };
 }
