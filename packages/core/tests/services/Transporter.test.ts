@@ -1,11 +1,25 @@
 import { Pont } from "@auaust/pont";
 import { RawResponse } from "src/classes/Responses/RawResponse.js";
 import type { Transporter } from "src/services/Transporter.js";
+import type { RequestOptions } from "src/types/requests.js";
 import { expect, test, vitest } from "vitest";
 
-test("Pont sends requests using the transporter", () => {
+test("Pont sends requests using the transporter", async () => {
   const transporter = {
-    handle: vitest.fn(async (pont, options) => {
+    handle: vitest.fn(async (pont, options: RequestOptions) => {
+      if (options.headers?.["x-pont-type"] === "data") {
+        return RawResponse.ok()
+          .withStatus(200)
+          .withUrl(options.url)
+          .withHeaders({
+            "x-pont": "true",
+          })
+          .withData({
+            type: "data",
+            data: { comment: `${(<any>options.data)?.name} is a great name!` },
+          });
+      }
+
       return RawResponse.ok()
         .withHeaders({
           "x-pont": "true",
@@ -21,7 +35,7 @@ test("Pont sends requests using the transporter", () => {
     },
   });
 
-  pont.visit("https://example.com", {
+  await pont.visit("https://example.com", {
     method: "get",
   });
 
@@ -29,10 +43,12 @@ test("Pont sends requests using the transporter", () => {
     url: "https://example.com/",
     method: "get",
     data: undefined,
-    headers: {},
+    headers: expect.objectContaining({
+      "x-pont-type": "visit",
+    }),
   });
 
-  pont.post(
+  await pont.post(
     "https://example.com",
     { john: "doe" },
     { headers: { "X-Test": "Test" } }
@@ -42,6 +58,25 @@ test("Pont sends requests using the transporter", () => {
     url: "https://example.com/",
     method: "post",
     data: { john: "doe" },
-    headers: { "x-test": "Test" }, // headers are normalized to lowercase
+    headers: expect.objectContaining({
+      "x-test": "Test",
+      "x-pont-type": "visit",
+    }),
   });
+
+  const data = await pont.data("https://example.com", {
+    method: "post",
+    data: { name: "John Cena" },
+  });
+
+  expect(transporter.handle).toHaveBeenLastCalledWith(pont, {
+    url: "https://example.com/",
+    method: "post",
+    data: { name: "John Cena" },
+    headers: expect.objectContaining({
+      "x-pont-type": "data",
+    }),
+  });
+
+  expect(data).toEqual({ comment: "John Cena is a great name!" });
 });
