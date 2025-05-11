@@ -1,5 +1,5 @@
 import type { LayoutName, PageName, Pont } from "@auaust/pont";
-import { MetaProvider } from "@solidjs/meta";
+import { Base, MetaProvider, Title } from "@solidjs/meta";
 import {
   batch,
   children,
@@ -75,6 +75,9 @@ export function App(props: PontAppProps) {
 
   return (
     <MetaProvider>
+      <Title>{title()}</Title>
+      <Base href={props.pont.getBaseUrl()} />
+
       <Content />
     </MetaProvider>
   );
