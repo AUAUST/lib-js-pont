@@ -1,14 +1,17 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
+    "moduleResolution": "nodenext",
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "types": ["vite/client"],
     "noEmit": true,
-    "isolatedModules": true
+    "paths": {
+      "@auaust/pont-adapter-solid": ["../src/index.js"],
+      "@auaust/pont/toolkit": ["../../core/src/toolkit.js"],
+      "@auaust/pont": ["../../core/src/index.js"]
+    }
   }
 }
