@@ -1,4 +1,5 @@
-import { Pont, type ServiceObject } from "@auaust/pont";
+import { Pont } from "@auaust/pont";
+import type { ServiceObject } from "@auaust/pont/services";
 import { EmptyResponse } from "src/classes/Responses/EmptyResponse.js";
 import { RawResponse } from "src/classes/Responses/RawResponse.js";
 import { transporter } from "tests/mocks/Transporter.js";

@@ -5,8 +5,9 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@auaust/pont": ["./src/index.js"],
-      "@auaust/pont/toolkit": ["./src/toolkit.js"]
+      "@auaust/pont/toolkit": ["./src/toolkit.js"],
+      "@auaust/pont/services": ["./src/services/index.js"],
+      "@auaust/pont": ["./src/index.js"]
     }
   },
   "exclude": ["node_modules", "dist"]
