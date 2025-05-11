@@ -6,7 +6,8 @@ import type {
 } from "src/services/index.js";
 import type { Pont } from "./Pont.js";
 
-export const ServiceMarker = Symbol.for("Pont.Service");
+export const ServiceConstructorMarker = Symbol.for("Pont.ServiceConstructor");
+export const ServiceInstanceMarker = Symbol.for("Pont.ServiceInstance");
 
 export abstract class Service<T extends ServiceName = ServiceName>
   implements ServiceInstance<T>
@@ -18,7 +19,16 @@ export abstract class Service<T extends ServiceName = ServiceName>
    *
    * @internal
    */
-  public static readonly [ServiceMarker] = true;
+  public static readonly [ServiceConstructorMarker] = true;
+
+  /**
+   * Used to check if an object is a service instance.
+   * This is a workaround for `instanceof` sometimes not working with
+   * ESM modules (same classes might actually be different objects/references).
+   *
+   * @internal
+   */
+  public readonly [ServiceInstanceMarker] = true;
 
   public constructor(public readonly pont: Pont) {}
 

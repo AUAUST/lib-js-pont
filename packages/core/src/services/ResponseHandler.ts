@@ -1,5 +1,4 @@
 import { A, O, S } from "@auaust/primitive-kit";
-import type { Pont } from "src/classes/Pont.js";
 import { DataResponse } from "src/classes/Responses/DataResponse.js";
 import { EmptyResponse } from "src/classes/Responses/EmptyResponse.js";
 import { PartialResponse } from "src/classes/Responses/PartialResponse.js";
@@ -12,16 +11,15 @@ import { ResponseType } from "src/enums/ResponseType.js";
 import type { PropsGroups } from "src/types/app.js";
 import type { Effects } from "src/types/effects.js";
 import type { ErrorBag } from "src/types/errors.js";
-import type { ServiceObject } from "./index.js";
 
-export interface ResponseHandler extends ServiceObject {
-  /**
-   * Handles a raw response from the server and converts it into a usable format.
-   * It is responsible for composing the partial responses, extracting the
-   * various data parts, and returning a standardized response object.
-   */
-  handle(pont: Pont, response: RawResponse): Response | UnhandledResponse;
-}
+/**
+ * Handles a raw response from the server and converts it into a usable format.
+ * It is responsible for composing the partial responses, extracting the
+ * various data parts, and returning a standardized response object.
+ */
+export type ResponseHandlerSignature = (
+  response: RawResponse
+) => Response | UnhandledResponse;
 
 type ResponseContext = {
   payload: {

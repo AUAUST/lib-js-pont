@@ -48,31 +48,33 @@ export type ResolvedService<N extends ServiceName = ServiceName> =
   | ServiceObject<N>
   | ServiceFunction<N>;
 
-export type ServiceHandler<T extends ServiceName = ServiceName> =
-  ServicesMap[T]["handle"];
+export type ServiceSignature<T extends ServiceName = ServiceName> =
+  ServicesMap[T];
 
 export type ServiceParameters<T extends ServiceName> = Parameters<
-  ServiceHandler<T>
-> extends [Pont, ...infer U]
-  ? U
-  : never;
+  ServiceSignature<T>
+>;
 
 export type ServiceReturnType<T extends ServiceName> = ReturnType<
-  ServiceHandler<T>
+  ServiceSignature<T>
 >;
 
 export type { ServiceName, ServicesMap };
 
 export {
   ParamsSerializerService,
-  type ParamsSerializer,
+  type ParamsSerializerSignature,
 } from "./ParamsSerializer.js";
 export {
   PropsReconcilerService,
-  type PropsReconciler,
+  type PropsReconcilerSignature,
 } from "./PropsReconciler.js";
 export {
   ResponseHandlerService,
-  type ResponseHandler,
+  type ResponseHandlerSignature,
 } from "./ResponseHandler.js";
-export { TransporterService, type Transporter } from "./Transporter.js";
+export type { TitleTransformerSignature } from "./TitleTransformer.js";
+export {
+  TransporterService,
+  type TransporterSignature,
+} from "./Transporter.js";

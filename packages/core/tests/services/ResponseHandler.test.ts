@@ -1,7 +1,6 @@
-import { Pont } from "@auaust/pont";
+import { Pont, type ServiceObject } from "@auaust/pont";
 import { EmptyResponse } from "src/classes/Responses/EmptyResponse.js";
 import { RawResponse } from "src/classes/Responses/RawResponse.js";
-import type { ResponseHandler } from "src/services/ResponseHandler.js";
 import { transporter } from "tests/mocks/Transporter.js";
 import { expect, test, vitest } from "vitest";
 
@@ -10,7 +9,7 @@ test("Pont handles response using the response handler", async () => {
     handle: vitest.fn((pont, response) => {
       return new EmptyResponse(response);
     }),
-  } satisfies ResponseHandler;
+  } satisfies ServiceObject<"responseHandler">;
 
   const pont = new Pont().init({
     baseUrl: "https://example.com",

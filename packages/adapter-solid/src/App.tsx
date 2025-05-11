@@ -34,6 +34,7 @@ export function App(props: PontAppProps) {
 
   const [layout, setLayout] = createSignal<Component>();
   const [page, setPage] = createSignal<Component>();
+  const [title, setTitle] = createSignal<string>(props.pont.getTitle());
 
   createEffect(
     on(

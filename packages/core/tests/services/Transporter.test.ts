@@ -1,6 +1,5 @@
-import { Pont } from "@auaust/pont";
+import { Pont, ServiceObject } from "@auaust/pont";
 import { RawResponse } from "src/classes/Responses/RawResponse.js";
-import type { Transporter } from "src/services/Transporter.js";
 import type { RequestOptions } from "src/types/requests.js";
 import { expect, test, vitest } from "vitest";
 
@@ -26,7 +25,7 @@ test("Pont sends requests using the transporter", async () => {
         })
         .withUrl(options.url);
     }),
-  } satisfies Transporter;
+  } satisfies ServiceObject<"transporter">;
 
   const pont = new Pont().init({
     baseUrl: "https://example.com",

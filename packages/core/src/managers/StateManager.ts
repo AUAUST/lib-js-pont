@@ -117,4 +117,8 @@ export class StateManager {
 
     return this.pont.use("propsReconciler", baseProps, partialProps);
   }
+
+  public transformTitle(title: string): string {
+    return this.pont.use("titleTransformer", title);
+  }
 }

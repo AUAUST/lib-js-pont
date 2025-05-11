@@ -1,16 +1,14 @@
 import { A, B, N, O, P, S } from "@auaust/primitive-kit";
-import type { Pont } from "src/classes/Pont.js";
 import { Service } from "src/classes/Service.js";
 import { shouldAppend, type NormalizedUrlParams } from "src/utils/params.js";
-import type { ServiceObject } from "./index.js";
 
-export interface ParamsSerializer extends ServiceObject {
-  /**
-   * Serializes the request parameters into a format suitable for sending in a request.
-   * The resulting string **MUST NOT** include the leading `?` character.
-   */
-  handle(pont: Pont, options: NormalizedUrlParams): URLSearchParams | string;
-}
+/**
+ * Serializes the request parameters into a format suitable for sending in a request.
+ * The resulting string **MUST NOT** include the leading `?` character.
+ */
+export type ParamsSerializerSignature = (
+  options: NormalizedUrlParams
+) => URLSearchParams | string;
 
 export class ParamsSerializerService extends Service<"paramsSerializer"> {
   public override handle(options: NormalizedUrlParams) {

@@ -1,15 +1,18 @@
 import { F, O } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
-import { Service, ServiceMarker } from "src/classes/Service.js";
+import {
+  ServiceConstructorMarker,
+  ServiceInstanceMarker,
+} from "src/classes/Service.js";
 import {
   ParamsSerializerService,
   PropsReconcilerService,
   ResponseHandlerService,
   TransporterService,
-  type ParamsSerializer,
-  type PropsReconciler,
+  type ParamsSerializerSignature,
+  type PropsReconcilerSignature,
   type ResolvedService,
-  type ResponseHandler,
+  type ResponseHandlerSignature,
   type ServiceClass,
   type ServiceFunction,
   type ServiceInit,
@@ -18,7 +21,8 @@ import {
   type ServiceParameters,
   type ServiceReturnType,
   type ServicesInit,
-  type Transporter,
+  type TitleTransformerSignature,
+  type TransporterSignature,
 } from "src/services/index.js";
 
 export type ServicesManagerInit = {
@@ -26,10 +30,11 @@ export type ServicesManagerInit = {
 };
 
 export type ServicesMap = {
-  paramsSerializer: ParamsSerializer;
-  propsReconciler: PropsReconciler;
-  responseHandler: ResponseHandler;
-  transporter: Transporter;
+  paramsSerializer: ParamsSerializerSignature;
+  propsReconciler: PropsReconcilerSignature;
+  responseHandler: ResponseHandlerSignature;
+  titleTransformer: TitleTransformerSignature;
+  transporter: TransporterSignature;
 };
 
 export type ServiceName = keyof ServicesMap;
@@ -57,6 +62,7 @@ export class ServicesManager {
       ["paramsSerializer", (pont) => new ParamsSerializerService(pont)],
       ["propsReconciler", (pont) => new PropsReconcilerService(pont)],
       ["responseHandler", ResponseHandlerService],
+      ["titleTransformer", () => F.identity],
       ["transporter", (pont) => new TransporterService(pont)],
     ]);
 
@@ -82,7 +88,7 @@ export class ServicesManager {
       throw new Error(`Service ${name} already exists`);
     }
 
-    if (F.isConstructible(init) && ServiceMarker in init) {
+    if (F.isConstructible(init) && ServiceConstructorMarker in init) {
       return this.registerServiceConstructor(name, init);
     }
 
@@ -94,7 +100,8 @@ export class ServicesManager {
       service = init;
     }
 
-    if (service instanceof Service) {
+    if (ServiceInstanceMarker in service) {
+      // @ts-expect-error - TS can't infer that ServiceInstanceMarker implies a ServiceInstance
       return this.registerServiceInstance(name, service);
     }
 

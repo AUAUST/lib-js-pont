@@ -1,19 +1,14 @@
 import { A, O } from "@auaust/primitive-kit";
-import type { Pont } from "src/classes/Pont.js";
 import { Service } from "src/classes/Service.js";
-import type { ServiceObject } from "./index.js";
 
-export interface PropsReconciler extends ServiceObject {
-  /**
-   * Merges two sets of props. The first set is the default props,
-   * and the second set is a partial set of props to merge with the default props.
-   */
-  handle(
-    pont: Pont,
-    baseProps: Record<string, unknown>,
-    partialProps: Record<string, unknown>
-  ): Record<string, unknown>;
-}
+/**
+ * Merges two sets of props. The first set is the default props,
+ * and the second set is a partial set of props to merge with the default props.
+ */
+export type PropsReconcilerSignature = (
+  baseProps: Record<string, unknown>,
+  partialProps: Record<string, unknown>
+) => Record<string, unknown>;
 
 export class PropsReconcilerService extends Service<"propsReconciler"> {
   public override handle(
