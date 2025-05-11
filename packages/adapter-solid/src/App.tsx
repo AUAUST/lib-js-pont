@@ -1,15 +1,17 @@
 import type { LayoutName, PageName, Pont } from "@auaust/pont";
-import { Base, MetaProvider, Title } from "@solidjs/meta";
+import { MetaProvider, Title } from "@solidjs/meta";
 import {
-  batch,
   children,
-  createEffect,
+  createResource,
   createSignal,
-  on,
   Show,
-  type Component,
+  Suspense,
   type ParentComponent,
 } from "solid-js";
+import { GlobalPropsProvider } from "./contexts/GlobalPropsContext.jsx";
+import { LayoutPropsProvider } from "./contexts/LayoutPropsContext.jsx";
+import { PagePropsProvider } from "./contexts/PagePropsContext.jsx";
+import { PontProvider } from "./contexts/PontContext.jsx";
 import type { ComponentResolver } from "./createPontApp.jsx";
 import { resolveComponent } from "./utils/resolveComponent.js";
 
@@ -20,36 +22,21 @@ export type PontAppProps = {
 };
 
 export function App(props: PontAppProps) {
+  const [title, setTitle] = createSignal<string>(props.pont.getTitle());
+
   const [layoutName, setLayoutName] = createSignal<string>(
     props.pont.getLayout()
   );
   const [pageName, setPageName] = createSignal<string>(props.pont.getPage());
 
-  const [globalProps, setGlobalProps] = createSignal(
-    props.pont.getGlobalProps()
+  const [page] = createResource(
+    pageName,
+    async (name) => await resolveComponent(props.resolvePage, name)
   );
-  const [layoutProps, setLayoutProps] = createSignal(
-    props.pont.getLayoutProps()
-  );
-  const [pageProps, setPageProps] = createSignal(props.pont.getPageProps());
 
-  const [layout, setLayout] = createSignal<ParentComponent>();
-  const [page, setPage] = createSignal<Component>();
-  const [title, setTitle] = createSignal<string>(props.pont.getTitle());
-
-  createEffect(
-    on(
-      () => [layoutName(), pageName()],
-      async ([layoutName, pageName]) => {
-        const layout = await resolveComponent(props.resolveLayout, layoutName);
-        const page = await resolveComponent(props.resolvePage, pageName);
-
-        batch(() => {
-          setLayout(() => layout);
-          setPage(() => page);
-        });
-      }
-    )
+  const [layout] = createResource(
+    layoutName,
+    async (name) => await resolveComponent(props.resolveLayout, name)
   );
 
   const Page = children(() => {
@@ -57,7 +44,7 @@ export function App(props: PontAppProps) {
 
     return (
       <Show when={Page}>
-        <Page {...pageProps()} />
+        <Page />
       </Show>
     );
   });
@@ -65,21 +52,33 @@ export function App(props: PontAppProps) {
   const Content = children(() => {
     const Layout = layout()!;
 
-    return (
-      <Show when={Layout} fallback={<Page />}>
+    if (Layout) {
+      return (
+        // @ts-ignore
         <Layout {...layoutProps()}>
           <Page />
         </Layout>
-      </Show>
-    );
+      );
+    }
+
+    return <Page />;
   });
 
   return (
-    <MetaProvider>
-      <Title>{title()}</Title>
-      <Base href={props.pont.getBaseUrl()} />
+    <PontProvider pont={props.pont}>
+      <MetaProvider>
+        <Title>{title()}</Title>
 
-      <Content />
-    </MetaProvider>
+        <GlobalPropsProvider>
+          <LayoutPropsProvider>
+            <PagePropsProvider>
+              <Suspense>
+                <Content />
+              </Suspense>
+            </PagePropsProvider>
+          </LayoutPropsProvider>
+        </GlobalPropsProvider>
+      </MetaProvider>
+    </PontProvider>
   );
 }
