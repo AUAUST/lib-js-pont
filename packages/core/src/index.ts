@@ -19,9 +19,13 @@ export {
   type ServicesMap,
 } from "@core/src/services/index.js";
 export type {
+  GlobalProps,
   LayoutName,
+  LayoutProps,
   PageName,
+  PageProps,
   PontAppState,
+  PropsGroups,
   StateInit,
 } from "@core/src/types/index.js";
 export type { RootElement } from "@core/src/utils/bootstrap.js";
