@@ -3,11 +3,12 @@ import { Base, MetaProvider, Title } from "@solidjs/meta";
 import {
   batch,
   children,
-  Component,
   createEffect,
   createSignal,
   on,
   Show,
+  type Component,
+  type ParentComponent,
 } from "solid-js";
 import type { ComponentResolver } from "./createPontApp.jsx";
 import { resolveComponent } from "./utils/resolveComponent.js";
@@ -15,7 +16,7 @@ import { resolveComponent } from "./utils/resolveComponent.js";
 export type PontAppProps = {
   pont: Pont;
   resolvePage: ComponentResolver<PageName>;
-  resolveLayout?: ComponentResolver<LayoutName>;
+  resolveLayout?: ComponentResolver<LayoutName, ParentComponent>;
 };
 
 export function App(props: PontAppProps) {
@@ -32,7 +33,7 @@ export function App(props: PontAppProps) {
   );
   const [pageProps, setPageProps] = createSignal(props.pont.getPageProps());
 
-  const [layout, setLayout] = createSignal<Component>();
+  const [layout, setLayout] = createSignal<ParentComponent>();
   const [page, setPage] = createSignal<Component>();
   const [title, setTitle] = createSignal<string>(props.pont.getTitle());
 

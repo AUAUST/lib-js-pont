@@ -2,24 +2,22 @@ import {
   Pont,
   type LayoutName,
   type PageName,
-  type PontAppState,
   type RootElement,
+  type StateInit,
 } from "@auaust/pont";
+import { ServicesInit } from "@auaust/pont/services";
 import { getBaseUrl, getElement, getInitialState } from "@auaust/pont/toolkit";
+import { F } from "@auaust/primitive-kit";
 import type { Component, JSX } from "solid-js";
 import { App, type PontAppProps } from "./App.jsx";
 
-export type ComponentModule = {
-  default: Component;
+export type ComponentModule<C = Component> = {
+  default: C;
 };
 
-export type ComponentResolver<N extends string> = (
+export type ComponentResolver<N extends string, C = Component> = (
   name: N
-) =>
-  | Promise<Component>
-  | Component
-  | Promise<ComponentModule>
-  | ComponentModule;
+) => Promise<C> | C | Promise<ComponentModule<C>> | ComponentModule<C>;
 
 export type PontAppOptions = {
   /**
@@ -51,7 +49,7 @@ export type PontAppOptions = {
    * It is useful if the server doesn't set the initial state as
    * the `data-props` attribute of the root element.
    */
-  initialState?: PontAppState;
+  initialState?: StateInit;
 
   /**
    * The function that will be called with the initial state of the application.
@@ -60,9 +58,15 @@ export type PontAppOptions = {
   setup: (options: SetupOptions) => void;
 
   /**
-   * If a different Pont instance than the singleton should be used, pass it here.
+   *
    */
   pont?: Pont;
+
+  /**
+   * Services allow to extend or modify the behavior of the application.
+   * For example, you can use it to add a custom request interceptor,
+   */
+  services?: ServicesInit;
 };
 
 export type SetupOptions = {
@@ -80,28 +84,31 @@ export async function createPontApp({
   initialState: customInitialState,
   setup,
   pont: customPont,
+  services = {},
 }: PontAppOptions) {
   const pont = customPont || Pont.getInstance();
-
-  if (pont.isInitialized()) {
-    throw new Error("Pont is already initialized");
-  }
-
   const element = getElement(root);
-  const initialState = customInitialState || getInitialState(element);
-  const baseUrl = getBaseUrl(customBaseUrl);
 
-  pont.init({
-    baseUrl,
-    initialState,
-  });
+  if (!pont.isInitialized()) {
+    const baseUrl = getBaseUrl(customBaseUrl);
+    const initialState = customInitialState || getInitialState(element);
+
+    F.is(transformTitle) &&
+      (services.titleTransformer ??= () => transformTitle);
+
+    pont.init({
+      baseUrl,
+      initialState,
+      services,
+    });
+  }
 
   setup({
     element,
     App,
     props: {
       pont,
-      resolvePage: resolvePage,
+      resolvePage,
       resolveLayout,
     },
   });
