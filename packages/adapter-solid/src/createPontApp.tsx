@@ -6,8 +6,8 @@ import {
   type RootElement,
 } from "@auaust/pont";
 import { getBaseUrl, getElement, getInitialState } from "@auaust/pont/toolkit";
-import type { Component } from "solid-js";
-import { App } from "./App.jsx";
+import type { Component, JSX } from "solid-js";
+import { App, type PontAppProps } from "./App.jsx";
 
 export type ComponentModule = {
   default: Component;
@@ -37,7 +37,7 @@ export type PontAppOptions = {
   baseUrl?: string;
 
   resolveComponent: ComponentResolver<ComponentName>;
-  resolveLayout: ComponentResolver<LayoutName>;
+  resolveLayout?: ComponentResolver<LayoutName>;
 
   /**
    * A callback that can format the title received from the server.
@@ -66,12 +66,9 @@ export type PontAppOptions = {
 };
 
 export type SetupOptions = {
-  /**
-   * The Pont instance in use.
-   */
-  pont: Pont;
   element: HTMLElement | null;
-  App: Component;
+  App: (props: PontAppProps) => JSX.Element;
+  props: PontAppProps;
 };
 
 export async function createPontApp({
@@ -100,8 +97,12 @@ export async function createPontApp({
   });
 
   setup({
-    pont,
     element,
     App,
+    props: {
+      pont,
+      resolveComponent,
+      resolveLayout,
+    },
   });
 }
