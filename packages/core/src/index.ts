@@ -5,6 +5,12 @@ const pont = Pont.getInstance();
 export { pont, Pont };
 
 export { Request, Service, Url, UrlParams } from "./classes/index.js";
+export {
+  HeadersManager,
+  RequestsManager,
+  ServicesManager,
+  StateManager,
+} from "./managers/index.js";
 export type { ParamsSerializer, Transporter } from "./services/index.js";
 export type {
   ComponentName,
