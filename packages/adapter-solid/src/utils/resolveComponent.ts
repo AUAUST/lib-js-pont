@@ -3,10 +3,10 @@ import type { Component } from "solid-js";
 import type { ComponentResolver } from "src/createPontApp.jsx";
 
 export async function resolveComponent<N extends string>(
-  resolver: ComponentResolver<N>,
+  resolver: ComponentResolver<N> | undefined,
   name: N | null
 ): Promise<Component | undefined> {
-  if (!name) {
+  if (!resolver || !name) {
     return undefined;
   }
 

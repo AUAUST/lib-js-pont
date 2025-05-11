@@ -14,7 +14,7 @@ import { resolveComponent } from "./utils/resolveComponent.js";
 export type PontAppProps = {
   pont: Pont;
   resolveComponent: ComponentResolver<ComponentName>;
-  resolveLayout: ComponentResolver<LayoutName>;
+  resolveLayout?: ComponentResolver<LayoutName>;
 };
 
 export function App(props: PontAppProps) {
