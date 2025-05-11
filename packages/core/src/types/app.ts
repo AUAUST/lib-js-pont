@@ -48,15 +48,7 @@ export interface PontAppState {
 /**
  * The initial state of the app as received from the server.
  */
-export interface StateInit {
-  url: string;
-  page: PageName;
-  layout: LayoutName;
-  propsGroups: PropsGroups;
-  title: string;
-  errors: Errors;
-  effects: Effects;
-}
+export type StateInit = Partial<PontAppState>;
 
 export type PropsGroups = {
   /**
