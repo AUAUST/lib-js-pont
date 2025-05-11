@@ -22,6 +22,7 @@ export default defineConfig(({ mode }) => {
     alias["@auaust/pont/toolkit"] = corePath("src/toolkit");
     alias["@auaust/pont/services"] = corePath("src/services");
     alias["@auaust/pont"] = corePath("src");
+    alias["@core"] = corePath();
   }
 
   return {

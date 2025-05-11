@@ -2,7 +2,7 @@ import { Pont } from "@auaust/pont";
 import type { ServiceObject } from "@auaust/pont/services";
 import { EmptyResponse } from "@core/src/classes/Responses/EmptyResponse.js";
 import { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
-import { transporter } from "tests/mocks/Transporter.js";
+import { transporter } from "@core/tests/mocks/Transporter.js";
 import { expect, test, vitest } from "vitest";
 
 test("Pont handles response using the response handler", async () => {
