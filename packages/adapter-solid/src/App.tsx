@@ -1,6 +1,7 @@
 import type { ComponentName, LayoutName, Pont } from "@auaust/pont";
 import { MetaProvider } from "@solidjs/meta";
 import {
+  batch,
   children,
   Component,
   createEffect,
@@ -39,23 +40,21 @@ export function App(props: PontAppProps) {
   const [component, setComponent] = createSignal<Component>();
 
   createEffect(
-    on(layoutName, async (name, prev) => {
-      if (name !== prev) {
-        const layout = await resolveComponent(props.resolveLayout, name);
+    on(
+      () => [layoutName(), componentName()],
+      async ([layoutName, componentName]) => {
+        const layout = await resolveComponent(props.resolveLayout, layoutName);
+        const component = await resolveComponent(
+          props.resolveComponent,
+          componentName
+        );
 
-        setLayout(() => layout);
+        batch(() => {
+          setLayout(() => layout);
+          setComponent(() => component);
+        });
       }
-    })
-  );
-
-  createEffect(
-    on(componentName, async (name, prev) => {
-      if (name !== prev) {
-        const component = await resolveComponent(props.resolveComponent, name);
-
-        setComponent(() => component);
-      }
-    })
+    )
   );
 
   const Page = children(() => {
