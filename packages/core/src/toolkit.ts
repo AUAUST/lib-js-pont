@@ -3,6 +3,7 @@
 // for building adapters or re-use some internal logic.
 
 export {
+  getBaseUrl,
   getElement,
   getInitialState,
   type RootElement,

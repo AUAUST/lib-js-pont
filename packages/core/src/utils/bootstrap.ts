@@ -1,6 +1,5 @@
-import { O, S } from "@auaust/primitive-kit";
-import type { PontAppState, StateInit } from "src/types/app.js";
-import { mustRunOnClient } from "./environment.js";
+import { s, S } from "@auaust/primitive-kit";
+import type { PontAppState } from "src/types/app.js";
 
 /**
  * An HTML element or a string representing the ID of an HTML element.
@@ -9,55 +8,63 @@ export type RootElement = HTMLElement | string;
 
 /**
  * Retrieves the root element for rendering the application.
- *
- * @param root - The root element or its ID.
- * @returns The HTML element corresponding to the provided root.
  */
-export function getElement(root: RootElement): HTMLElement {
-  mustRunOnClient();
-
-  if (S.is(root)) {
-    const element = document.getElementById(root);
-
-    if (!element) {
-      throw new Error(`Element with ID "${root}" not found.`);
-    }
-
-    return element;
-  }
-
+export function getElement(root: RootElement = "app"): HTMLElement | null {
   if (root instanceof HTMLElement) {
     return root;
   }
 
-  throw new Error(
-    "Invalid root element. It must be an HTMLElement or a string."
-  );
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  if (S.is(root)) {
+    return document.getElementById(root);
+  }
+
+  return null;
 }
 
 /**
  * Retrieves the initial state of the application from the root element.
  */
 export function getInitialState(
-  initialState: StateInit,
-  element: HTMLElement
-): PontAppState {
-  mustRunOnClient();
-
-  if (O.is(initialState)) {
-    return <any>initialState;
+  element: HTMLElement | null
+): Partial<PontAppState> {
+  if (!element) {
+    return {};
   }
 
-  const dataProps = element.dataset.propsGroups || element.dataset.props;
+  const dataProps = element.dataset.pontState || element.dataset.pont;
 
   if (!dataProps) {
-    return <PontAppState>{};
+    return {};
   }
 
   try {
     return JSON.parse(dataProps);
   } catch (error) {
     console.error("Failed to parse initial state:", error);
-    return <PontAppState>{};
+    return {};
   }
+}
+
+/**
+ * Retrieves the base URL for the application.
+ */
+export function getBaseUrl(url: string | undefined): string {
+  if (S.isStrict(url)) {
+    // If the URL does not start with a protocol, prepend the current protocol.
+    // This allows users to specify a simple domain name without a protocol,
+    // like "example.com", and it will be treated as "http://example.com".
+    if (s(url).before("://").includes("http").not().toBoolean()) {
+      url = s(url)
+        .after("://")
+        .or(url)
+        .prepend(window.location.protocol, "//")
+        .toString();
+    }
+  }
+
+  return new URL(url || "", window.location.origin).origin;
 }

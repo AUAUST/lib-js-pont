@@ -1,2 +1,2 @@
 export type { PontAppState, StateInit } from "./app.js";
-export type { ComponentName } from "./utils.js";
+export type { ComponentName, LayoutName } from "./utils.js";
