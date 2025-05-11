@@ -18,8 +18,10 @@ export type PontAppProps = {
 };
 
 export function App(props: PontAppProps) {
-  const [layoutName, setLayoutName] = createSignal(props.pont.getLayout?.());
-  const [componentName, setComponentName] = createSignal(
+  const [layoutName, setLayoutName] = createSignal<string>(
+    props.pont.getLayout?.()
+  );
+  const [componentName, setComponentName] = createSignal<string>(
     props.pont.getComponent()
   );
 
@@ -35,20 +37,26 @@ export function App(props: PontAppProps) {
   const [component, setComponent] = createSignal<Component>();
 
   createEffect(
-    on(layoutName, async (name) => {
-      const layout = await resolveComponent(props.resolveLayout, name);
-      setLayout(() => layout);
+    on(layoutName, async (name, prev) => {
+      if (name !== prev) {
+        const layout = await resolveComponent(props.resolveLayout, name);
+
+        setLayout(() => layout);
+      }
     })
   );
 
   createEffect(
-    on(componentName, async (name) => {
-      const component = await resolveComponent(props.resolveComponent, name);
-      setComponent(() => component);
+    on(componentName, async (name, prev) => {
+      if (name !== prev) {
+        const component = await resolveComponent(props.resolveComponent, name);
+
+        setComponent(() => component);
+      }
     })
   );
 
-  const Component = children(() => {
+  const Page = children(() => {
     const Component = component()!;
 
     return (
@@ -58,19 +66,21 @@ export function App(props: PontAppProps) {
     );
   });
 
-  const Layout = children(() => {
+  const Content = children(() => {
     const Layout = layout()!;
 
     return (
-      <Show when={Layout} fallback={<Component />}>
-        <Layout {...layoutProps()}>{Component}</Layout>
+      <Show when={Layout} fallback={<Page />}>
+        <Layout {...layoutProps()}>
+          <Page />
+        </Layout>
       </Show>
     );
   });
 
   return (
     <MetaProvider>
-      <Layout />
+      <Content />
     </MetaProvider>
   );
 }
