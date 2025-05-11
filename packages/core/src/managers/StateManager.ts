@@ -1,3 +1,4 @@
+import { O } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { Response } from "src/classes/Responses/Response.js";
 import type {
@@ -34,10 +35,18 @@ export class StateManager {
   public init({ initialState }: StateManagerInit = {}): this {
     this.url = initialState?.url!;
     this.page = initialState?.page!;
-    this.propsGroups = initialState?.propsGroups!;
+    this.propsGroups = O.from(initialState?.propsGroups!);
     this.title = initialState?.title!;
 
     return this;
+  }
+
+  public getUrl(): string {
+    return this.url;
+  }
+
+  public getTitle(): string {
+    return this.title;
   }
 
   public getPage(): PageName {
@@ -46,10 +55,6 @@ export class StateManager {
 
   public getLayout(): LayoutName {
     return this.layout;
-  }
-
-  public getUrl(): string {
-    return this.url;
   }
 
   public getPageProps(): PageProps {

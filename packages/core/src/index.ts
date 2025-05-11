@@ -5,6 +5,7 @@ const pont = Pont.getInstance();
 export { pont, Pont };
 
 export { Request, Service, Url, UrlParams } from "./classes/index.js";
+export { type PontInit } from "./classes/Pont.js";
 export {
   HeadersManager,
   RequestsManager,
@@ -15,6 +16,7 @@ export {
   type ServiceInit,
   type ServiceName,
   type ServicesInit,
+  type ServicesMap,
 } from "./services/index.js";
 export type {
   LayoutName,

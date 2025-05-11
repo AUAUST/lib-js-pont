@@ -42,6 +42,7 @@ interface Pont
     | "getLayoutProps"
     | "getPage"
     | "getPageProps"
+    | "getTitle"
     | "getUrl"
   > {}
 
@@ -87,9 +88,11 @@ class Pont implements WithPont {
 
     forwardCalls(this.managers.state, this, [
       "getGlobalProps",
+      "getLayout",
       "getLayoutProps",
       "getPage",
       "getPageProps",
+      "getTitle",
       "getUrl",
     ]);
 
