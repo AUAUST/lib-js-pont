@@ -6,7 +6,7 @@ import {
   type StateInit,
 } from "@auaust/pont";
 import { ServicesInit } from "@auaust/pont/services";
-import { getBaseUrl, getElement, getInitialState } from "@auaust/pont/toolkit";
+import { getElement, getInitialState } from "@auaust/pont/toolkit";
 import { F } from "@auaust/primitive-kit";
 import type { Component, JSX } from "solid-js";
 import { App, type PontAppProps } from "./App.jsx";
@@ -77,7 +77,7 @@ export type SetupOptions = {
 
 export async function createPontApp({
   root,
-  baseUrl: customBaseUrl,
+  baseUrl,
   resolvePage,
   resolveLayout,
   transformTitle,
@@ -90,7 +90,6 @@ export async function createPontApp({
   const element = getElement(root);
 
   if (!pont.isInitialized()) {
-    const baseUrl = getBaseUrl(customBaseUrl);
     const initialState = customInitialState || getInitialState(element);
 
     F.is(transformTitle) &&

@@ -1,4 +1,4 @@
-import { ObjectType, s } from "@auaust/primitive-kit";
+import type { ObjectType } from "@auaust/primitive-kit";
 import type { Pont } from "@core/src/classes/Pont.js";
 import { Request, type RequestInit } from "@core/src/classes/Request.js";
 import type { RequestDataInit } from "@core/src/classes/RequestData.js";
@@ -6,6 +6,7 @@ import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import type { Response } from "@core/src/classes/Responses/Response.js";
 import { Method } from "@core/src/enums/Method.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
+import { getBaseUrl } from "../utils/getBaseUrl.js";
 
 export type RequestManagerInit = {
   /**
@@ -26,7 +27,7 @@ export class RequestsManager {
   public constructor(public readonly pont: Pont) {}
 
   public init({ baseUrl }: RequestManagerInit): this {
-    this.baseUrl = s(baseUrl).trim().ensureEnd("/").toString() || undefined;
+    this.baseUrl = getBaseUrl(baseUrl);
 
     return this;
   }
