@@ -23,8 +23,34 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./toolkit": {
+      "import": {
+        "types": "./dist/toolkit.d.ts",
+        "default": "./dist/toolkit.js"
+      },
+      "require": {
+        "types": "./dist/toolkit.d.cts",
+        "default": "./dist/toolkit.cjs"
+      }
+    },
+    "./services": {
+      "import": {
+        "types": "./dist/services.d.ts",
+        "default": "./dist/services.js"
+      },
+      "require": {
+        "types": "./dist/services.d.cts",
+        "default": "./dist/services.cjs"
+      }
     }
   },
   "scripts": {
