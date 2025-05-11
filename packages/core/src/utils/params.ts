@@ -1,5 +1,5 @@
 import { A, O, P, S } from "@auaust/primitive-kit";
-import type { UrlParamsInit } from "src/classes/UrlParams.js";
+import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
 
 /**
  * The result of basic pre-processing of URL parameters.

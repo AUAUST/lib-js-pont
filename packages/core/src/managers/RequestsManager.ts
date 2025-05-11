@@ -1,11 +1,11 @@
 import { ObjectType, s } from "@auaust/primitive-kit";
-import type { Pont } from "src/classes/Pont.js";
-import { Request, type RequestInit } from "src/classes/Request.js";
-import type { RequestDataInit } from "src/classes/RequestData.js";
-import { DataResponse } from "src/classes/Responses/DataResponse.js";
-import type { Response } from "src/classes/Responses/Response.js";
-import { Method } from "src/enums/Method.js";
-import { ResponseType } from "src/enums/ResponseType.js";
+import type { Pont } from "@core/src/classes/Pont.js";
+import { Request, type RequestInit } from "@core/src/classes/Request.js";
+import type { RequestDataInit } from "@core/src/classes/RequestData.js";
+import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
+import type { Response } from "@core/src/classes/Responses/Response.js";
+import { Method } from "@core/src/enums/Method.js";
+import { ResponseType } from "@core/src/enums/ResponseType.js";
 
 export type RequestManagerInit = {
   /**

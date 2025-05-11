@@ -1,5 +1,8 @@
-import { ResponseType } from "src/enums/ResponseType.js";
-import { type BaseResponseInit, Response } from "./Response.js";
+import {
+  type BaseResponseInit,
+  Response,
+} from "@core/src/classes/Responses/Response.js";
+import { ResponseType } from "@core/src/enums/ResponseType.js";
 
 export interface EmptyResponseInit extends BaseResponseInit {
   type: ResponseType.EMPTY;

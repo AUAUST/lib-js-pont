@@ -1,6 +1,9 @@
 import { type Stringifiable } from "@auaust/primitive-kit";
-import { type NormalizedUrlParams, normalizeParams } from "src/utils/params.js";
-import type { WithPont } from "./Pont.js";
+import type { WithPont } from "@core/src/classes/Pont.js";
+import {
+  type NormalizedUrlParams,
+  normalizeParams,
+} from "@core/src/utils/params.js";
 
 /**
  * A value that can be used to initialize the request parameters.

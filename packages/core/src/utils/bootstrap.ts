@@ -1,5 +1,5 @@
 import { s, S } from "@auaust/primitive-kit";
-import type { PontAppState } from "src/types/app.js";
+import type { PontAppState } from "@core/src/types/app.js";
 
 /**
  * An HTML element or a string representing the ID of an HTML element.

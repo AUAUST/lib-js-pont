@@ -1,7 +1,7 @@
 import { Pont } from "@auaust/pont";
 import type { ServiceObject } from "@auaust/pont/services";
-import { RawResponse } from "src/classes/Responses/RawResponse.js";
-import type { RequestOptions } from "src/types/requests.js";
+import { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
+import type { RequestOptions } from "@core/src/types/requests.js";
 import { expect, test, vitest } from "vitest";
 
 test("Pont sends requests using the transporter", async () => {

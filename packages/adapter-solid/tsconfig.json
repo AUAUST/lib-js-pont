@@ -10,7 +10,8 @@
       "@auaust/pont-adapter-solid": ["./src/index.js"],
       "@auaust/pont/services": ["../core/src/services/index.js"],
       "@auaust/pont/toolkit": ["../core/src/toolkit.js"],
-      "@auaust/pont": ["../core/src/index.js"]
+      "@auaust/pont": ["../core/src/index.js"],
+      "@core/*": ["../core/*"]
     }
   },
   "exclude": ["node_modules", "dist", "test-app"]

@@ -1,6 +1,6 @@
-import { forwardCalls } from "src/utils/forwardCalls.js";
-import type { Pont, WithPont } from "./Pont.js";
-import { UrlParams, type UrlParamsInit } from "./UrlParams.js";
+import type { Pont, WithPont } from "@core/src/classes/Pont.js";
+import { UrlParams, type UrlParamsInit } from "@core/src/classes/UrlParams.js";
+import { forwardCalls } from "@core/src/utils/forwardCalls.js";
 
 export interface Url extends Pick<UrlParams, "getParams" | "setParam"> {}
 

@@ -1,5 +1,5 @@
 import { A, O } from "@auaust/primitive-kit";
-import { Service } from "src/classes/Service.js";
+import { Service } from "@core/src/classes/Service.js";
 
 /**
  * Merges two sets of props. The first set is the default props,

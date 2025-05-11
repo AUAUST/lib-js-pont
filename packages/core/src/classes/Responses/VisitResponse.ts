@@ -1,7 +1,7 @@
-import { ResponseType } from "src/enums/ResponseType.js";
-import type { PropsGroups } from "src/types/app.js";
-import type { LayoutName, PageName } from "src/types/utils.js";
-import { Response } from "./Response.js";
+import { Response } from "@core/src/classes/Responses/Response.js";
+import { ResponseType } from "@core/src/enums/ResponseType.js";
+import type { PropsGroups } from "@core/src/types/app.js";
+import type { LayoutName, PageName } from "@core/src/types/utils.js";
 
 export interface VisitResponseInit {
   type: ResponseType.VISIT;

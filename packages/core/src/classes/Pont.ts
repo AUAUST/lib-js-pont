@@ -1,3 +1,5 @@
+import { Url } from "@core/src/classes/Url.js";
+import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
 import {
   HeadersManager,
   RequestsManager,
@@ -6,10 +8,8 @@ import {
   type HeadersManagerInit,
   type ServicesManagerInit,
   type StateManagerInit,
-} from "src/managers/index.js";
-import { forwardCalls } from "src/utils/forwardCalls.js";
-import { Url } from "./Url.js";
-import type { UrlParamsInit } from "./UrlParams.js";
+} from "@core/src/managers/index.js";
+import { forwardCalls } from "@core/src/utils/forwardCalls.js";
 
 export interface WithPont {
   readonly pont: Pont;

@@ -7,7 +7,8 @@
     "paths": {
       "@auaust/pont/toolkit": ["./src/toolkit.js"],
       "@auaust/pont/services": ["./src/services/index.js"],
-      "@auaust/pont": ["./src/index.js"]
+      "@auaust/pont": ["./src/index.js"],
+      "@core/*": ["./*"]
     }
   },
   "exclude": ["node_modules", "dist"]

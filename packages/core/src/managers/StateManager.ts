@@ -1,14 +1,14 @@
 import { O } from "@auaust/primitive-kit";
-import type { Pont } from "src/classes/Pont.js";
-import { Response } from "src/classes/Responses/Response.js";
+import type { Pont } from "@core/src/classes/Pont.js";
+import { Response } from "@core/src/classes/Responses/Response.js";
 import type {
   GlobalProps,
   LayoutProps,
   PageProps,
   PropsGroups,
   StateInit,
-} from "src/types/app.js";
-import type { LayoutName, PageName } from "src/types/utils.js";
+} from "@core/src/types/app.js";
+import type { LayoutName, PageName } from "@core/src/types/utils.js";
 
 export type StateManagerInit = {
   initialState?: StateInit;

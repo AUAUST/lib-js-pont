@@ -1,6 +1,6 @@
-import { hasBody } from "src/utils/methods.js";
+import type { Request } from "@core/src/classes/Request.js";
+import { hasBody } from "@core/src/utils/methods.js";
 import type Stream from "stream";
-import type { Request } from "./Request.js";
 
 /**
  * A value that can be used to initialize the request data.

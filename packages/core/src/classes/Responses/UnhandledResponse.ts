@@ -1,5 +1,5 @@
-import { ResponseType } from "src/enums/ResponseType.js";
-import type { RawResponse } from "./RawResponse.js";
+import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
+import { ResponseType } from "@core/src/enums/ResponseType.js";
 
 /**
  * The UnhandledResponse class only exists to

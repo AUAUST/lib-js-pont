@@ -1,6 +1,6 @@
 import { s, S } from "@auaust/primitive-kit";
-import { RawResponse } from "src/classes/Responses/RawResponse.js";
-import { RequestOptions } from "src/types/requests.js";
+import { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
+import { RequestOptions } from "@core/src/types/requests.js";
 import { vitest } from "vitest";
 
 type MockTransporter = typeof transporter;

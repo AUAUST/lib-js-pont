@@ -1,17 +1,26 @@
 import { A, O, S } from "@auaust/primitive-kit";
-import { ResponseType } from "src/enums/ResponseType.js";
-import type { PropsGroups } from "src/types/app.js";
-import type { Effects } from "src/types/effects.js";
-import type { ErrorBag } from "src/types/errors.js";
-import type { DataResponse, DataResponseInit } from "./DataResponse.js";
-import type { EmptyResponse, EmptyResponseInit } from "./EmptyResponse.js";
+import type {
+  DataResponse,
+  DataResponseInit,
+} from "@core/src/classes/Responses/DataResponse.js";
+import type {
+  EmptyResponse,
+  EmptyResponseInit,
+} from "@core/src/classes/Responses/EmptyResponse.js";
 import type {
   PartialResponse,
   PartialResponseInit,
-} from "./PartialResponse.js";
-import type { RawResponse } from "./RawResponse.js";
-import { UnhandledResponse } from "./UnhandledResponse.js";
-import type { VisitResponse, VisitResponseInit } from "./VisitResponse.js";
+} from "@core/src/classes/Responses/PartialResponse.js";
+import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
+import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
+import type {
+  VisitResponse,
+  VisitResponseInit,
+} from "@core/src/classes/Responses/VisitResponse.js";
+import { ResponseType } from "@core/src/enums/ResponseType.js";
+import type { PropsGroups } from "@core/src/types/app.js";
+import type { Effects } from "@core/src/types/effects.js";
+import type { ErrorBag } from "@core/src/types/errors.js";
 
 export interface BaseResponseInit {
   type: ResponseType;

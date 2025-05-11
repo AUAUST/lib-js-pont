@@ -1,6 +1,9 @@
 import { A, B, N, O, P, S } from "@auaust/primitive-kit";
-import { Service } from "src/classes/Service.js";
-import { shouldAppend, type NormalizedUrlParams } from "src/utils/params.js";
+import { Service } from "@core/src/classes/Service.js";
+import {
+  shouldAppend,
+  type NormalizedUrlParams,
+} from "@core/src/utils/params.js";
 
 /**
  * Serializes the request parameters into a format suitable for sending in a request.

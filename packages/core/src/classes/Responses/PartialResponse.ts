@@ -1,7 +1,10 @@
-import { ResponseType } from "src/enums/ResponseType.js";
-import type { PageProps, PropsGroups } from "src/types/app.js";
-import type { PageName } from "src/types/utils.js";
-import { type BaseResponseInit, Response } from "./Response.js";
+import {
+  type BaseResponseInit,
+  Response,
+} from "@core/src/classes/Responses/Response.js";
+import { ResponseType } from "@core/src/enums/ResponseType.js";
+import type { PageProps, PropsGroups } from "@core/src/types/app.js";
+import type { PageName } from "@core/src/types/utils.js";
 
 export interface PartialResponseInit extends BaseResponseInit {
   type: ResponseType.PARTIAL;

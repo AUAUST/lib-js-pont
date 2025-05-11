@@ -1,4 +1,4 @@
-import type { Method } from "src/enums/Method.js";
+import type { Method } from "@core/src/enums/Method.js";
 
 /**
  * A request object contains all the information needed to process a request.

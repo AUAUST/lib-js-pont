@@ -1,16 +1,16 @@
 import { A, O, S } from "@auaust/primitive-kit";
-import { DataResponse } from "src/classes/Responses/DataResponse.js";
-import { EmptyResponse } from "src/classes/Responses/EmptyResponse.js";
-import { PartialResponse } from "src/classes/Responses/PartialResponse.js";
-import type { RawResponse } from "src/classes/Responses/RawResponse.js";
-import { Response } from "src/classes/Responses/Response.js";
-import { UnhandledResponse } from "src/classes/Responses/UnhandledResponse.js";
-import { VisitResponse } from "src/classes/Responses/VisitResponse.js";
-import { Service } from "src/classes/Service.js";
-import { ResponseType } from "src/enums/ResponseType.js";
-import type { PropsGroups } from "src/types/app.js";
-import type { Effects } from "src/types/effects.js";
-import type { ErrorBag } from "src/types/errors.js";
+import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
+import { EmptyResponse } from "@core/src/classes/Responses/EmptyResponse.js";
+import { PartialResponse } from "@core/src/classes/Responses/PartialResponse.js";
+import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
+import { Response } from "@core/src/classes/Responses/Response.js";
+import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
+import { VisitResponse } from "@core/src/classes/Responses/VisitResponse.js";
+import { Service } from "@core/src/classes/Service.js";
+import { ResponseType } from "@core/src/enums/ResponseType.js";
+import type { PropsGroups } from "@core/src/types/app.js";
+import type { Effects } from "@core/src/types/effects.js";
+import type { ErrorBag } from "@core/src/types/errors.js";
 
 /**
  * Handles a raw response from the server and converts it into a usable format.

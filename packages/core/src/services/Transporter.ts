@@ -1,8 +1,8 @@
+import type { Pont } from "@core/src/classes/Pont.js";
+import { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
+import { Service } from "@core/src/classes/Service.js";
+import type { RequestOptions } from "@core/src/types/requests.js";
 import axios, { type AxiosInstance } from "axios";
-import type { Pont } from "src/classes/Pont.js";
-import { RawResponse } from "src/classes/Responses/RawResponse.js";
-import { Service } from "src/classes/Service.js";
-import type { RequestOptions } from "src/types/requests.js";
 
 /**
  * Sends a request to the server.

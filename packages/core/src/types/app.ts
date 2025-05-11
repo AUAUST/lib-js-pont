@@ -1,6 +1,6 @@
-import type { Effects } from "./effects.js";
-import type { Errors } from "./errors.js";
-import type { LayoutName, PageName } from "./utils.js";
+import type { Effects } from "@core/src/types/effects.js";
+import type { Errors } from "@core/src/types/errors.js";
+import type { LayoutName, PageName } from "@core/src/types/utils.js";
 
 /**
  * The state of the app. It contains all the information needed to

@@ -1,28 +1,28 @@
-import { Pont } from "./classes/Pont.js";
+import { Pont } from "@core/src/classes/Pont.js";
 
 const pont = Pont.getInstance();
 
 export { pont, Pont };
 
-export { Request, Service, Url, UrlParams } from "./classes/index.js";
-export { type PontInit } from "./classes/Pont.js";
+export { Request, Service, Url, UrlParams } from "@core/src/classes/index.js";
+export { type PontInit } from "@core/src/classes/Pont.js";
 export {
   HeadersManager,
   RequestsManager,
   ServicesManager,
   StateManager,
-} from "./managers/index.js";
+} from "@core/src/managers/index.js";
 export {
   type ServiceInit,
   type ServiceName,
   type ServicesInit,
   type ServicesMap,
-} from "./services/index.js";
+} from "@core/src/services/index.js";
 export type {
   LayoutName,
   PageName,
   PontAppState,
   StateInit,
-} from "./types/index.js";
-export type { RootElement } from "./utils/bootstrap.js";
-export type { NormalizedUrlParams } from "./utils/params.js";
+} from "@core/src/types/index.js";
+export type { RootElement } from "@core/src/utils/bootstrap.js";
+export type { NormalizedUrlParams } from "@core/src/utils/params.js";

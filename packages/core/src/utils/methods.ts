@@ -1,5 +1,5 @@
 import { S } from "@auaust/primitive-kit";
-import { Method } from "src/enums/Method.js";
+import { Method } from "@core/src/enums/Method.js";
 
 export { Method };
 

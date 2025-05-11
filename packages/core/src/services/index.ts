@@ -1,5 +1,8 @@
-import type { Pont } from "src/classes/Pont.js";
-import type { ServiceName, ServicesMap } from "src/managers/ServicesManager.js";
+import type { Pont } from "@core/src/classes/Pont.js";
+import type {
+  ServiceName,
+  ServicesMap,
+} from "@core/src/managers/ServicesManager.js";
 
 export interface ServiceObject<N extends ServiceName = ServiceName> {
   /**
@@ -64,17 +67,17 @@ export type { ServiceName, ServicesMap };
 export {
   ParamsSerializerService,
   type ParamsSerializerSignature,
-} from "./ParamsSerializer.js";
+} from "@core/src/services/ParamsSerializer.js";
 export {
   PropsReconcilerService,
   type PropsReconcilerSignature,
-} from "./PropsReconciler.js";
+} from "@core/src/services/PropsReconciler.js";
 export {
   ResponseHandlerService,
   type ResponseHandlerSignature,
-} from "./ResponseHandler.js";
-export type { TitleTransformerSignature } from "./TitleTransformer.js";
+} from "@core/src/services/ResponseHandler.js";
+export type { TitleTransformerSignature } from "@core/src/services/TitleTransformer.js";
 export {
   TransporterService,
   type TransporterSignature,
-} from "./Transporter.js";
+} from "@core/src/services/Transporter.js";

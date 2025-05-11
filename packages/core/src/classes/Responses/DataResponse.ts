@@ -1,6 +1,9 @@
 import { F, S, type ObjectType } from "@auaust/primitive-kit";
-import { ResponseType } from "src/enums/ResponseType.js";
-import { Response, type BaseResponseInit } from "./Response.js";
+import {
+  Response,
+  type BaseResponseInit,
+} from "@core/src/classes/Responses/Response.js";
+import { ResponseType } from "@core/src/enums/ResponseType.js";
 
 export interface DataResponseInit<T = unknown> extends BaseResponseInit {
   type: ResponseType.DATA;

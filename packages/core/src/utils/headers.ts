@@ -1,4 +1,4 @@
-import type { RequestHeadersInit } from "src/classes/RequestHeaders.js";
+import type { RequestHeadersInit } from "@core/src/classes/RequestHeaders.js";
 
 export function parseHeaders(
   headers?: RequestHeadersInit

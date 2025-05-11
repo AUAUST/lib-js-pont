@@ -7,8 +7,8 @@ export {
   getElement,
   getInitialState,
   type RootElement,
-} from "./utils/bootstrap.js";
-export { parseHeaders } from "./utils/headers.js";
+} from "@core/src/utils/bootstrap.js";
+export { parseHeaders } from "@core/src/utils/headers.js";
 export {
   hasBody,
   isIdempotentMethod,
@@ -18,10 +18,10 @@ export {
   toMethod,
   type IdempotentMethod,
   type MethodString,
-} from "./utils/methods.js";
+} from "@core/src/utils/methods.js";
 export {
   normalizeParams,
   paramsEntries,
   shouldAppend,
   type NormalizedUrlParams,
-} from "./utils/params.js";
+} from "@core/src/utils/params.js";

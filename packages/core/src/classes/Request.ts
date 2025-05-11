@@ -1,11 +1,21 @@
-import type { RequestOptions } from "src/types/requests.js";
-import { forwardCalls } from "src/utils/forwardCalls.js";
-import { Method, toMethod, type MethodString } from "src/utils/methods.js";
-import type { WithPont } from "./Pont.js";
-import { RequestData, type RequestDataInit } from "./RequestData.js";
-import { RequestHeaders, type RequestHeadersInit } from "./RequestHeaders.js";
-import { Url } from "./Url.js";
-import type { UrlParamsInit } from "./UrlParams.js";
+import type { WithPont } from "@core/src/classes/Pont.js";
+import {
+  RequestData,
+  type RequestDataInit,
+} from "@core/src/classes/RequestData.js";
+import {
+  RequestHeaders,
+  type RequestHeadersInit,
+} from "@core/src/classes/RequestHeaders.js";
+import { Url } from "@core/src/classes/Url.js";
+import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
+import type { RequestOptions } from "@core/src/types/requests.js";
+import { forwardCalls } from "@core/src/utils/forwardCalls.js";
+import {
+  Method,
+  toMethod,
+  type MethodString,
+} from "@core/src/utils/methods.js";
 
 export type RequestInit = {
   url: string;

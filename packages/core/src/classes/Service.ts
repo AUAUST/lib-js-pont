@@ -1,10 +1,10 @@
+import type { Pont } from "@core/src/classes/Pont.js";
 import type {
   ServiceInstance,
   ServiceName,
   ServiceParameters,
   ServiceReturnType,
-} from "src/services/index.js";
-import type { Pont } from "./Pont.js";
+} from "@core/src/services/index.js";
 
 export const ServiceConstructorMarker = Symbol.for("Pont.ServiceConstructor");
 export const ServiceInstanceMarker = Symbol.for("Pont.ServiceInstance");

@@ -1,9 +1,9 @@
 import { F, O } from "@auaust/primitive-kit";
-import type { Pont } from "src/classes/Pont.js";
+import type { Pont } from "@core/src/classes/Pont.js";
 import {
   ServiceConstructorMarker,
   ServiceInstanceMarker,
-} from "src/classes/Service.js";
+} from "@core/src/classes/Service.js";
 import {
   ParamsSerializerService,
   PropsReconcilerService,
@@ -23,7 +23,7 @@ import {
   type ServicesInit,
   type TitleTransformerSignature,
   type TransporterSignature,
-} from "src/services/index.js";
+} from "@core/src/services/index.js";
 
 export type ServicesManagerInit = {
   services?: ServicesInit;
