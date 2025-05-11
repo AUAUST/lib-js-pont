@@ -9,6 +9,18 @@ import { getBaseUrl, getElement, getInitialState } from "@auaust/pont/toolkit";
 import type { Component } from "solid-js";
 import { App } from "./App.jsx";
 
+export type ComponentModule = {
+  default: Component;
+};
+
+export type ComponentResolver<N extends string> = (
+  name: N
+) =>
+  | Promise<Component>
+  | Component
+  | Promise<ComponentModule>
+  | ComponentModule;
+
 export type PontAppOptions = {
   /**
    * The root element to render the application into.
@@ -24,8 +36,8 @@ export type PontAppOptions = {
    */
   baseUrl?: string;
 
-  resolveComponent: (name: ComponentName) => Promise<Component> | Component;
-  resolveLayout: (name: LayoutName) => Promise<Component> | Component;
+  resolveComponent: ComponentResolver<ComponentName>;
+  resolveLayout: ComponentResolver<LayoutName>;
 
   /**
    * A callback that can format the title received from the server.
