@@ -1,5 +1,5 @@
 import { S } from "@auaust/primitive-kit";
-import { parseHeaders } from "src/utils/index.js";
+import { parseHeaders } from "src/utils/headers.js";
 import type { WithPont } from "./Pont.js";
 /**
  * A value that can be used to initialize the request headers.

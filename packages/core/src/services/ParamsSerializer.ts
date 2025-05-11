@@ -1,7 +1,7 @@
 import { A, B, N, O, P, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import { Service } from "src/classes/Service.js";
-import { shouldAppend, type NormalizedUrlParams } from "src/utils/index.js";
+import { shouldAppend, type NormalizedUrlParams } from "src/utils/params.js";
 import type { ServiceObject } from "./index.js";
 
 export interface ParamsSerializer extends ServiceObject {

@@ -1,4 +1,4 @@
-import { forwardCalls } from "src/utils/index.js";
+import { forwardCalls } from "src/utils/forwardCalls.js";
 import type { Pont, WithPont } from "./Pont.js";
 import { UrlParams, type UrlParamsInit } from "./UrlParams.js";
 

@@ -1,4 +1,4 @@
-import { hasBody } from "src/utils/index.js";
+import { hasBody } from "src/utils/methods.js";
 import type Stream from "stream";
 import type { Request } from "./Request.js";
 

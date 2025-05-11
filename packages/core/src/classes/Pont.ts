@@ -7,7 +7,7 @@ import {
   type ServicesManagerInit,
   type StateManagerInit,
 } from "src/managers/index.js";
-import { forwardCalls } from "src/utils/index.js";
+import { forwardCalls } from "src/utils/forwardCalls.js";
 import { Url } from "./Url.js";
 import type { UrlParamsInit } from "./UrlParams.js";
 

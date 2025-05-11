@@ -19,6 +19,7 @@ export type PontAppProps = {
 
 export function App(props: PontAppProps) {
   const [layoutName, setLayoutName] = createSignal<string>(
+    // @ts-expect-error
     props.pont.getLayout?.()
   );
   const [componentName, setComponentName] = createSignal<string>(
@@ -29,6 +30,7 @@ export function App(props: PontAppProps) {
     props.pont.getGlobalProps()
   );
   const [layoutProps, setLayoutProps] = createSignal(
+    // @ts-expect-error
     props.pont.getLayoutProps?.()
   );
   const [pageProps, setPageProps] = createSignal(props.pont.getPageProps());

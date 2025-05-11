@@ -1,7 +1,7 @@
 import { O, P, S } from "@auaust/primitive-kit";
 import type { Pont } from "src/classes/Pont.js";
 import type { RequestHeadersInit } from "src/classes/RequestHeaders.js";
-import { parseHeaders } from "src/utils/index.js";
+import { parseHeaders } from "src/utils/headers.js";
 import { PONT_CORE_VERSION } from "src/utils/internals.js";
 
 export type HeadersManagerInit = {
