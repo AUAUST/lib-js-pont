@@ -1,25 +1,25 @@
 import { ResponseType } from "src/enums/ResponseType.js";
 import type { PageProps, PropsGroups } from "src/types/app.js";
-import type { ComponentName } from "src/types/utils.js";
+import type { PageName } from "src/types/utils.js";
 import { type BaseResponseInit, Response } from "./Response.js";
 
 export interface PartialResponseInit extends BaseResponseInit {
   type: ResponseType.PARTIAL;
-  intendedComponent: ComponentName;
+  intendedPage: PageName;
   propsGroups: Partial<PropsGroups>;
 }
 
 export class PartialResponse extends Response<ResponseType.PARTIAL> {
-  protected readonly intendedComponent: ComponentName;
+  protected readonly intendedPage: PageName;
 
   public constructor(init: Omit<PartialResponseInit, "type">) {
     super({ ...init, type: ResponseType.PARTIAL });
 
-    this.intendedComponent = init.intendedComponent;
+    this.intendedPage = init.intendedPage;
   }
 
-  public getIntendedComponent(): ComponentName {
-    return this.intendedComponent;
+  public getIntendedPage(): PageName {
+    return this.intendedPage;
   }
 
   public getPageProps(): PageProps | undefined {

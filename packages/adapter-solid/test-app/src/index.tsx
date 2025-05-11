@@ -1,9 +1,9 @@
 import { createPontApp } from "@auaust/pont-adapter-solid";
-import { Component } from "solid-js";
+import type { Component } from "solid-js";
 import { render } from "solid-js/web";
 
 createPontApp({
-  resolveComponent: async (name) => {
+  resolvePage: async (name) => {
     const pages = import.meta.glob("./Pages/**/*.tsx");
 
     return (await pages[`./pages/${name}.tsx`]()) as Component;

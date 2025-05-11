@@ -37,7 +37,12 @@ interface Pont
 interface Pont
   extends Pick<
     StateManager,
-    "getComponent" | "getUrl" | "getPageProps" | "getGlobalProps"
+    | "getGlobalProps"
+    | "getLayout"
+    | "getLayoutProps"
+    | "getPage"
+    | "getPageProps"
+    | "getUrl"
   > {}
 
 interface Pont extends Pick<ServicesManager, "use"> {}
@@ -81,8 +86,9 @@ class Pont implements WithPont {
     ]);
 
     forwardCalls(this.managers.state, this, [
-      "getComponent",
       "getGlobalProps",
+      "getLayoutProps",
+      "getPage",
       "getPageProps",
       "getUrl",
     ]);

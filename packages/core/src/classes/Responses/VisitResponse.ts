@@ -1,32 +1,40 @@
 import { ResponseType } from "src/enums/ResponseType.js";
 import type { PropsGroups } from "src/types/app.js";
-import type { ComponentName } from "src/types/utils.js";
+import type { LayoutName, PageName } from "src/types/utils.js";
 import { Response } from "./Response.js";
 
 export interface VisitResponseInit {
   type: ResponseType.VISIT;
-  /** The component name to render. */
-  component: ComponentName;
-  /** The new URL that the browser should display. */
+  page: PageName;
+  layout: LayoutName | undefined;
   url: string;
-  /** The page props to pass to the component. */
   propsGroups: Partial<PropsGroups>;
 }
 
 export class VisitResponse extends Response<ResponseType.VISIT> {
-  protected readonly component: ComponentName;
+  protected readonly page: PageName;
+  protected readonly layout?: LayoutName;
 
   public constructor(init: Omit<VisitResponseInit, "type">) {
     super({ ...init, type: ResponseType.VISIT });
 
-    this.component = init.component;
+    this.page = init.page;
+    this.layout = init.layout;
   }
 
-  public getComponent(): ComponentName {
-    return this.component;
+  public getPage(): PageName {
+    return this.page;
+  }
+
+  public getLayout(): LayoutName | undefined {
+    return this.layout;
   }
 
   public getPageProps(): PropsGroups["page"] | undefined {
     return this.propsGroups.page;
+  }
+
+  public getLayoutProps(): PropsGroups["layout"] | undefined {
+    return this.propsGroups.layout;
   }
 }

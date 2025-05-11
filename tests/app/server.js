@@ -18,7 +18,7 @@ app.use(bodyParser.json({ extended: true }));
 
 app.get("/", (req, res) =>
   pont.renderVisit(req, res, {
-    component: "Home",
+    page: "Home",
     title: s(name).capitalize().append(" test app").toString(),
     propsGroups: {
       page: {},

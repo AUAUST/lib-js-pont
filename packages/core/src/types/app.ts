@@ -1,6 +1,6 @@
 import type { Effects } from "./effects.js";
 import type { Errors } from "./errors.js";
-import type { ComponentName } from "./utils.js";
+import type { LayoutName, PageName } from "./utils.js";
 
 /**
  * The state of the app. It contains all the information needed to
@@ -14,9 +14,14 @@ export interface PontAppState {
   url: string;
 
   /**
-   * The name of the current component.
+   * The name of the current page.
    */
-  component: ComponentName;
+  page: PageName;
+
+  /**
+   * The name of the current layout.
+   */
+  layout: LayoutName;
 
   /**
    * The current title of the app, after being transformed by the title transformer.
@@ -45,7 +50,8 @@ export interface PontAppState {
  */
 export interface StateInit {
   url: string;
-  component: ComponentName;
+  page: PageName;
+  layout: LayoutName;
   propsGroups: PropsGroups;
   title: string;
   errors: Errors;
@@ -54,10 +60,14 @@ export interface StateInit {
 
 export type PropsGroups = {
   /**
-   * The page props. They are passed to the component
-   * and represent the current page state.
+   * The page props. They are passed to the page component.
    */
   page: PageProps;
+
+  /**
+   * The layout props. They are passed to the layout component.
+   */
+  layout: LayoutProps;
 
   /**
    * The global props. They are global to the app and
@@ -68,6 +78,10 @@ export type PropsGroups = {
 };
 
 export interface PageProps {
+  [key: string]: unknown;
+}
+
+export interface LayoutProps {
   [key: string]: unknown;
 }
 

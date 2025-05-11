@@ -1,4 +1,4 @@
-import type { ComponentName, LayoutName, Pont } from "@auaust/pont";
+import type { LayoutName, PageName, Pont } from "@auaust/pont";
 import { MetaProvider } from "@solidjs/meta";
 import {
   batch,
@@ -14,55 +14,48 @@ import { resolveComponent } from "./utils/resolveComponent.js";
 
 export type PontAppProps = {
   pont: Pont;
-  resolveComponent: ComponentResolver<ComponentName>;
+  resolvePage: ComponentResolver<PageName>;
   resolveLayout?: ComponentResolver<LayoutName>;
 };
 
 export function App(props: PontAppProps) {
   const [layoutName, setLayoutName] = createSignal<string>(
-    // @ts-expect-error
-    props.pont.getLayout?.()
+    props.pont.getLayout()
   );
-  const [componentName, setComponentName] = createSignal<string>(
-    props.pont.getComponent()
-  );
+  const [pageName, setPageName] = createSignal<string>(props.pont.getPage());
 
   const [globalProps, setGlobalProps] = createSignal(
     props.pont.getGlobalProps()
   );
   const [layoutProps, setLayoutProps] = createSignal(
-    // @ts-expect-error
-    props.pont.getLayoutProps?.()
+    props.pont.getLayoutProps()
   );
   const [pageProps, setPageProps] = createSignal(props.pont.getPageProps());
 
   const [layout, setLayout] = createSignal<Component>();
-  const [component, setComponent] = createSignal<Component>();
+  const [page, setPage] = createSignal<Component>();
 
   createEffect(
     on(
-      () => [layoutName(), componentName()],
-      async ([layoutName, componentName]) => {
+      () => [layoutName(), pageName()],
+      async ([layoutName, pageName]) => {
         const layout = await resolveComponent(props.resolveLayout, layoutName);
-        const component = await resolveComponent(
-          props.resolveComponent,
-          componentName
-        );
+        const page = await resolveComponent(props.resolvePage, pageName);
 
         batch(() => {
           setLayout(() => layout);
-          setComponent(() => component);
+          setPage(() => page);
         });
       }
     )
   );
 
   const Page = children(() => {
-    const Component = component()!;
+    const Page = page()!;
 
     return (
-      <Show when={Component}>
-        <Component {...pageProps()} />
+      <Show when={Page}>
+        <Page {...pageProps()} />
       </Show>
     );
   });

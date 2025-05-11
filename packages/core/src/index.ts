@@ -13,8 +13,8 @@ export {
 } from "./managers/index.js";
 export type { ParamsSerializer, Transporter } from "./services/index.js";
 export type {
-  ComponentName,
   LayoutName,
+  PageName,
   PontAppState,
   StateInit,
 } from "./types/index.js";

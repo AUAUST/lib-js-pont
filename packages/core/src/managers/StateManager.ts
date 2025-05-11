@@ -1,15 +1,13 @@
 import type { Pont } from "src/classes/Pont.js";
-import {
-  Response,
-  StateChangingResponseType,
-} from "src/classes/Responses/Response.js";
-import { ResponseType } from "src/enums/ResponseType.js";
+import { Response } from "src/classes/Responses/Response.js";
 import type {
   GlobalProps,
+  LayoutProps,
   PageProps,
   PropsGroups,
   StateInit,
 } from "src/types/app.js";
+import type { LayoutName, PageName } from "src/types/utils.js";
 
 export type StateManagerInit = {
   initialState?: StateInit;
@@ -25,7 +23,8 @@ export type StateUpdateOptions = {
  * The state manager holds the state of the app, including the URL, component name, props, and other data.
  */
 export class StateManager {
-  protected component!: string;
+  protected page!: PageName;
+  protected layout!: LayoutName;
   protected url!: string;
   protected propsGroups!: PropsGroups;
   protected title!: string;
@@ -34,15 +33,19 @@ export class StateManager {
 
   public init({ initialState }: StateManagerInit = {}): this {
     this.url = initialState?.url!;
-    this.component = initialState?.component!;
+    this.page = initialState?.page!;
     this.propsGroups = initialState?.propsGroups!;
     this.title = initialState?.title!;
 
     return this;
   }
 
-  public getComponent(): string {
-    return this.component;
+  public getPage(): PageName {
+    return this.page;
+  }
+
+  public getLayout(): LayoutName {
+    return this.layout;
   }
 
   public getUrl(): string {
@@ -51,6 +54,10 @@ export class StateManager {
 
   public getPageProps(): PageProps {
     return this.propsGroups.page;
+  }
+
+  public getLayoutProps(): LayoutProps {
+    return this.propsGroups.layout;
   }
 
   public getGlobalProps(): GlobalProps {
@@ -98,40 +105,6 @@ export class StateManager {
     // this.handleTitle(response.getTitle());
     // this.handleErrors(response.getErrors());
     // this.handleEffects(response.getEffects());
-  }
-
-  /**
-   * From the response, returns the new state of the app.
-   */
-  protected getNewStateFromResponse(
-    response: StateChangingResponseType
-  ):
-    | { url: string; component: string; pageProps: PageProps | undefined }
-    | undefined {
-    if (response.type === ResponseType.VISIT) {
-      return {
-        url: response.getUrl(),
-        component: response.getComponent(),
-        pageProps: response.getPageProps(),
-      };
-    }
-
-    if (response.type === ResponseType.PARTIAL) {
-      if (response.getIntendedComponent() !== this.component) {
-        throw new Error(
-          "The intended component does not match the current component. The partial response cannot be applied."
-        );
-      }
-
-      return {
-        url: response.getUrl(),
-        component: this.component,
-        pageProps: this.reconcileProps(
-          this.getPageProps(),
-          response.getPageProps()
-        ),
-      };
-    }
   }
 
   public reconcileProps(

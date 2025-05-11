@@ -109,10 +109,10 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
   ): VisitResponse | UnhandledResponse {
     const { payload, propsGroups } = context;
 
-    const component = S.is(payload.component) ? payload.component : undefined;
+    const page = S.is(payload.page) ? payload.page : undefined;
 
-    if (!component) {
-      return Response.unhandled(response, "Missing component");
+    if (!page) {
+      return Response.unhandled(response, "Missing page component");
     }
 
     const url = S.is(payload.url) ? payload.url : undefined;
@@ -125,11 +125,14 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       return Response.unhandled(response, "Missing props");
     }
 
+    const layout = S.is(payload.layout) ? payload.layout : undefined;
+
     propsGroups.page = O.is(payload.props.page) ? payload.props.page : {};
 
     return new VisitResponse({
       ...context,
-      component,
+      page,
+      layout,
       url,
     });
   }
@@ -147,17 +150,15 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
   ): PartialResponse | UnhandledResponse {
     const { payload } = context;
 
-    const intendedComponent = S.is(payload.component)
-      ? payload.component
-      : undefined;
+    const intendedPage = S.is(payload.page) ? payload.page : undefined;
 
-    if (!intendedComponent) {
-      return Response.unhandled(response, "Missing intended component");
+    if (!intendedPage) {
+      return Response.unhandled(response, "Missing intended page component");
     }
 
     return new PartialResponse({
       ...context,
-      intendedComponent,
+      intendedPage,
     });
   }
 

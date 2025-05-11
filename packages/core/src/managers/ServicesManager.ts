@@ -44,7 +44,7 @@ export type ServiceHandlerTypesMap<T extends ServiceName = ServiceName> = {
 export type ServiceHandlerType = keyof ServiceHandlerTypesMap;
 
 /**
- * The state manager holds the state of the app, including the URL, component name, props, and other data.
+ * The state manager holds the state of the app, including the URL, page name, layout name, props, and other data.
  */
 export class ServicesManager {
   protected services: { [K in ServiceName]: ResolvedService<K> } = <any>{};

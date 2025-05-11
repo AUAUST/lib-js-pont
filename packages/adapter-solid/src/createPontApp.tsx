@@ -1,7 +1,7 @@
 import {
   Pont,
-  type ComponentName,
   type LayoutName,
+  type PageName,
   type PontAppState,
   type RootElement,
 } from "@auaust/pont";
@@ -36,7 +36,7 @@ export type PontAppOptions = {
    */
   baseUrl?: string;
 
-  resolveComponent: ComponentResolver<ComponentName>;
+  resolvePage: ComponentResolver<PageName>;
   resolveLayout?: ComponentResolver<LayoutName>;
 
   /**
@@ -74,7 +74,7 @@ export type SetupOptions = {
 export async function createPontApp({
   root,
   baseUrl: customBaseUrl,
-  resolveComponent,
+  resolvePage,
   resolveLayout,
   transformTitle,
   initialState: customInitialState,
@@ -101,7 +101,7 @@ export async function createPontApp({
     App,
     props: {
       pont,
-      resolveComponent,
+      resolvePage: resolvePage,
       resolveLayout,
     },
   });
