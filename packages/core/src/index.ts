@@ -6,12 +6,14 @@ export { pont, Pont };
 
 export { Request, Service, Url, UrlParams } from "@core/src/classes/index.js";
 export { type PontInit } from "@core/src/classes/Pont.js";
+export { Method } from "@core/src/enums/Method.js";
 export {
   HeadersManager,
   RequestsManager,
   ServicesManager,
   StateManager,
 } from "@core/src/managers/index.js";
+export type { VisitOptions } from "@core/src/managers/RequestsManager.js";
 export {
   type ServiceInit,
   type ServiceName,
@@ -19,6 +21,7 @@ export {
   type ServicesMap,
 } from "@core/src/services/index.js";
 export type {
+  EventWithTarget,
   GlobalProps,
   LayoutName,
   LayoutProps,
