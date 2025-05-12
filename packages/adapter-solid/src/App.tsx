@@ -2,10 +2,9 @@ import type { LayoutName, PageName, Pont } from "@auaust/pont";
 import { MetaProvider, Title } from "@solidjs/meta";
 import {
   children,
-  createResource,
   createSignal,
   Show,
-  Suspense,
+  type Component,
   type ParentComponent,
 } from "solid-js";
 import { GlobalPropsProvider } from "./contexts/GlobalPropsContext.jsx";
@@ -13,12 +12,13 @@ import { LayoutPropsProvider } from "./contexts/LayoutPropsContext.jsx";
 import { PagePropsProvider } from "./contexts/PagePropsContext.jsx";
 import { PontProvider } from "./contexts/PontContext.jsx";
 import type { ComponentResolver } from "./createPontApp.jsx";
-import { resolveComponent } from "./utils/resolveComponent.js";
 
 export type PontAppProps = {
   pont: Pont;
   resolvePage: ComponentResolver<PageName>;
   resolveLayout?: ComponentResolver<LayoutName, ParentComponent>;
+  initialPage: Component;
+  initialLayout?: ParentComponent;
 };
 
 export function App(props: PontAppProps) {
@@ -29,14 +29,10 @@ export function App(props: PontAppProps) {
   );
   const [pageName, setPageName] = createSignal<string>(props.pont.getPage());
 
-  const [page] = createResource(
-    pageName,
-    async (name) => await resolveComponent(props.resolvePage, name)
-  );
+  const [page, setPage] = createSignal<Component>(props.initialPage);
 
-  const [layout] = createResource(
-    layoutName,
-    async (name) => await resolveComponent(props.resolveLayout, name)
+  const [layout, setLayout] = createSignal<ParentComponent | undefined>(
+    props.initialLayout
   );
 
   const Page = children(() => {
@@ -72,9 +68,7 @@ export function App(props: PontAppProps) {
         <GlobalPropsProvider>
           <LayoutPropsProvider>
             <PagePropsProvider>
-              <Suspense>
-                <Content />
-              </Suspense>
+              <Content />
             </PagePropsProvider>
           </LayoutPropsProvider>
         </GlobalPropsProvider>

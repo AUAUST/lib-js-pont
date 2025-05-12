@@ -10,6 +10,7 @@ import { getElement, getInitialState } from "@auaust/pont/toolkit";
 import { F } from "@auaust/primitive-kit";
 import type { Component, JSX } from "solid-js";
 import { App, type PontAppProps } from "./App.jsx";
+import { resolveComponents } from "./utils/resolveComponent.js";
 
 export type ComponentModule<C = Component> = {
   default: C;
@@ -102,13 +103,26 @@ export async function createPontApp({
     });
   }
 
-  setup({
-    element,
-    App,
-    props: {
-      pont,
-      resolvePage,
-      resolveLayout,
+  resolveComponents({
+    initialPage: {
+      resolver: resolvePage,
+      name: pont.getPage(),
     },
+    initialLayout: {
+      resolver: resolveLayout,
+      name: pont.getLayout(),
+    },
+  }).then(({ initialPage, initialLayout }) => {
+    setup({
+      element,
+      App,
+      props: {
+        pont,
+        resolvePage,
+        resolveLayout,
+        initialPage,
+        initialLayout,
+      },
+    });
   });
 }

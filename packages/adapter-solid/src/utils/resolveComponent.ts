@@ -26,3 +26,27 @@ export async function resolveComponent<N extends string>(
 
   return undefined;
 }
+
+type ResolverInput<N extends string = string, C = Component> = {
+  resolver: ComponentResolver<N, C> | undefined;
+  name: string | null;
+};
+
+export async function resolveComponents<
+  T extends Record<string, ResolverInput>
+>(
+  components: T
+): Promise<{
+  [K in keyof T]: T[K] extends ResolverInput<any, infer C> ? C : never;
+}>;
+export async function resolveComponents(
+  components: Record<string, ResolverInput>
+): Promise<Record<string, Component | undefined>> {
+  const result = await Promise.all(
+    Object.entries(components).map(async ([key, { resolver, name }]) => {
+      return [key, await resolveComponent(resolver, name)] as const;
+    })
+  );
+
+  return Object.fromEntries(result);
+}
