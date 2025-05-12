@@ -5,14 +5,8 @@ export { Method };
 
 export type MethodString = `${Method}`;
 
-/**
- * Methods that are safe to use without side effects.
- */
 export type SafeMethod = Method.GET;
 
-/**
- * Methods that can be safely retried without side effects.
- */
 export type IdempotentMethod = Method.GET | Method.PUT | Method.DELETE;
 
 export function toMethod(
@@ -35,17 +29,25 @@ export function isMethod(method: string | undefined | null): method is Method {
   }
 }
 
+/**
+ * Safe methods are HTTP methods that do not modify the state of the server.
+ */
 export function isSafeMethod(
   method: string | undefined | null
 ): method is SafeMethod {
-  switch (S.lower(method)) {
-    case Method.GET:
-      return true;
-    default:
-      return false;
-  }
+  return S.lower(method) === Method.GET;
+  // switch (S.lower(method)) {
+  //   case Method.GET:
+  //     return true;
+  //   default:
+  //     return false;
+  // }
 }
 
+/**
+ * Idempotent methods are HTTP methods that can be called once
+ * or several times without different outcomes.
+ */
 export function isIdempotentMethod(
   method: string | undefined | null
 ): method is IdempotentMethod {
@@ -63,10 +65,11 @@ export function isIdempotentMethod(
  * Whether requests sent with the given method include a body.
  */
 export function hasBody(method: string | undefined | null): boolean {
-  switch (S.lower(method)) {
-    case Method.GET:
-      return false;
-    default:
-      return true;
-  }
+  return S.lower(method) !== Method.GET;
+  // switch (S.lower(method)) {
+  //   case Method.GET:
+  //     return false;
+  //   default:
+  //     return true;
+  // }
 }
