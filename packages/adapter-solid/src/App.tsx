@@ -48,16 +48,13 @@ export function App(props: PontAppProps) {
   const Content = children(() => {
     const Layout = layout()!;
 
-    if (Layout) {
-      return (
-        // @ts-ignore
-        <Layout {...layoutProps()}>
+    return (
+      <Show when={Layout} fallback={<Page />}>
+        <Layout>
           <Page />
         </Layout>
-      );
-    }
-
-    return <Page />;
+      </Show>
+    );
   });
 
   return (

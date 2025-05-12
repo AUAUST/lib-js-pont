@@ -35,6 +35,7 @@ export class StateManager {
   public init({ initialState }: StateManagerInit = {}): this {
     this.url = initialState?.url!;
     this.page = initialState?.page!;
+    this.layout = initialState?.layout!;
     this.propsGroups = O.from(initialState?.propsGroups!);
     this.title = initialState?.title!;
 

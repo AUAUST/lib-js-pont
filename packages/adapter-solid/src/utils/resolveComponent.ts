@@ -1,4 +1,4 @@
-import { F } from "@auaust/primitive-kit";
+import { F, O } from "@auaust/primitive-kit";
 import type { Component } from "solid-js";
 import type { ComponentResolver } from "src/createPontApp.jsx";
 
@@ -43,10 +43,10 @@ export async function resolveComponents(
   components: Record<string, ResolverInput>
 ): Promise<Record<string, Component | undefined>> {
   const result = await Promise.all(
-    Object.entries(components).map(async ([key, { resolver, name }]) => {
+    O.entries(components).map(async ([key, { resolver, name }]) => {
       return [key, await resolveComponent(resolver, name)] as const;
     })
   );
 
-  return Object.fromEntries(result);
+  return O.fromEntries(result);
 }
