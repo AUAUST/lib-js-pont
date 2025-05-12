@@ -5,7 +5,7 @@ import {
   type RootElement,
   type StateInit,
 } from "@auaust/pont";
-import { ServicesInit } from "@auaust/pont/services";
+import type { ServicesInit } from "@auaust/pont/services";
 import { getElement, getInitialState } from "@auaust/pont/toolkit";
 import { F } from "@auaust/primitive-kit";
 import type { Component, JSX } from "solid-js";
@@ -27,7 +27,7 @@ export type PontAppOptions = {
    *
    * @default "app"
    */
-  root?: RootElement;
+  element?: RootElement;
 
   /**
    * The base URL of the application. It is used to resolve relative URLs.
@@ -71,30 +71,31 @@ export type PontAppOptions = {
 };
 
 export type SetupOptions = {
-  element: HTMLElement | null;
+  element: HTMLElement | undefined;
   App: (props: PontAppProps) => JSX.Element;
   props: PontAppProps;
 };
 
 export async function createPontApp({
-  root,
+  element,
   baseUrl,
   resolvePage,
   resolveLayout,
   transformTitle,
-  initialState: customInitialState,
+  initialState,
   setup,
-  pont: customPont,
+  pont,
   services = {},
 }: PontAppOptions) {
-  const pont = customPont || Pont.getInstance();
-  const element = getElement(root);
+  pont ??= Pont.getInstance();
+  element = getElement(element);
 
   if (!pont.isInitialized()) {
-    const initialState = customInitialState || getInitialState(element);
+    initialState ??= getInitialState(element);
 
-    F.is(transformTitle) &&
-      (services.titleTransformer ??= () => transformTitle);
+    if (F.is(transformTitle)) {
+      services.titleTransformer ??= () => transformTitle;
+    }
 
     pont.init({
       baseUrl,
