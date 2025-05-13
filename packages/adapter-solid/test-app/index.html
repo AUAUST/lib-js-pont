@@ -6,7 +6,12 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="app" data-pont-state="{{ initialState }}"></div>
+
+    <script id="pont-state" type="application/json">
+      {{ initialState }}
+    </script>
+
+    <div id="app"></div>
 
     <script src="/src/index.tsx" type="module"></script>
   </body>

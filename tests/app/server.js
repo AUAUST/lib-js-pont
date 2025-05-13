@@ -12,7 +12,7 @@ const { name, port, testAppDistDirectory } = resolveAdapter(
 
 const app = express();
 
-app.use(express.static(testAppDistDirectory));
+app.use(express.static(testAppDistDirectory, { index: false }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ extended: true }));
 
@@ -26,8 +26,4 @@ app.get("/", (req, res) =>
   })
 );
 
-app.get("/*any", (req, res) => {
-  res.sendFile(path.join(testAppDistDirectory, "index.html"));
-});
-
-app.listen(port);
+app.listen(port, () => console.log(`Server is running on port ${port}`));
