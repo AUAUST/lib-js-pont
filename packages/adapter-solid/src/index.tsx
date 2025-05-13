@@ -2,6 +2,7 @@
 // It a Pont instance is needed, it should be created from the core package.
 export { pont, type Pont } from "@auaust/pont";
 
+export { Link } from "./components/Link.jsx";
 export { useGlobalProps } from "./contexts/GlobalPropsContext.jsx";
 export { useLayoutProps } from "./contexts/LayoutPropsContext.jsx";
 export { usePageProps } from "./contexts/PagePropsContext.jsx";

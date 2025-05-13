@@ -24,3 +24,4 @@ export {
   shouldAppend,
   type NormalizedUrlParams,
 } from "@core/src/utils/params.js";
+export { shouldHijackClick } from "@core/src/utils/visits.js";
