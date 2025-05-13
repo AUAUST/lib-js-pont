@@ -24,9 +24,7 @@ export function normalizeParams(
       continue;
     }
 
-    for (const [key, value] of paramsEntries(init)) {
-      normalized.push([key, value]);
-    }
+    normalized.push(...paramsEntries(init));
   }
 
   return normalized;
@@ -46,8 +44,7 @@ export function paramsEntries(params: UrlParamsInit): NormalizedUrlParams {
   }
 
   if (A.is(params)) {
-    // @ts-expect-error
-    return params;
+    return params.map(([key, value]) => [key, value]);
   }
 
   if (O.is(params)) {
