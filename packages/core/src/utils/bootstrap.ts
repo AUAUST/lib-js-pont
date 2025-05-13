@@ -40,14 +40,28 @@ export function getInitialState(
     return {};
   }
 
-  const dataProps = element.dataset.pontState || element.dataset.pont;
+  let json: string | undefined;
 
-  if (!dataProps) {
+  // First, check for a `data-*` attribute on the root element
+  json = element.dataset.pontState || element.dataset.pont;
+
+  // Then, check for a `script` tag with the `type="application/json"` attribute
+  if (!json) {
+    const script = document.querySelector(
+      'script#pont-state[type="application/json"]'
+    ) as HTMLScriptElement | null;
+
+    if (script) {
+      json = script.innerHTML;
+    }
+  }
+
+  if (!S.is(json)) {
     return {};
   }
 
   try {
-    return JSON.parse(dataProps);
+    return JSON.parse(json);
   } catch (error) {
     console.error("Failed to parse initial state:", error);
     return {};
