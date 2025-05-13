@@ -35,8 +35,26 @@ export function App(props: PontAppProps) {
     props.initialLayout
   );
 
+  return (
+    <MetaProvider>
+      <PontProvider pont={props.pont}>
+        <Title>{title()}</Title>
+
+        <GlobalPropsProvider>
+          <LayoutPropsProvider>
+            <PagePropsProvider>
+              <View layout={layout()} page={page()} />
+            </PagePropsProvider>
+          </LayoutPropsProvider>
+        </GlobalPropsProvider>
+      </PontProvider>
+    </MetaProvider>
+  );
+}
+
+function View(props: { page: Component; layout?: ParentComponent }) {
   const Page = children(() => {
-    const Page = page()!;
+    const Page = props.page;
 
     return (
       <Show when={Page}>
@@ -46,7 +64,7 @@ export function App(props: PontAppProps) {
   });
 
   const Content = children(() => {
-    const Layout = layout()!;
+    const Layout = props.layout!;
 
     return (
       <Show when={Layout} fallback={<Page />}>
@@ -57,19 +75,5 @@ export function App(props: PontAppProps) {
     );
   });
 
-  return (
-    <PontProvider pont={props.pont}>
-      <MetaProvider>
-        <Title>{title()}</Title>
-
-        <GlobalPropsProvider>
-          <LayoutPropsProvider>
-            <PagePropsProvider>
-              <Content />
-            </PagePropsProvider>
-          </LayoutPropsProvider>
-        </GlobalPropsProvider>
-      </MetaProvider>
-    </PontProvider>
-  );
+  return <Content />;
 }
