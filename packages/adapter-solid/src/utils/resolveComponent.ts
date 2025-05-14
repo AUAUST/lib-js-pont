@@ -2,9 +2,19 @@ import { F, O } from "@auaust/primitive-kit";
 import type { Component } from "solid-js";
 import type { ComponentResolver } from "src/createPontApp.jsx";
 
+type ResolverOptions = {
+  lenient?: boolean;
+};
+
+type ResolverInput<N extends string = string, C = Component> = {
+  resolver: ComponentResolver<N, C> | undefined;
+  name: string | null;
+} & ResolverOptions;
+
 export async function resolveComponent<N extends string>(
   resolver: ComponentResolver<N> | undefined,
-  name: N | null
+  name: N | null,
+  { lenient = false }: ResolverOptions = {}
 ): Promise<Component | undefined> {
   if (!resolver || !name) {
     return undefined;
@@ -12,25 +22,22 @@ export async function resolveComponent<N extends string>(
 
   const result = await resolver(name);
 
-  if (!result) {
+  if (result) {
+    if (F.is(result)) {
+      return result;
+    }
+
+    if ("default" in result) {
+      return result.default;
+    }
+  }
+
+  if (lenient) {
     return undefined;
   }
 
-  if (F.is(result)) {
-    return result;
-  }
-
-  if ("default" in result) {
-    return result.default;
-  }
-
-  return undefined;
+  throw new Error(`Component resolution failed for "${name}"`);
 }
-
-type ResolverInput<N extends string = string, C = Component> = {
-  resolver: ComponentResolver<N, C> | undefined;
-  name: string | null;
-};
 
 export async function resolveComponents<
   T extends Record<string, ResolverInput>

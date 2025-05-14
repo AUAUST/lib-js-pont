@@ -112,6 +112,7 @@ export async function createPontApp({
     initialLayout: {
       resolver: resolveLayout,
       name: pont.getLayout(),
+      lenient: true,
     },
   }).then(({ initialPage, initialLayout }) => {
     setup({
