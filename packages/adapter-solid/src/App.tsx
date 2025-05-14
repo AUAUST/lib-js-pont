@@ -8,8 +8,14 @@ import {
   type ParentComponent,
 } from "solid-js";
 import { GlobalPropsProvider } from "./contexts/GlobalPropsContext.jsx";
-import { LayoutPropsProvider } from "./contexts/LayoutPropsContext.jsx";
-import { PagePropsProvider } from "./contexts/PagePropsContext.jsx";
+import {
+  LayoutPropsProvider,
+  useLayoutProps,
+} from "./contexts/LayoutPropsContext.jsx";
+import {
+  PagePropsProvider,
+  usePageProps,
+} from "./contexts/PagePropsContext.jsx";
 import { PontProvider } from "./contexts/PontContext.jsx";
 import type { ComponentResolver } from "./createPontApp.jsx";
 
@@ -53,12 +59,15 @@ export function App(props: PontAppProps) {
 }
 
 function View(props: { page: Component; layout?: ParentComponent }) {
+  const layoutProps = useLayoutProps();
+  const pageProps = usePageProps();
+
   const Page = children(() => {
     const Page = props.page;
 
     return (
       <Show when={Page}>
-        <Page />
+        <Page {...pageProps} />
       </Show>
     );
   });
@@ -68,7 +77,7 @@ function View(props: { page: Component; layout?: ParentComponent }) {
 
     return (
       <Show when={Layout} fallback={<Page />}>
-        <Layout>
+        <Layout {...layoutProps}>
           <Page />
         </Layout>
       </Show>

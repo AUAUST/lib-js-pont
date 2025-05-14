@@ -1,12 +1,12 @@
 import { Link } from "@auaust/pont-adapter-solid";
 
-export default function Home() {
+export default function () {
   return (
     <div>
       <h1>Home</h1>
       <p>Welcome to the home page!</p>
 
-      <Link href="/about">Hey!</Link>
+      <Link href="/about">About</Link>
     </div>
   );
 }
