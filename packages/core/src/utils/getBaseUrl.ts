@@ -12,10 +12,16 @@ export function getBaseUrl(url: string | undefined): string {
       url = s(url)
         .after("://")
         .or(url)
-        .prepend(window.location.protocol, "//")
+        .prepend(
+          typeof window === "undefined" ? "http:" : window.location.protocol, // match http or https from the current window, if available
+          "//"
+        )
         .toString();
     }
   }
 
-  return new URL(url || "", window.location.origin).origin;
+  return new URL(
+    url || "",
+    typeof window === "undefined" ? "http://localhost" : window.location.origin
+  ).origin;
 }
