@@ -1,9 +1,9 @@
 import { F, O } from "@auaust/primitive-kit";
-import type { Pont } from "@core/src/classes/Pont.js";
 import {
   ServiceConstructorMarker,
   ServiceInstanceMarker,
 } from "@core/src/classes/Service.js";
+import { Manager } from "@core/src/managers/Manager.js";
 import {
   ParamsSerializerService,
   PropsReconcilerService,
@@ -51,11 +51,9 @@ export type ServiceHandlerType = keyof ServiceHandlerTypesMap;
 /**
  * The state manager holds the state of the app, including the URL, page name, layout name, props, and other data.
  */
-export class ServicesManager {
+export class ServicesManager extends Manager {
   protected services: { [K in ServiceName]: ResolvedService<K> } = <any>{};
   protected servicesTypes: Record<ServiceName, ServiceHandlerType> = <any>{};
-
-  public constructor(public readonly pont: Pont) {}
 
   public init({ services }: ServicesManagerInit = {}): this {
     this.registerServices(services, [

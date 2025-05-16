@@ -1,6 +1,6 @@
 import { O, P, S } from "@auaust/primitive-kit";
-import type { Pont } from "@core/src/classes/Pont.js";
 import type { RequestHeadersInit } from "@core/src/classes/RequestHeaders.js";
+import { Manager } from "@core/src/managers/Manager.js";
 import { parseHeaders } from "@core/src/utils/headers.js";
 import { PONT_CORE_VERSION } from "@core/src/utils/internals.js";
 
@@ -12,13 +12,11 @@ export type HeadersManagerInit = {
  * The HeadersManager class is responsible for managing the headers of a request.
  * If holds default headers, is responsible for CSRF tokens and other headers.
  */
-export class HeadersManager {
+export class HeadersManager extends Manager {
   protected defaultHeaders: Record<string, string> = {};
   protected coreHeaders: Record<string, string> = {
     "x-pont": PONT_CORE_VERSION,
   };
-
-  public constructor(public readonly pont: Pont) {}
 
   public init(init?: HeadersManagerInit): this {
     this.defaultHeaders = parseHeaders(init?.defaultHeaders);

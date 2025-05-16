@@ -1,6 +1,6 @@
 import { O } from "@auaust/primitive-kit";
-import type { Pont } from "@core/src/classes/Pont.js";
 import { Response } from "@core/src/classes/Responses/Response.js";
+import { Manager } from "@core/src/managers/Manager.js";
 import type {
   GlobalProps,
   LayoutProps,
@@ -23,14 +23,12 @@ export type StateUpdateOptions = {
 /**
  * The state manager holds the state of the app, including the URL, component name, props, and other data.
  */
-export class StateManager {
+export class StateManager extends Manager {
   protected page!: PageName;
   protected layout!: LayoutName;
   protected url!: string;
   protected propsGroups!: PropsGroups;
   protected title!: string;
-
-  public constructor(public readonly pont: Pont) {}
 
   public init({ initialState }: StateManagerInit = {}): this {
     this.url = initialState?.url!;

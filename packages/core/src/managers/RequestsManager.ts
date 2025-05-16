@@ -1,11 +1,11 @@
 import type { ObjectType } from "@auaust/primitive-kit";
-import type { Pont } from "@core/src/classes/Pont.js";
 import { Request, type RequestInit } from "@core/src/classes/Request.js";
 import type { RequestDataInit } from "@core/src/classes/RequestData.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import type { Response } from "@core/src/classes/Responses/Response.js";
 import { Method } from "@core/src/enums/Method.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
+import { Manager } from "@core/src/managers/Manager.js";
 import { getBaseUrl } from "../utils/getBaseUrl.js";
 
 export type RequestManagerInit = {
@@ -21,10 +21,8 @@ export type VisitOptions = Omit<RequestInit, "url">;
  * The requests manager is responsible for managing the requests made by the app.
  * It handles the form submissions, navigations, try-catches, and other requests.
  */
-export class RequestsManager {
+export class RequestsManager extends Manager {
   protected baseUrl: string | undefined;
-
-  public constructor(public readonly pont: Pont) {}
 
   public init({ baseUrl }: RequestManagerInit): this {
     this.baseUrl = getBaseUrl(baseUrl);

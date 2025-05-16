@@ -1,5 +1,7 @@
 import { Url } from "@core/src/classes/Url.js";
 import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
+import { Creatable } from "@core/src/concerns/Creatable.js";
+import { HasSingleton } from "@core/src/concerns/HasSingleton.js";
 import {
   HeadersManager,
   RequestsManager,
@@ -48,13 +50,7 @@ interface Pont
 
 interface Pont extends Pick<ServicesManager, "use"> {}
 
-class Pont implements WithPont {
-  protected static instance: Pont;
-
-  public static getInstance(): Pont {
-    return (this.instance ??= new this());
-  }
-
+class Pont extends Creatable(HasSingleton()) implements WithPont {
   public readonly pont: Pont;
   protected initialized: boolean = false;
 
@@ -66,13 +62,15 @@ class Pont implements WithPont {
   };
 
   public constructor() {
+    super();
+
     this.pont = this;
 
     this.managers = {
-      headers: new HeadersManager(this),
-      requests: new RequestsManager(this),
-      services: new ServicesManager(this),
-      state: new StateManager(this),
+      headers: HeadersManager.create(this),
+      requests: RequestsManager.create(this),
+      services: ServicesManager.create(this),
+      state: StateManager.create(this),
     };
 
     forwardCalls(this.managers.requests, this, [
