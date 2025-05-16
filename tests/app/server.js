@@ -26,4 +26,14 @@ app.get("/", (req, res) =>
   })
 );
 
+app.get("/about", (req, res) =>
+  pont.renderVisit(req, res, {
+    page: "About",
+    title: "About us!",
+    propsGroups: {
+      page: {},
+    },
+  })
+);
+
 app.listen(port, () => console.log(`Server is running on port ${port}`));

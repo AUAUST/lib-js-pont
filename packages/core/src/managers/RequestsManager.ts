@@ -41,7 +41,7 @@ export class RequestsManager {
 
     if (response.type === ResponseType.UNHANDLED) {
       throw new Error(
-        `A response could not be handled. Please check the response type: ${response.type}.`
+        `A response could not be handled. Please check the response type: ${response.type}. Reason: ${response.reason}`
       );
     }
 

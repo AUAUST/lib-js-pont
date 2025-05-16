@@ -1,8 +1,7 @@
-const { S } = require("@auaust/primitive-kit");
 const { readFileSync } = require("fs");
 const { resolve } = require("path");
-
 const { resolveAdapter } = require("../helpers.js");
+
 const { testAppDistDirectory } = resolveAdapter(process.env.PACKAGE);
 
 /**
@@ -18,6 +17,9 @@ function render(req, res, data) {}
  * @param {Record<string, unknown>} data
  */
 function renderVisit(req, res, data) {
+  data.type = "visit";
+  data.url ??= req.url;
+
   if (req.get("X-Pont")) {
     res.header("Vary", "Accept");
     res.header("X-Pont", "true");

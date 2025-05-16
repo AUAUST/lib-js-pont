@@ -119,19 +119,17 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       return Response.unhandled(response, "Missing URL");
     }
 
-    if (!O.is(payload.props)) {
-      return Response.unhandled(response, "Missing props");
-    }
-
     const layout = S.is(payload.layout) ? payload.layout : undefined;
 
-    propsGroups.page = O.is(payload.props.page) ? payload.props.page : {};
+    propsGroups.page = O(O.deepGet(payload, "propsGroups.page"));
+    propsGroups.layout = O(O.deepGet(payload, "propsGroups.layout"));
 
     return new VisitResponse({
       ...context,
+      url,
       page,
       layout,
-      url,
+      propsGroups,
     });
   }
 

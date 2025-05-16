@@ -12,7 +12,7 @@ export class UnhandledResponse {
 
   public constructor(
     public readonly response: RawResponse,
-    protected reason?: string
+    public reason?: string
   ) {}
 
   public withReason(reason: string): this {
