@@ -1,15 +1,28 @@
+// @ts-nocheck – These are too generic to be properly typed, thus we provide the signatures on a "trust me bro" basis.
 import type { Constructor } from "@auaust/primitive-kit";
 import { Base } from "@core/src/concerns/index.js";
 
-// @ts-expect-error
-export function Creatable<B extends Constructor<object>>(base: B = Base) {
-  return class extends base {
-    static create<T extends Constructor>(
-      this: T,
-      ...args: ConstructorParameters<T>
-    ): InstanceType<T> {
-      // @ts-expect-error
+const cache = new WeakMap<Constructor, Constructor>();
+
+export function Creatable<B extends Constructor<object>>(
+  base: B = Base
+): B & {
+  create<T extends Constructor>(
+    this: T,
+    ...args: ConstructorParameters<T>
+  ): InstanceType<T>;
+} {
+  if (cache.has(base)) {
+    return cache.get(base)!;
+  }
+
+  const extension = class extends base {
+    static create(...args: any[]) {
       return new this(...args);
     }
   };
+
+  cache.set(base, extension);
+
+  return extension;
 }
