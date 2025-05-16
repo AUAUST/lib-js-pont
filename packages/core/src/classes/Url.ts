@@ -41,7 +41,7 @@ export class Url extends Creatable() implements WithPont {
     return this.url.toString();
   }
 
-  public override toString(): string {
+  public toString(): string {
     return this.getUrl();
   }
 }

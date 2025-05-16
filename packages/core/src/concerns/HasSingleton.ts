@@ -1,23 +1,13 @@
-// @ts-nocheck – These are too generic to be properly typed, thus we provide the signatures on a "trust me bro" basis.
 import type { Constructor } from "@auaust/primitive-kit";
-import { Concern } from "@core/src/concerns/index.js";
+import { concern } from "@core/src/concerns/index.js";
 
-const cache = new WeakMap<Constructor, Constructor>();
+export const HasSingleton = concern(
+  <B extends Constructor<any>>(base: B) =>
+    class extends base {
+      private static instance: InstanceType<B> | undefined;
 
-export function HasSingleton<B extends Constructor<object>>(
-  base: B = Concern
-): B & { getInstance<T extends Constructor>(this: T): InstanceType<T> } {
-  if (cache.has(base)) {
-    return cache.get(base)!;
-  }
-
-  const extension = class extends base {
-    static getInstance() {
-      return (this.instance ??= new this());
+      static getInstance(): InstanceType<B> {
+        return (this.instance ??= new this());
+      }
     }
-  };
-
-  cache.set(base, extension);
-
-  return extension;
-}
+);
