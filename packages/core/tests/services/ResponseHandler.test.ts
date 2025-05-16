@@ -8,11 +8,11 @@ import { expect, test, vitest } from "vitest";
 test("Pont handles response using the response handler", async () => {
   const responseHandler = {
     handle: vitest.fn((pont, response) => {
-      return new EmptyResponse(response);
+      return EmptyResponse.create(response);
     }),
   } satisfies ServiceObject<"responseHandler">;
 
-  const pont = new Pont().init({
+  const pont = Pont.create().init({
     baseUrl: "https://example.com",
     services: {
       transporter,

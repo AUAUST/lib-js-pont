@@ -1,5 +1,6 @@
 import { type Stringifiable } from "@auaust/primitive-kit";
 import type { WithPont } from "@core/src/classes/Pont.js";
+import { Creatable } from "@core/src/concerns/Creatable.js";
 import {
   type NormalizedUrlParams,
   normalizeParams,
@@ -14,7 +15,7 @@ export type UrlParamsInit =
   | string[][]
   | string;
 
-export class UrlParams implements WithPont {
+export class UrlParams extends Creatable() implements WithPont {
   protected readonly params: NormalizedUrlParams;
 
   public constructor(
@@ -25,6 +26,7 @@ export class UrlParams implements WithPont {
      */
     ...inits: (UrlParamsInit | undefined)[]
   ) {
+    super();
     this.params = normalizeParams(...inits);
   }
 

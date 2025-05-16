@@ -1,4 +1,5 @@
 import { F, N, O, P, S } from "@auaust/primitive-kit";
+import { Creatable } from "@core/src/concerns/Creatable.js";
 
 export interface RawResponseInit {
   status?: number;
@@ -15,7 +16,7 @@ export interface RawResponseInit {
  * to simplify the consumption of responses
  * across different services.
  */
-export class RawResponse {
+export class RawResponse extends Creatable() {
   public static ok(init: Omit<RawResponseInit, "status"> = {}) {
     return new RawResponse(init).withStatus(200);
   }
@@ -50,6 +51,8 @@ export class RawResponse {
   protected data?: string | object;
 
   public constructor({ status, url, headers, data }: RawResponseInit = {}) {
+    super();
+
     if (P.isSet(status)) {
       this.withStatus(status);
     }

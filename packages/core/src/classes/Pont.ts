@@ -138,7 +138,7 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
   }
 
   public createUrl(url: string, params?: UrlParamsInit) {
-    return new Url(this, url, params);
+    return Url.create(this, url, params);
   }
 }
 

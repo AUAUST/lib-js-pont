@@ -28,7 +28,7 @@ test("Pont sends requests using the transporter", async () => {
     }),
   } satisfies ServiceObject<"transporter">;
 
-  const pont = new Pont().init({
+  const pont = Pont.create().init({
     baseUrl: "https://example.com",
     services: {
       transporter,

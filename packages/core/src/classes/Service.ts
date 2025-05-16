@@ -1,4 +1,5 @@
 import type { Pont } from "@core/src/classes/Pont.js";
+import { Creatable } from "@core/src/concerns/Creatable.js";
 import type {
   ServiceInstance,
   ServiceName,
@@ -10,6 +11,7 @@ export const ServiceConstructorMarker = Symbol.for("Pont.ServiceConstructor");
 export const ServiceInstanceMarker = Symbol.for("Pont.ServiceInstance");
 
 export abstract class Service<T extends ServiceName = ServiceName>
+  extends Creatable()
   implements ServiceInstance<T>
 {
   /**
@@ -30,7 +32,9 @@ export abstract class Service<T extends ServiceName = ServiceName>
    */
   public readonly [ServiceInstanceMarker] = true;
 
-  public constructor(public readonly pont: Pont) {}
+  public constructor(public readonly pont: Pont) {
+    super();
+  }
 
   public abstract handle(...args: ServiceParameters<T>): ServiceReturnType<T>;
 }

@@ -24,7 +24,7 @@ export class TransporterService extends Service<"transporter"> {
 
   public async handle(options: RequestOptions) {
     return await this.axios.request(options).then((response) => {
-      return new RawResponse()
+      return RawResponse.create()
         .withStatus(response.status)
         .withUrl(response.config.url)
         .withHeaders(<any>response.headers)

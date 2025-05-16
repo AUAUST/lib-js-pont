@@ -52,7 +52,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       // we return an EmptyResponse. It simply means the
       // request was successful, but there is nothing to do.
       if (response.isOk()) {
-        return new EmptyResponse({ url });
+        return EmptyResponse.create({ url });
       }
 
       return Response.unhandled(response, "Invalid payload");
@@ -124,7 +124,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     propsGroups.page = O(O.deepGet(payload, "propsGroups.page"));
     propsGroups.layout = O(O.deepGet(payload, "propsGroups.layout"));
 
-    return new VisitResponse({
+    return VisitResponse.create({
       ...context,
       url,
       page,
@@ -137,7 +137,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     response: RawResponse,
     context: ResponseContext
   ): EmptyResponse {
-    return new EmptyResponse(context);
+    return EmptyResponse.create(context);
   }
 
   createPartialResponse(
@@ -152,7 +152,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       return Response.unhandled(response, "Missing intended page component");
     }
 
-    return new PartialResponse({
+    return PartialResponse.create({
       ...context,
       intendedPage,
     });
@@ -162,7 +162,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     response: RawResponse,
     context: ResponseContext
   ): DataResponse {
-    return new DataResponse({
+    return DataResponse.create({
       ...context,
       data: context.payload.data,
     });

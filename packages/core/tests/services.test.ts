@@ -20,7 +20,7 @@ describe("Pont can be initialized with services", () => {
       }
     };
 
-    const pont = new Pont().init({
+    const pont = Pont.create().init({
       baseUrl: "https://example.com",
       services: {
         paramsSerializer,
@@ -46,16 +46,16 @@ describe("Pont can be initialized with services", () => {
     let thisValue: any;
     let pontValue: any;
 
-    const pont = new Pont();
+    const pont = Pont.create();
 
-    const paramsSerializer = new (class extends Service<"paramsSerializer"> {
+    const paramsSerializer = class extends Service<"paramsSerializer"> {
       override handle() {
         thisValue = this;
         pontValue = this.pont;
 
         return "my=params&serializer=works";
       }
-    })(pont);
+    }.create(pont);
 
     pont.init({
       baseUrl: "https://example.com",
@@ -90,7 +90,7 @@ describe("Pont can be initialized with services", () => {
 
     let pontValue: any;
 
-    const pont = new Pont().init({
+    const pont = Pont.create().init({
       baseUrl: "https://example.com",
       services: {
         paramsSerializer: (pont: Pont) => {
@@ -133,7 +133,7 @@ describe("Pont can be initialized with services", () => {
       },
     };
 
-    const pont = new Pont().init({
+    const pont = Pont.create().init({
       baseUrl: "https://example.com",
       services: {
         paramsSerializer,

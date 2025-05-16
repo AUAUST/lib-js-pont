@@ -17,6 +17,7 @@ import type {
   VisitResponse,
   VisitResponseInit,
 } from "@core/src/classes/Responses/VisitResponse.js";
+import { Creatable } from "@core/src/concerns/Creatable.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 import type { PropsGroups } from "@core/src/types/app.js";
 import type { Effects } from "@core/src/types/effects.js";
@@ -78,7 +79,7 @@ export abstract class Response<
     ResponseType,
     ResponseType.UNHANDLED
   >
-> {
+> extends Creatable() {
   public static isValidType(type: unknown): type is ResponseType {
     switch (S.lower(type)) {
       case ResponseType.VISIT:
@@ -95,7 +96,7 @@ export abstract class Response<
     raw: RawResponse,
     reason?: string
   ): UnhandledResponse {
-    return new UnhandledResponse(raw, reason);
+    return UnhandledResponse.create(raw, reason);
   }
 
   public readonly type: T;
@@ -113,6 +114,8 @@ export abstract class Response<
     effects,
     errors,
   }: BaseResponseInit) {
+    super();
+
     this.type = <T>S.lower(type);
     this.url = S(url);
     this.propsGroups = O.is(propsGroups) ? propsGroups : {};

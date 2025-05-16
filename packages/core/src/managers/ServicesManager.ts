@@ -57,11 +57,11 @@ export class ServicesManager extends Manager {
 
   public init({ services }: ServicesManagerInit = {}): this {
     this.registerServices(services, [
-      ["paramsSerializer", (pont) => new ParamsSerializerService(pont)],
-      ["propsReconciler", (pont) => new PropsReconcilerService(pont)],
+      ["paramsSerializer", (pont) => ParamsSerializerService.create(pont)],
+      ["propsReconciler", (pont) => PropsReconcilerService.create(pont)],
       ["responseHandler", ResponseHandlerService],
       ["titleTransformer", () => F.identity],
-      ["transporter", (pont) => new TransporterService(pont)],
+      ["transporter", (pont) => TransporterService.create(pont)],
     ]);
 
     return this;
