@@ -1,1 +1,1 @@
-export abstract class Base {}
+export abstract class Concern {}
