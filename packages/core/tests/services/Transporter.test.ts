@@ -44,7 +44,7 @@ test("Pont sends requests using the transporter", async () => {
     method: "get",
     data: undefined,
     headers: expect.objectContaining({
-      "x-pont-type": "visit",
+      "x-pont-type": "navigation",
     }),
   });
 
@@ -60,7 +60,7 @@ test("Pont sends requests using the transporter", async () => {
     data: { john: "doe" },
     headers: expect.objectContaining({
       "x-test": "Test",
-      "x-pont-type": "visit",
+      "x-pont-type": "navigation",
     }),
   });
 

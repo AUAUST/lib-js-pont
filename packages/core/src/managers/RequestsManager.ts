@@ -72,7 +72,7 @@ export class RequestsManager {
   public async visit(url: string, options: VisitOptions = {}): Promise<void> {
     const request = this.createRequest(url, options);
 
-    request.setHeader("x-pont-type", "visit");
+    request.setHeader("x-pont-type", "navigation");
 
     // this.pont.emit("start");
 
