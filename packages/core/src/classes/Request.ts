@@ -9,6 +9,8 @@ import {
 } from "@core/src/classes/RequestHeaders.js";
 import { Url } from "@core/src/classes/Url.js";
 import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
+import { Creatable } from "@core/src/concerns/Creatable.js";
+import { RequestType } from "@core/src/enums/RequestType.js";
 import type { RequestOptions } from "@core/src/types/requests.js";
 import { forwardCalls } from "@core/src/utils/forwardCalls.js";
 import {
@@ -18,6 +20,7 @@ import {
 } from "@core/src/utils/methods.js";
 
 export type RequestInit = {
+  type: RequestType;
   url: string;
   method?: Method | MethodString;
   data?: RequestDataInit;
@@ -35,7 +38,8 @@ export interface Request
  * A request object contains all the information needed to process a request.
  * It includes the URL, the method, the body, the headers.
  */
-export class Request implements WithPont {
+export class Request extends Creatable() implements WithPont {
+  protected readonly type: RequestType;
   protected readonly url: Url;
   protected readonly method: Method;
   protected readonly data: RequestData;
@@ -54,13 +58,15 @@ export class Request implements WithPont {
 
   public constructor(
     public readonly context: WithPont,
-    { url, method, data, params, headers }: RequestInit
+    { data, headers, method, params, type, url }: RequestInit
   ) {
-    // Omit the search params from the URL, which are passed to the RequestParameters below
+    super();
+
+    this.type = type ?? RequestType.NAVIGATION;
     this.method = toMethod(method, Method.GET);
     this.url = this.pont.createUrl(url, params);
-    this.data = new RequestData(this, data);
-    this.headers = new RequestHeaders(this, headers);
+    this.data = RequestData.create(this, data);
+    this.headers = RequestHeaders.create(this, headers);
 
     forwardCalls(this.data, this, ["getContentType", "getData"]);
     forwardCalls(this.url, this, ["getParams", "getUrl"]);
@@ -78,6 +84,10 @@ export class Request implements WithPont {
       data: this.getData(),
       headers: this.getHeaders(),
     };
+  }
+
+  public getType(): RequestType {
+    return this.type;
   }
 
   public getMethod(): Method {

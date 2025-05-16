@@ -3,16 +3,18 @@ import { O, P, S } from "@auaust/primitive-kit";
 import { describe, expect, test, vitest } from "vitest";
 
 describe("Url parameters", async () => {
-  const pont = new Pont().init({
+  const pont = Pont.create().init({
     baseUrl: "https://example.com",
   });
 
   test("can be passed as a config option", () => {
-    const request = pont.getRequestsManager().createRequest("/users/create", {
-      params: {
-        id: 123,
-      },
-    });
+    const request = pont
+      .getRequestsManager()
+      .createNavigationRequest("/users/create", {
+        params: {
+          id: 123,
+        },
+      });
 
     expect(request.getUrl()).toBe(
       encodeURI("https://example.com/users/create?id=123")
@@ -20,9 +22,11 @@ describe("Url parameters", async () => {
   });
 
   test("can be passed in the URL and merged with the config options", () => {
-    const request = pont.getRequestsManager().createRequest("/users?limit=10", {
-      params: { page: 4 },
-    });
+    const request = pont
+      .getRequestsManager()
+      .createNavigationRequest("/users?limit=10", {
+        params: { page: 4 },
+      });
 
     expect(request.getUrl()).toBe(
       encodeURI("https://example.com/users?limit=10&page=4")
@@ -30,11 +34,13 @@ describe("Url parameters", async () => {
   });
 
   test("supports arrays as bracketed parameters", () => {
-    const request = pont.getRequestsManager().createRequest("/users", {
-      params: {
-        ids: [1, 2, 3],
-      },
-    });
+    const request = pont
+      .getRequestsManager()
+      .createNavigationRequest("/users", {
+        params: {
+          ids: [1, 2, 3],
+        },
+      });
 
     expect(request.getUrl()).toBe(
       encodeURI("https://example.com/users?ids[]=1&ids[]=2&ids[]=3")
@@ -57,7 +63,7 @@ test("Pont can use a custom params serializer", () => {
     }),
   };
 
-  const pont = new Pont().init({
+  const pont = Pont.create().init({
     baseUrl: "https://example.com",
     services: {
       paramsSerializer,
@@ -66,7 +72,7 @@ test("Pont can use a custom params serializer", () => {
 
   const request = pont
     .getRequestsManager()
-    .createRequest("/users?page=3#fragment", {
+    .createNavigationRequest("/users?page=3#fragment", {
       params: {
         ids: [1, 2, 3],
       },

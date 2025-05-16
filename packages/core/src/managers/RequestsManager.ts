@@ -4,9 +4,10 @@ import type { RequestDataInit } from "@core/src/classes/RequestData.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import type { Response } from "@core/src/classes/Responses/Response.js";
 import { Method } from "@core/src/enums/Method.js";
+import { RequestType } from "@core/src/enums/RequestType.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 import { Manager } from "@core/src/managers/Manager.js";
-import { getBaseUrl } from "../utils/getBaseUrl.js";
+import { getBaseUrl } from "@core/src/utils/getBaseUrl.js";
 
 export type RequestManagerInit = {
   /**
@@ -15,7 +16,7 @@ export type RequestManagerInit = {
   baseUrl?: string;
 };
 
-export type VisitOptions = Omit<RequestInit, "url">;
+export type VisitOptions = Omit<RequestInit, "url" | "type">;
 
 /**
  * The requests manager is responsible for managing the requests made by the app.
@@ -50,9 +51,7 @@ export class RequestsManager extends Manager {
     url: string,
     options: VisitOptions = {}
   ): Promise<T> {
-    const request = this.createRequest(url, options);
-
-    request.setHeader("x-pont-type", "data");
+    const request = this.createDataRequest(url, options);
 
     const response = await this.execute<DataResponse>(request);
 
@@ -68,9 +67,7 @@ export class RequestsManager extends Manager {
   }
 
   public async visit(url: string, options: VisitOptions = {}): Promise<void> {
-    const request = this.createRequest(url, options);
-
-    request.setHeader("x-pont-type", "navigation");
+    const request = this.createNavigationRequest(url, options);
 
     // this.pont.emit("start");
 
@@ -142,13 +139,25 @@ export class RequestsManager extends Manager {
     return this.baseUrl;
   }
 
-  /**
-   * Instanciates a new request.
-   */
   public createRequest(
+    type: RequestType,
     url: string,
-    options: Omit<RequestInit, "url">
+    options: Omit<RequestInit, "url" | "type">
   ): Request {
-    return new Request(this, { ...options, url });
+    return Request.create(this, { ...options, url, type });
+  }
+
+  public createDataRequest(
+    url: string,
+    options: Omit<RequestInit, "url" | "type">
+  ): Request {
+    return this.createRequest(RequestType.DATA, url, options);
+  }
+
+  public createNavigationRequest(
+    url: string,
+    options: Omit<RequestInit, "url" | "type">
+  ): Request {
+    return this.createRequest(RequestType.NAVIGATION, url, options);
   }
 }
