@@ -8,10 +8,16 @@ export { Request, Service, Url, UrlParams } from "@core/src/classes/index.js";
 export { type PontInit } from "@core/src/classes/Pont.js";
 export { Method } from "@core/src/enums/Method.js";
 export {
+  EventsManager,
   HeadersManager,
   RequestsManager,
   ServicesManager,
   StateManager,
+  type EventsManagerInit,
+  type HeadersManagerInit,
+  type RequestManagerInit,
+  type ServicesManagerInit,
+  type StateManagerInit,
 } from "@core/src/managers/index.js";
 export type { VisitOptions } from "@core/src/managers/RequestsManager.js";
 export {
