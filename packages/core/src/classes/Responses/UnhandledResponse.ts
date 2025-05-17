@@ -12,7 +12,7 @@ export class UnhandledResponse extends Creatable() {
   public readonly type = ResponseType.UNHANDLED;
 
   public constructor(
-    public readonly response: RawResponse,
+    public readonly rawResponse: RawResponse,
     public reason?: string
   ) {
     super();
