@@ -1,4 +1,4 @@
-import { Fn, s } from "@auaust/primitive-kit";
+import { type Fn, S, s } from "@auaust/primitive-kit";
 import type { Pont } from "@core/src/classes/Pont.js";
 import type { Request } from "@core/src/classes/Request.js";
 import type { ResponseInstance } from "@core/src/classes/Responses/Response.js";
@@ -7,11 +7,7 @@ import { Manager } from "@core/src/managers/Manager.js";
 import type { RequestOptions } from "@core/src/types/requests.js";
 
 export type EventsManagerInit = {
-  onBefore?: EventListener<"before">;
-  onUnhandled?: EventListener<"unhandled">;
-  onSuccess?: EventListener<"success">;
-  onError?: EventListener<"error">;
-  onFinish?: EventListener<"finish">;
+  [K in EventName as `on${Capitalize<K>}`]?: EventListener<K>;
 };
 
 /**
@@ -83,20 +79,24 @@ export class EventsManager extends Manager {
   protected readonly listeners: { [K in EventName]?: Set<EventListener<K>> } =
     {};
 
-  public init({
-    onBefore,
-    onUnhandled,
-    onSuccess,
-    onError,
-    onFinish,
-  }: EventsManagerInit = {}): this {
-    onBefore && this.onBefore(onBefore);
-    onUnhandled && this.onUnhandled(onUnhandled);
-    onSuccess && this.onSuccess(onSuccess);
-    onError && this.onError(onError);
-    onFinish && this.onFinish(onFinish);
+  public init(init: EventsManagerInit = {}): this {
+    for (const [name, listener] of Object.entries(init)) {
+      const event = <EventName>S.afterStart(name, "on").toLowerCase();
+
+      if (event) {
+        this.on(event, listener as EventListener<typeof event>);
+      }
+    }
 
     return this;
+  }
+
+  public eventExists(name: string): name is EventName {
+    return name in this.config;
+  }
+
+  public getEventNames(): EventName[] {
+    return Object.keys(this.config) as EventName[];
   }
 
   protected getEventConfig<T extends EventName>(name: T): EventConfig {
@@ -108,12 +108,12 @@ export class EventsManager extends Manager {
   }
 
   public on<T extends EventName>(name: T, listener: EventListener<T>) {
-    if (!this.listeners[name]) {
-      // @ts-expect-error
-      this.listeners[name] = new Set();
+    if (!this.eventExists(name)) {
+      throw new Error(`Event "${name}" does not exist.`);
     }
 
-    this.listeners[name].add(listener);
+    // @ts-expect-error
+    (this.listeners[name] ??= new Set()).add(listener);
 
     return () => this.off(name, listener);
   }
