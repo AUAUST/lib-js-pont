@@ -1,4 +1,4 @@
-import type { ObjectType } from "@auaust/primitive-kit";
+import { S, type ObjectType } from "@auaust/primitive-kit";
 import { Request, type RequestInit } from "@core/src/classes/Request.js";
 import type { RequestDataInit } from "@core/src/classes/RequestData.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
@@ -27,6 +27,12 @@ export class RequestsManager extends Manager {
 
   public init({ baseUrl }: RequestManagerInit): this {
     this.baseUrl = getBaseUrl(baseUrl);
+
+    if (!S.isStrict(this.baseUrl)) {
+      throw new Error(
+        `The base URL is not a valid URL and could not be determined automatically.`
+      );
+    }
 
     return this;
   }
