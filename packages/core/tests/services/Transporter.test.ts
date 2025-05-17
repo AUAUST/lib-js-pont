@@ -40,6 +40,7 @@ test("Pont sends requests using the transporter", async () => {
   });
 
   expect(transporter.handle).toHaveBeenCalledExactlyOnceWith(pont, {
+    type: "navigation",
     url: "https://example.com/",
     method: "get",
     data: undefined,
@@ -55,6 +56,7 @@ test("Pont sends requests using the transporter", async () => {
   );
 
   expect(transporter.handle).toHaveBeenLastCalledWith(pont, {
+    type: "navigation",
     url: "https://example.com/",
     method: "post",
     data: { john: "doe" },
@@ -70,6 +72,7 @@ test("Pont sends requests using the transporter", async () => {
   });
 
   expect(transporter.handle).toHaveBeenLastCalledWith(pont, {
+    type: "data",
     url: "https://example.com/",
     method: "post",
     data: { name: "John Cena" },
