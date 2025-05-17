@@ -79,6 +79,7 @@ export class Request extends Creatable() implements WithPont {
 
   public getOptions(): RequestOptions {
     return {
+      type: this.getType(),
       url: this.getUrl(),
       method: this.getMethod(),
       data: this.getData(),
