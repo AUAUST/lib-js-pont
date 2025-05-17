@@ -105,16 +105,12 @@ export class HeadersManager extends Manager {
    * Retrieves the CSRF token from the `meta[name="csrf-token"]` tag.
    */
   public getCsrfToken(): string | undefined {
-    if (typeof document === "undefined") {
-      return;
+    if (typeof document !== "undefined") {
+      const meta = document.querySelector('meta[name="csrf-token"]');
+
+      if (meta) {
+        return meta.getAttribute("content") || undefined;
+      }
     }
-
-    const meta = document.querySelector('meta[name="csrf-token"]');
-
-    if (meta) {
-      return meta.getAttribute("content") || undefined;
-    }
-
-    return;
   }
 }
