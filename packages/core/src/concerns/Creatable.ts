@@ -3,7 +3,7 @@ import { concern } from "@core/src/concerns/index.js";
 
 export const Creatable = concern(
   <B extends Constructor<object>>(base: B) =>
-    class extends base {
+    class Creatable extends base {
       static create<T extends Constructor<any>>(
         this: T,
         ...args: ConstructorParameters<T>
