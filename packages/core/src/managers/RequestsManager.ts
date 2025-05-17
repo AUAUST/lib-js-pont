@@ -39,27 +39,53 @@ export class RequestsManager extends Manager {
 
   public async execute<R extends Response = Response>(
     request: Request
-  ): Promise<R> {
-    const options = request.getOptions();
-    const rawResponse = await this.pont.use("transporter", options);
-    const response = this.pont.use("responseHandler", rawResponse);
+  ): Promise<R | undefined> {
+    const { canceled } = this.pont.emit("before", { request });
 
-    if (response.type === ResponseType.UNHANDLED) {
-      throw new Error(
-        `A response could not be handled. Please check the response type: ${response.type}. Reason: ${response.reason}`
-      );
+    if (canceled) {
+      this.pont.emit("prevented", { request });
+
+      return;
     }
 
-    return <R>response;
+    try {
+      this.pont.emit("start", { request });
+
+      const options = request.getOptions();
+      const rawResponse = await this.pont.use("transporter", options);
+
+      this.pont.emit("received", { request, rawResponse });
+
+      const response = this.pont.use("responseHandler", rawResponse);
+
+      if (response.type === ResponseType.UNHANDLED) {
+        // TODO: Handle the unhandled responses. If the event is canceled, it should do nothing. Otherwise, show a modal through a service.
+        const { canceled } = this.pont.emit("unhandled", { request, response });
+
+        throw new Error(
+          `A response could not be handled. Please check the response type: ${response.type}. Reason: ${response.reason}`
+        );
+      }
+
+      this.pont.emit("success", { request, response });
+
+      return <R>response;
+    } finally {
+      this.pont.emit("finish", { request });
+    }
   }
 
   public async data<T = ObjectType>(
     url: string,
     options: VisitOptions = {}
-  ): Promise<T> {
+  ): Promise<T | undefined> {
     const request = this.createDataRequest(url, options);
 
     const response = await this.execute<DataResponse>(request);
+
+    if (!response) {
+      return;
+    }
 
     if (response.type !== ResponseType.DATA) {
       throw new Error(
@@ -75,13 +101,15 @@ export class RequestsManager extends Manager {
   public async visit(url: string, options: VisitOptions = {}): Promise<void> {
     const request = this.createNavigationRequest(url, options);
 
-    // this.pont.emit("start");
-
-    let response: Response;
+    let response: Response | undefined;
     let error: unknown;
 
     try {
       response = await this.execute(request);
+
+      if (!response) {
+        return;
+      }
 
       if (response.type === ResponseType.DATA) {
         // this.pont.emit("invalid");

@@ -1,10 +1,10 @@
-import { type Fn, S, s } from "@auaust/primitive-kit";
+import { F, type Fn, S, s } from "@auaust/primitive-kit";
 import type { Pont } from "@core/src/classes/Pont.js";
 import type { Request } from "@core/src/classes/Request.js";
+import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
 import type { ResponseInstance } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { Manager } from "@core/src/managers/Manager.js";
-import type { RequestOptions } from "@core/src/types/requests.js";
 
 export type EventsManagerInit = {
   [K in EventName as `on${Capitalize<K>}`]?: EventListener<K>;
@@ -15,7 +15,17 @@ export type EventsManagerInit = {
  */
 export type PontEventsMap = {
   before: {
-    request: RequestOptions;
+    request: Request;
+  };
+  prevented: {
+    request: Request;
+  };
+  start: {
+    request: Request;
+  };
+  received: {
+    request: Request;
+    rawResponse: RawResponse;
   };
   success: {
     request: Request;
@@ -62,6 +72,15 @@ export class EventsManager extends Manager {
     before: {
       cancelable: true,
     },
+    prevented: {
+      cancelable: false,
+    },
+    start: {
+      cancelable: false,
+    },
+    received: {
+      cancelable: false,
+    },
     unhandled: {
       cancelable: true,
     },
@@ -81,6 +100,10 @@ export class EventsManager extends Manager {
 
   public init(init: EventsManagerInit = {}): this {
     for (const [name, listener] of Object.entries(init)) {
+      if (!listener) {
+        continue;
+      }
+
       const event = <EventName>S.afterStart(name, "on").toLowerCase();
 
       if (event) {
@@ -110,6 +133,10 @@ export class EventsManager extends Manager {
   public on<T extends EventName>(name: T, listener: EventListener<T>) {
     if (!this.eventExists(name)) {
       throw new Error(`Event "${name}" does not exist.`);
+    }
+
+    if (!F.is(listener)) {
+      throw new Error(`Listener for event "${name}" is not a function.`);
     }
 
     // @ts-expect-error
@@ -152,33 +179,45 @@ export class EventsManager extends Manager {
     return this.getListeners(name)?.delete(listener);
   }
 
-  public emit<T extends EventName>(name: T, detail: EventDetails<T>): void {
+  public emit<T extends EventName>(
+    name: T,
+    detail: Omit<EventDetails<T>, "pont">
+  ): { event: PontEvent<T>; canceled: boolean } {
     const event = this.createEvent(name, detail);
+    const canceled = this.dispatchEvent(name, event);
 
-    this.dispatchEvent(name, event);
+    return { event, canceled };
   }
 
   protected dispatchEvent<T extends EventName>(
     name: T,
     event: PontEvent<T>
-  ): void {
+  ): boolean {
     const shouldDispatch = this.callListeners(name, event);
 
     if (shouldDispatch && typeof window !== "undefined") {
       window.dispatchEvent(event);
     }
+
+    return shouldDispatch && !event.defaultPrevented;
   }
 
   protected callListeners<T extends EventName>(
     name: T,
     event: PontEvent<T>
   ): boolean {
-    const config = this.getEventConfig(name);
+    const listeners = this.getListeners(name);
 
-    for (const listener of this.getListeners(name)) {
+    if (!listeners) {
+      return true;
+    }
+
+    const { cancelable } = this.getEventConfig(name);
+
+    for (const listener of listeners) {
       const result = listener.call(this.pont, event);
 
-      if (config.cancelable && result === false) {
+      if (cancelable && result === false) {
         event.preventDefault();
       }
 
@@ -192,11 +231,14 @@ export class EventsManager extends Manager {
 
   protected createEvent<T extends EventName>(
     name: T,
-    detail: EventDetails<T>
+    detail: Omit<EventDetails<T>, "pont">
   ): PontEvent<T> {
     return new CustomEvent(s(name).lower().ensureStart("pont:").toString(), {
       ...this.getEventConfig(name),
-      detail: { ...detail, pont: this.pont },
+      detail: {
+        ...(detail as EventDetails<T>),
+        pont: this.pont,
+      },
     });
   }
 }

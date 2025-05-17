@@ -26,6 +26,7 @@ export type PontInit = {
 interface Pont
   extends Pick<
     EventsManager,
+    | "emit"
     | "on"
     | "once"
     | "onBefore"
@@ -88,6 +89,7 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
     };
 
     forwardCalls(this.managers.events, this, [
+      "emit",
       "on",
       "once",
       "onBefore",
@@ -155,6 +157,10 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
 
   public isInitialized(): boolean {
     return this.initialized;
+  }
+
+  public getEventsManager() {
+    return this.managers.events;
   }
 
   public getStateManager() {

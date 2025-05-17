@@ -3,7 +3,10 @@ import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import { EmptyResponse } from "@core/src/classes/Responses/EmptyResponse.js";
 import { PartialResponse } from "@core/src/classes/Responses/PartialResponse.js";
 import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
-import { Response } from "@core/src/classes/Responses/Response.js";
+import {
+  Response,
+  type ResponseInstance,
+} from "@core/src/classes/Responses/Response.js";
 import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { VisitResponse } from "@core/src/classes/Responses/VisitResponse.js";
 import { Service } from "@core/src/classes/Service.js";
@@ -19,7 +22,7 @@ import type { ErrorBag } from "@core/src/types/errors.js";
  */
 export type ResponseHandlerSignature = (
   response: RawResponse
-) => Response | UnhandledResponse;
+) => ResponseInstance | UnhandledResponse;
 
 type ResponseContext = {
   payload: {
