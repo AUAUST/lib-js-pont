@@ -1,6 +1,7 @@
-import type { Pont, WithPont } from "@core/src/classes/Pont.js";
+import type { Pont } from "@core/src/classes/Pont.js";
 import { UrlParams, type UrlParamsInit } from "@core/src/classes/UrlParams.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
+import type { WithPont } from "@core/src/contracts/WithPont.js";
 import { forwardCalls } from "@core/src/utils/forwardCalls.js";
 
 export interface Url extends Pick<UrlParams, "getParams" | "setParam"> {}
@@ -41,7 +42,7 @@ export class Url extends Creatable() implements WithPont {
     return this.url.toString();
   }
 
-  public toString(): string {
+  public override toString(): string {
     return this.getUrl();
   }
 }

@@ -1,4 +1,3 @@
-import type { WithPont } from "@core/src/classes/Pont.js";
 import {
   RequestData,
   type RequestDataInit,
@@ -10,6 +9,7 @@ import {
 import { Url } from "@core/src/classes/Url.js";
 import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
+import type { WithPont } from "@core/src/contracts/WithPont.js";
 import { RequestType } from "@core/src/enums/RequestType.js";
 import type { RequestOptions } from "@core/src/types/requests.js";
 import { forwardCalls } from "@core/src/utils/forwardCalls.js";

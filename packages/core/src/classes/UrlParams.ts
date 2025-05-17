@@ -1,6 +1,6 @@
 import { type Stringifiable } from "@auaust/primitive-kit";
-import type { WithPont } from "@core/src/classes/Pont.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
+import type { WithPont } from "@core/src/contracts/WithPont.js";
 import {
   type NormalizedUrlParams,
   normalizeParams,

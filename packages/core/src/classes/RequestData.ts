@@ -1,6 +1,6 @@
-import type { WithPont } from "@core/src/classes/Pont.js";
 import type { Request } from "@core/src/classes/Request.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
+import type { WithPont } from "@core/src/contracts/WithPont.js";
 import { hasBody } from "@core/src/utils/methods.js";
 import type Stream from "stream";
 

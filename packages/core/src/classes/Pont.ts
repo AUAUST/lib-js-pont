@@ -2,6 +2,7 @@ import { Url } from "@core/src/classes/Url.js";
 import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
 import { HasSingleton } from "@core/src/concerns/HasSingleton.js";
+import type { WithPont } from "@core/src/contracts/WithPont.js";
 import {
   EventsManager,
   HeadersManager,
@@ -14,10 +15,6 @@ import {
   type StateManagerInit,
 } from "@core/src/managers/index.js";
 import { forwardCalls } from "@core/src/utils/forwardCalls.js";
-
-export interface WithPont {
-  readonly pont: Pont;
-}
 
 export type PontInit = {
   baseUrl?: string;
