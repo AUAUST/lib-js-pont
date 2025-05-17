@@ -1,4 +1,8 @@
 export {
+  EventsManager,
+  type EventsManagerInit,
+} from "@core/src/managers/EventsManager.js";
+export {
   HeadersManager,
   type HeadersManagerInit,
 } from "@core/src/managers/HeadersManager.js";

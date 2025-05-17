@@ -3,10 +3,12 @@ import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
 import { HasSingleton } from "@core/src/concerns/HasSingleton.js";
 import {
+  EventsManager,
   HeadersManager,
   RequestsManager,
   ServicesManager,
   StateManager,
+  type EventsManagerInit,
   type HeadersManagerInit,
   type ServicesManagerInit,
   type StateManagerInit,
@@ -19,9 +21,22 @@ export interface WithPont {
 
 export type PontInit = {
   baseUrl?: string;
-} & HeadersManagerInit &
-  StateManagerInit &
-  ServicesManagerInit;
+} & EventsManagerInit &
+  HeadersManagerInit &
+  ServicesManagerInit &
+  StateManagerInit;
+
+interface Pont
+  extends Pick<
+    EventsManager,
+    | "on"
+    | "once"
+    | "onBefore"
+    | "onUnhandled"
+    | "onSuccess"
+    | "onError"
+    | "onFinish"
+  > {}
 
 interface Pont
   extends Pick<
@@ -55,6 +70,7 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
   protected initialized: boolean = false;
 
   protected readonly managers: {
+    events: EventsManager;
     headers: HeadersManager;
     requests: RequestsManager;
     services: ServicesManager;
@@ -67,11 +83,22 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
     this.pont = this;
 
     this.managers = {
+      events: EventsManager.create(this),
       headers: HeadersManager.create(this),
       requests: RequestsManager.create(this),
       services: ServicesManager.create(this),
       state: StateManager.create(this),
     };
+
+    forwardCalls(this.managers.events, this, [
+      "on",
+      "once",
+      "onBefore",
+      "onUnhandled",
+      "onSuccess",
+      "onError",
+      "onFinish",
+    ]);
 
     forwardCalls(this.managers.requests, this, [
       "getBaseUrl",
@@ -84,6 +111,8 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
       "patch",
     ]);
 
+    forwardCalls(this.managers.services, this, ["use"]);
+
     forwardCalls(this.managers.state, this, [
       "getGlobalProps",
       "getLayout",
@@ -93,8 +122,6 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
       "getTitle",
       "getUrl",
     ]);
-
-    forwardCalls(this.managers.services, this, ["use"]);
   }
 
   public init({
@@ -102,11 +129,23 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
     defaultHeaders,
     initialState,
     services,
+    onBefore,
+    onError,
+    onFinish,
+    onSuccess,
+    onUnhandled,
   }: PontInit = {}): this {
     if (this.initialized) {
       throw new Error("Pont is already initialized");
     }
 
+    this.managers.events.init({
+      onBefore,
+      onUnhandled,
+      onSuccess,
+      onError,
+      onFinish,
+    });
     this.managers.state.init({ initialState });
     this.managers.requests.init({ baseUrl });
     this.managers.headers.init({ defaultHeaders });
