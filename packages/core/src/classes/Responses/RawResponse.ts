@@ -102,11 +102,7 @@ export class RawResponse extends Creatable() {
     return this.status;
   }
 
-  public getUrl(): string {
-    if (this.url === undefined) {
-      throw new Error("URL is not set");
-    }
-
+  public getUrl(): string | undefined {
     return this.url;
   }
 

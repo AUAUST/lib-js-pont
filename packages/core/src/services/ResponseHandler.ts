@@ -45,6 +45,11 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     }
 
     const url = response.getUrl();
+
+    if (!S.is(url)) {
+      return Response.unhandled(response, "Missing URL");
+    }
+
     const payload = this.payload();
 
     if (!payload) {
