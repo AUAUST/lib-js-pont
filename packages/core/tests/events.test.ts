@@ -1,8 +1,14 @@
-import { EventListeners, Pont, PontInit } from "@auaust/pont";
+import {
+  Pont,
+  type EventListener,
+  type EventListeners,
+  type EventName,
+  type PontInit,
+} from "@auaust/pont";
 import { S } from "@auaust/primitive-kit";
 import { transporter } from "@core/tests/mocks/Transporter.js";
 import { describe } from "node:test";
-import { expect, test, vitest } from "vitest";
+import { beforeEach, expect, test, vitest } from "vitest";
 
 describe("Pont events", () => {
   const init: PontInit = {
@@ -22,7 +28,7 @@ describe("Pont events", () => {
     "start",
     "success",
     "unhandled",
-  ] as const;
+  ] as const satisfies EventName[];
 
   {
     const pont = Pont.from(init);
@@ -71,7 +77,7 @@ describe("Pont events", () => {
     expect(onFinish).toHaveBeenCalledOnce();
   });
 
-  test("with the correct this value", async () => {
+  test("are called with the correct this value", async () => {
     const thisValues: any[] = [];
 
     const pushThis = function (this: Pont) {
@@ -97,5 +103,99 @@ describe("Pont events", () => {
     for (const thisValue of thisValues) {
       expect(thisValue).toBe(pont);
     }
+  });
+
+  describe("are correctly called", () => {
+    const onBefore = vitest.fn<EventListener<"before">>();
+    const onPrevented = vitest.fn<EventListener<"prevented">>();
+    const onStart = vitest.fn<EventListener<"start">>();
+    const onException = vitest.fn<EventListener<"exception">>();
+    const onReceived = vitest.fn<EventListener<"received">>();
+    const onUnhandled = vitest.fn<EventListener<"unhandled">>();
+    const onInvalid = vitest.fn<EventListener<"invalid">>();
+    const onSuccess = vitest.fn<EventListener<"success">>();
+    const onError = vitest.fn<EventListener<"error">>();
+    const onFinish = vitest.fn<EventListener<"finish">>();
+
+    const listeners = {
+      onBefore,
+      onPrevented,
+      onStart,
+      onException,
+      onReceived,
+      onUnhandled,
+      onInvalid,
+      onSuccess,
+      onError,
+      onFinish,
+    } satisfies EventListeners;
+
+    beforeEach(vitest.clearAllMocks);
+
+    test("when the request is prevented", async () => {
+      const pont = Pont.from({
+        ...init,
+        listeners,
+      });
+
+      onBefore.mockImplementationOnce((event) => {
+        event.preventDefault();
+      });
+
+      await pont.visit("/");
+
+      expect(onBefore).toHaveBeenCalledOnce();
+      expect(onPrevented).toHaveBeenCalledAfter(onBefore);
+      expect(onStart).not.toHaveBeenCalled();
+      expect(onException).not.toHaveBeenCalled();
+      expect(onReceived).not.toHaveBeenCalled();
+      expect(onUnhandled).not.toHaveBeenCalled();
+      expect(onInvalid).not.toHaveBeenCalled();
+      expect(onSuccess).not.toHaveBeenCalled();
+      expect(onError).not.toHaveBeenCalled();
+      expect(onFinish).not.toHaveBeenCalled();
+    });
+
+    test("when the request is successful", async () => {
+      const pont = Pont.from({
+        ...init,
+        listeners,
+      });
+
+      await pont.visit("/");
+
+      expect(onBefore).toHaveBeenCalledOnce();
+      expect(onStart).toHaveBeenCalledAfter(onBefore);
+      expect(onReceived).toHaveBeenCalledAfter(onStart);
+      expect(onSuccess).toHaveBeenCalledAfter(onReceived);
+      expect(onFinish).toHaveBeenCalledAfter(onSuccess);
+
+      expect(onPrevented).not.toHaveBeenCalled();
+      expect(onException).not.toHaveBeenCalled();
+      expect(onUnhandled).not.toHaveBeenCalled();
+      expect(onInvalid).not.toHaveBeenCalled();
+      expect(onError).not.toHaveBeenCalled();
+    });
+
+    // test.only("when the request returns 404", async () => {
+    //   const pont = Pont.from({
+    //     ...init,
+    //     listeners,
+    //   });
+
+    //   await pont.visit("/not-found");
+
+    //   expect(onBefore).toHaveBeenCalledOnce();
+    //   expect(onStart).toHaveBeenCalledAfter(onBefore);
+    //   expect(onReceived).toHaveBeenCalledAfter(onStart);
+    //   expect(onError).toHaveBeenCalledAfter(onReceived);
+    //   expect(onFinish).toHaveBeenCalledAfter(onError);
+
+    //   expect(onPrevented).not.toHaveBeenCalled();
+    //   expect(onException).not.toHaveBeenCalled();
+    //   expect(onUnhandled).not.toHaveBeenCalled();
+    //   expect(onInvalid).not.toHaveBeenCalled();
+    //   expect(onSuccess).not.toHaveBeenCalled();
+    // });
   });
 });
