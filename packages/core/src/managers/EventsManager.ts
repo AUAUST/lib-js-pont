@@ -5,6 +5,7 @@ import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
 import type { ResponseInstance } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { Manager } from "@core/src/managers/Manager.js";
+import type { ErrorBag } from "@core/src/types/errors.js";
 
 export type EventListeners = {
   [K in EventName as `on${Capitalize<K>}`]?: EventListener<K>;
@@ -45,7 +46,8 @@ export type PontEventsMap = {
   };
   error: {
     request: Request;
-    error: Error;
+    response: ResponseInstance;
+    errors?: ErrorBag;
   };
   finish: {
     request: Request;

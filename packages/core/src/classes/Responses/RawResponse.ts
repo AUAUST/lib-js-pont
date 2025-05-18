@@ -98,8 +98,8 @@ export class RawResponse extends Creatable() {
     return this;
   }
 
-  public getStatus(): number | undefined {
-    return this.status;
+  public getStatus(): number {
+    return this.status!;
   }
 
   public getUrl(): string | undefined {

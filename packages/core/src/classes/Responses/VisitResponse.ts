@@ -5,6 +5,7 @@ import type { LayoutName, PageName } from "@core/src/types/utils.js";
 
 export interface VisitResponseInit {
   type: ResponseType.VISIT;
+  status: number;
   page: PageName;
   layout: LayoutName | undefined;
   url: string;

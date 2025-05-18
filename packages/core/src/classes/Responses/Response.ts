@@ -1,4 +1,4 @@
-import { A, O, S } from "@auaust/primitive-kit";
+import { A, N, O, S } from "@auaust/primitive-kit";
 import type {
   DataResponse,
   DataResponseInit,
@@ -26,6 +26,7 @@ import type { ErrorBag } from "@core/src/types/errors.js";
 export interface BaseResponseInit {
   type: ResponseType;
   url: string;
+  status: number;
   propsGroups?: Partial<Pick<PropsGroups, "global">>;
   title?: string;
   errors?: ErrorBag;
@@ -61,6 +62,11 @@ export type ResponseConstructor<T extends ResponseType = ResponseType> =
 
 export type ResponseInstance<T extends ResponseType = ResponseType> =
   ResponsesMap[T][1];
+
+export type ValidResponseInstance = Exclude<
+  ResponseInstance,
+  UnhandledResponse
+>;
 
 export type ResponseInit<T extends ResponseType = ResponseType> =
   ResponsesMap[T][2];
@@ -100,6 +106,7 @@ export abstract class Response<
   }
 
   public readonly type: T;
+  protected readonly status: number;
   protected readonly url: string;
   protected readonly propsGroups: Partial<PropsGroups>;
   protected readonly title?: string;
@@ -109,6 +116,7 @@ export abstract class Response<
   public constructor({
     url,
     type,
+    status,
     propsGroups,
     title,
     effects,
@@ -116,12 +124,21 @@ export abstract class Response<
   }: BaseResponseInit) {
     super();
 
-    this.type = <T>S.lower(type);
     this.url = S(url);
+    this.type = <T>S.lower(type);
+    this.status = status;
     this.propsGroups = O.is(propsGroups) ? propsGroups : {};
     this.title = S.is(title) ? title : undefined;
     this.errors = O.is(errors) ? errors : undefined;
     this.effects = A.wrap(effects);
+  }
+
+  public getType(): T {
+    return this.type;
+  }
+
+  public getStatus(): number {
+    return this.status;
   }
 
   public getUrl(): string {
@@ -140,7 +157,23 @@ export abstract class Response<
     return this.errors;
   }
 
+  public hasErrors(): boolean {
+    return O.is(this.errors) && O.keys(this.errors).length > 0;
+  }
+
   public getEffects(): Effects | undefined {
     return this.effects;
+  }
+
+  public isValid(): boolean {
+    return N.isBetween(this.status, 200, 299);
+  }
+
+  public hasClientError(): boolean {
+    return N.isBetween(this.status, 400, 499);
+  }
+
+  public hasServerError(): boolean {
+    return N.isBetween(this.status, 500, 599);
   }
 }

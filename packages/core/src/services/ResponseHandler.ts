@@ -1,4 +1,5 @@
 import { A, O, S } from "@auaust/primitive-kit";
+import type { Request } from "@core/src/classes/Request.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import { EmptyResponse } from "@core/src/classes/Responses/EmptyResponse.js";
 import { PartialResponse } from "@core/src/classes/Responses/PartialResponse.js";
@@ -14,6 +15,7 @@ import { ResponseType } from "@core/src/enums/ResponseType.js";
 import type { PropsGroups } from "@core/src/types/app.js";
 import type { Effects } from "@core/src/types/effects.js";
 import type { ErrorBag } from "@core/src/types/errors.js";
+import { RequestType } from "../enums/RequestType.js";
 
 /**
  * Handles a raw response from the server and converts it into a usable format.
@@ -21,6 +23,7 @@ import type { ErrorBag } from "@core/src/types/errors.js";
  * various data parts, and returning a standardized response object.
  */
 export type ResponseHandlerSignature = (
+  request: Request,
   response: RawResponse
 ) => ResponseInstance | UnhandledResponse;
 
@@ -29,6 +32,7 @@ type ResponseContext = {
     type: ResponseType;
     [key: string]: unknown;
   };
+  status: number;
   url: string;
   title?: string;
   errors?: ErrorBag;
@@ -40,7 +44,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
   protected response!: RawResponse;
   protected data!: { type: ResponseType; [key: string]: unknown };
 
-  public override handle(response: RawResponse) {
+  public override handle(request: Request, response: RawResponse) {
     this.response = response;
 
     if (!this.isPontResponse()) {
@@ -53,6 +57,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       return Response.unhandled(response, "Missing URL");
     }
 
+    const status = response.getStatus();
     const payload = this.payload();
 
     if (!payload) {
@@ -60,7 +65,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       // we return an EmptyResponse. It simply means the
       // request was successful, but there is nothing to do.
       if (response.isOk()) {
-        return EmptyResponse.create({ url });
+        return EmptyResponse.create({ url, status });
       }
 
       return Response.unhandled(response, "Invalid payload");
@@ -69,6 +74,19 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     this.data = payload;
 
     const type = payload.type;
+
+    if (
+      (request.getType() === RequestType.DATA) !==
+      (type === ResponseType.DATA)
+    ) {
+      return Response.unhandled(
+        response,
+        request.getType() === RequestType.DATA
+          ? "Expected a data response"
+          : "Expected a navigation response"
+      );
+    }
+
     const title = this.title();
     const errors = this.errors();
     const effects = this.effects();
@@ -77,6 +95,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     return this.createResponse(type, response, {
       payload,
       url,
+      status,
       title,
       errors,
       effects,

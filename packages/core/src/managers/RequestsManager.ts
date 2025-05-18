@@ -2,14 +2,18 @@ import { S, type ObjectType } from "@auaust/primitive-kit";
 import { Request, type RequestInit } from "@core/src/classes/Request.js";
 import type { RequestDataInit } from "@core/src/classes/RequestData.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
-import type { Response } from "@core/src/classes/Responses/Response.js";
+import { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
+import type {
+  Response,
+  ValidResponseInstance,
+} from "@core/src/classes/Responses/Response.js";
+import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
+import { ExecuteStatus } from "@core/src/enums/ExecuteStatus.js";
 import { Method } from "@core/src/enums/Method.js";
 import { RequestType } from "@core/src/enums/RequestType.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import { getBaseUrl } from "@core/src/utils/getBaseUrl.js";
-import { RawResponse } from "../classes/Responses/RawResponse.js";
-import { ExecuteStatus } from "../enums/ExecuteStatus.js";
 
 export type RequestManagerInit = {
   /**
@@ -33,6 +37,11 @@ export type ExecuteResult<R extends Response = Response> =
       response: R;
     };
 
+export type MightFail<
+  Success extends object,
+  Failure extends object = { error: Error }
+> = ({ success: true } & Success) | ({ success: false } & Failure);
+
 /**
  * The requests manager is responsible for managing the requests made by the app.
  * It handles the form submissions, navigations, try-catches, and other requests.
@@ -52,7 +61,48 @@ export class RequestsManager extends Manager {
     return this;
   }
 
-  public async execute<R extends Response = Response>(
+  protected async transport(
+    request: Request
+  ): Promise<MightFail<{ rawResponse: RawResponse }>> {
+    try {
+      const options = request.getOptions();
+      const rawResponse = await this.pont.use("transporter", options);
+
+      return {
+        success: true,
+        rawResponse,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
+    }
+  }
+
+  protected handleResponse(
+    request: Request,
+    rawResponse: RawResponse
+  ): MightFail<
+    { response: ValidResponseInstance },
+    { error: Error; response: UnhandledResponse }
+  > {
+    const response = this.pont.use("responseHandler", request, rawResponse);
+
+    if (response.type === ResponseType.UNHANDLED) {
+      return {
+        success: false,
+        error: new Error(
+          `The response was not handled. Reason: ${response.reason}`
+        ),
+        response,
+      };
+    }
+
+    return { success: true, response };
+  }
+
+  protected async execute<R extends Response = Response>(
     request: Request
   ): Promise<ExecuteResult<R>> {
     const { canceled } = this.pont.emit("before", { request });
@@ -63,45 +113,58 @@ export class RequestsManager extends Manager {
       return { status: ExecuteStatus.CANCELED };
     }
 
+    let response: ValidResponseInstance | undefined;
+
+    this.pont.emit("start", { request });
+
     try {
-      this.pont.emit("start", { request });
+      const transport = await this.transport(request);
 
-      const options = request.getOptions();
-
-      let rawResponse: RawResponse | undefined;
-
-      try {
-        rawResponse = await this.pont.use("transporter", options);
-      } catch (error) {
+      if (!transport.success) {
         this.pont.emit("exception", {
           request,
-          error: error instanceof Error ? error : new Error(String(error)),
+          error: transport.error,
         });
 
-        return { status: ExecuteStatus.FAILED };
+        return { status: ExecuteStatus.FAILED, error: transport.error };
       }
+
+      const { rawResponse } = transport;
 
       this.pont.emit("received", { request, rawResponse });
 
-      const response = this.pont.use("responseHandler", rawResponse);
+      const handling = this.handleResponse(request, rawResponse);
 
-      if (response.type === ResponseType.UNHANDLED) {
-        // TODO: Handle the unhandled responses. If the event is canceled, it should do nothing. Otherwise, show a modal through a service.
-        const { canceled } = this.pont.emit("unhandled", { request, response });
+      if (!handling.success) {
+        const { canceled } = this.pont.emit("unhandled", {
+          request,
+          response: handling.response,
+        });
 
-        throw new Error(
-          `A response could not be handled. Reason: ${response.reason}`
-        );
+        return {
+          status: ExecuteStatus.FAILED,
+          error: handling.error,
+        };
       }
 
-      this.pont.emit("success", { request, response });
+      response = handling.response;
+
+      if (response.isValid() && !response.hasErrors()) {
+        this.pont.emit("success", { request, response });
+      } else {
+        this.pont.emit("error", {
+          request,
+          response,
+          errors: response.getErrors(),
+        });
+      }
 
       return {
         status: ExecuteStatus.SUCCESS,
         response: <R>response,
       };
     } finally {
-      this.pont.emit("finish", { request });
+      this.pont.emit("finish", { request, response });
     }
   }
 
@@ -110,7 +173,6 @@ export class RequestsManager extends Manager {
     options: VisitOptions = {}
   ): Promise<T | undefined> {
     const request = this.createDataRequest(url, options);
-
     const result = await this.execute<DataResponse>(request);
     const { status } = result;
 
@@ -124,12 +186,6 @@ export class RequestsManager extends Manager {
 
     const { response } = result;
 
-    if (response.type !== ResponseType.DATA) {
-      throw new Error(
-        `Expected a data response, but got ${response.type} instead.`
-      );
-    }
-
     this.pont.getStateManager().applySideEffects(response);
 
     return <T>response.getData();
@@ -137,44 +193,23 @@ export class RequestsManager extends Manager {
 
   public async visit(url: string, options: VisitOptions = {}): Promise<void> {
     const request = this.createNavigationRequest(url, options);
+    const result = await this.execute(request);
+    const { status } = result;
 
-    let response: Response | undefined;
-    let error: unknown;
-
-    try {
-      const result = await this.execute(request);
-      const { status } = result;
-
-      if (status === ExecuteStatus.CANCELED) {
-        return;
-      }
-
-      if (status === ExecuteStatus.FAILED) {
-        console.error("Request failed", result.error);
-
-        return;
-      }
-
-      response = result.response;
-
-      if (response.type === ResponseType.DATA) {
-        // this.pont.emit("invalid");
-
-        throw new Error(
-          `Expected a visit response, but got ${response.type} instead.`
-        );
-      }
-
-      this.pont.getStateManager().applySideEffects(response);
-      this.pont.getStateManager().updateState(response);
-      // this.pont.emit("success");
-    } catch (error) {
-      // this.pont.emit("error");
-
-      throw error;
-    } finally {
-      // this.pont.emit("finish");
+    if (status === ExecuteStatus.CANCELED) {
+      return;
     }
+
+    if (status === ExecuteStatus.FAILED) {
+      console.error("Request failed", result.error);
+
+      return;
+    }
+
+    const { response } = result;
+
+    this.pont.getStateManager().applySideEffects(response);
+    this.pont.getStateManager().updateState(response);
   }
 
   public async get(

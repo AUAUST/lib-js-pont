@@ -6,10 +6,16 @@ import { transporter } from "@core/tests/mocks/Transporter.js";
 import { expect, test, vitest } from "vitest";
 
 test("Pont handles response using the response handler", async () => {
+  const handle: ServiceObject<"responseHandler">["handle"] = (
+    pont,
+    request,
+    response
+  ) => {
+    return EmptyResponse.create(response);
+  };
+
   const responseHandler = {
-    handle: vitest.fn((pont, response) => {
-      return EmptyResponse.create(response);
-    }),
+    handle: vitest.fn(handle),
   } satisfies ServiceObject<"responseHandler">;
 
   const pont = Pont.create().init({
@@ -23,10 +29,10 @@ test("Pont handles response using the response handler", async () => {
   await pont.visit("/");
 
   expect(responseHandler.handle).toHaveBeenCalledOnce();
-  expect(responseHandler.handle.mock.lastCall![1]).toBeInstanceOf(RawResponse);
+  expect(responseHandler.handle.mock.lastCall![2]).toBeInstanceOf(RawResponse);
 
   await pont.post("/invalid");
 
   expect(responseHandler.handle).toHaveBeenCalledTimes(2);
-  expect(responseHandler.handle.mock.lastCall![1]).toBeInstanceOf(RawResponse);
+  expect(responseHandler.handle.mock.lastCall![2]).toBeInstanceOf(RawResponse);
 });
