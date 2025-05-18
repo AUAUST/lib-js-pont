@@ -4,9 +4,7 @@ import { concern } from "@core/src/concerns/index.js";
 export const HasSingleton = concern(
   <B extends Constructor<object>>(base: B) =>
     class HasSingleton extends base {
-      static instance: InstanceType<B> | undefined;
-
-      static getInstance(): InstanceType<B> {
+      static getInstance<T extends Constructor<any>>(this: T): InstanceType<T> {
         // @ts-expect-error
         return (this.instance ??= new this());
       }
