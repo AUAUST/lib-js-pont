@@ -16,7 +16,7 @@
     "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
-    "@auaust/primitive-kit": "^0.41.5",
+    "@auaust/primitive-kit": "^0.41.7",
     "@changesets/cli": "^2.29.3",
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.4",
