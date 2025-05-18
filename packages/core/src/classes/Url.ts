@@ -25,7 +25,7 @@ export class Url extends Creatable() implements WithPont {
     this.url = new URL(url, this.getBaseUrl());
     this.params = UrlParams.create(this, this.url.searchParams, params);
 
-    forwardCalls(this.params, this, ["getParams", "setParam"]);
+    forwardCalls(this.params, <Url>this, ["getParams", "setParam"]);
   }
 
   public get pont(): Pont {

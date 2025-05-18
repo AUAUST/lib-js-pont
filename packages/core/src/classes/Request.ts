@@ -68,9 +68,9 @@ export class Request extends Creatable() implements WithPont {
     this.data = RequestData.create(this, data);
     this.headers = RequestHeaders.create(this, headers);
 
-    forwardCalls(this.data, this, ["getContentType", "getData"]);
-    forwardCalls(this.url, this, ["getParams", "getUrl"]);
-    forwardCalls(this.headers, this, ["getHeaders", "setHeader"]);
+    forwardCalls(this.data, <Request>this, ["getContentType", "getData"]);
+    forwardCalls(this.url, <Request>this, ["getParams", "getUrl"]);
+    forwardCalls(this.headers, <Request>this, ["getHeaders", "setHeader"]);
   }
 
   public get pont() {

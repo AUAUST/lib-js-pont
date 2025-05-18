@@ -25,7 +25,7 @@ export type PontInit = {
   StateManagerInit;
 
 interface Pont
-  extends Pick<EventsManager, "emit" | "on" | keyof EventRegistrars> {}
+  extends Pick<EventsManager, "emit" | "on" | "once" | keyof EventRegistrars> {}
 
 interface Pont
   extends Pick<
@@ -83,7 +83,7 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
       state: StateManager.create(this),
     };
 
-    forwardCalls(this.managers.events, this, [
+    forwardCalls(this.managers.events, this.pont, [
       "emit",
       "on",
       "once",
@@ -98,7 +98,7 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
       "onUnhandled",
     ]);
 
-    forwardCalls(this.managers.requests, this, [
+    forwardCalls(this.managers.requests, this.pont, [
       "getBaseUrl",
       "data",
       "visit",
@@ -109,9 +109,9 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
       "patch",
     ]);
 
-    forwardCalls(this.managers.services, this, ["use"]);
+    forwardCalls(this.managers.services, this.pont, ["use"]);
 
-    forwardCalls(this.managers.state, this, [
+    forwardCalls(this.managers.state, this.pont, [
       "getGlobalProps",
       "getLayout",
       "getLayoutProps",
@@ -174,5 +174,3 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
 }
 
 export { Pont };
-
-type test = keyof Pont & keyof EventsManager;
