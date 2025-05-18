@@ -1,4 +1,4 @@
-import { F, type Fn, s } from "@auaust/primitive-kit";
+import { F, type Fn, O, S, s } from "@auaust/primitive-kit";
 import type { Pont } from "@core/src/classes/Pont.js";
 import type { Request } from "@core/src/classes/Request.js";
 import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
@@ -72,11 +72,19 @@ export type EventListener<T extends EventName = EventName> = (
   event: PontEvent<T>
 ) => void | false;
 
+export type EventRegistrars = {
+  [K in EventName as `on${Capitalize<K>}`]: (
+    listener: EventListener<K>
+  ) => () => void;
+};
+
+export interface EventsManager extends EventRegistrars {}
+
 /**
  * The EventsManager class is responsible for storing and dispatching events.
  */
 export class EventsManager extends Manager {
-  protected readonly config: Record<EventName, EventConfig> = {
+  protected static readonly config: Record<EventName, EventConfig> = {
     before: {
       cancelable: true,
     },
@@ -106,6 +114,17 @@ export class EventsManager extends Manager {
     },
   };
 
+  static {
+    for (const name of O.keys(this.config)) {
+      // @ts-expect-error
+      this.prototype[`on${S.capitalize(name)}`] = function (
+        listener: EventListener
+      ) {
+        return this.on(name, listener);
+      };
+    }
+  }
+
   protected readonly listeners: { [K in EventName]?: Set<EventListener<K>> } =
     {};
 
@@ -128,15 +147,15 @@ export class EventsManager extends Manager {
   }
 
   public eventExists(name: string): name is EventName {
-    return name in this.config;
+    return name in EventsManager.config;
   }
 
   public getEventNames(): EventName[] {
-    return Object.keys(this.config) as EventName[];
+    return Object.keys(EventsManager.config) as EventName[];
   }
 
   protected getEventConfig<T extends EventName>(name: T): EventConfig {
-    return this.config[name];
+    return EventsManager.config[name];
   }
 
   protected getListeners<T extends EventName>(name: T): Set<EventListener<T>> {
@@ -166,26 +185,6 @@ export class EventsManager extends Manager {
     this.on(name, wrappedListener);
 
     return () => this.off(name, wrappedListener);
-  }
-
-  public onBefore(listener: EventListener<"before">) {
-    return this.on("before", listener);
-  }
-
-  public onUnhandled(listener: EventListener<"unhandled">) {
-    return this.on("unhandled", listener);
-  }
-
-  public onSuccess(listener: EventListener<"success">) {
-    return this.on("success", listener);
-  }
-
-  public onError(listener: EventListener<"error">) {
-    return this.on("error", listener);
-  }
-
-  public onFinish(listener: EventListener<"finish">) {
-    return this.on("finish", listener);
   }
 
   protected off(name: EventName, listener: Fn): boolean {

@@ -3,6 +3,7 @@ import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
 import { HasSingleton } from "@core/src/concerns/HasSingleton.js";
 import type { WithPont } from "@core/src/contracts/WithPont.js";
+import type { EventRegistrars } from "@core/src/managers/EventsManager.js";
 import {
   EventsManager,
   HeadersManager,
@@ -24,17 +25,7 @@ export type PontInit = {
   StateManagerInit;
 
 interface Pont
-  extends Pick<
-    EventsManager,
-    | "emit"
-    | "on"
-    | "once"
-    | "onBefore"
-    | "onUnhandled"
-    | "onSuccess"
-    | "onError"
-    | "onFinish"
-  > {}
+  extends Pick<EventsManager, "emit" | "on" | keyof EventRegistrars> {}
 
 interface Pont
   extends Pick<
@@ -97,10 +88,14 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
       "on",
       "once",
       "onBefore",
-      "onUnhandled",
-      "onSuccess",
       "onError",
+      "onException",
       "onFinish",
+      "onPrevented",
+      "onReceived",
+      "onStart",
+      "onSuccess",
+      "onUnhandled",
     ]);
 
     forwardCalls(this.managers.requests, this, [
@@ -179,3 +174,5 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
 }
 
 export { Pont };
+
+type test = keyof Pont & keyof EventsManager;
