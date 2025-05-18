@@ -14,10 +14,10 @@ export type Effect =
       /**
        * The effect type. The frontend application should provide a handler for each used effect type, or a default handler.
        */
-      type: string;
+      readonly type: string;
 
       /**
        * The effect payload. Any additional data needed to execute the effect.
        */
-      props?: unknown;
+      readonly props?: unknown;
     };

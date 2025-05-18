@@ -1,5 +1,6 @@
 import { O, P, S } from "@auaust/primitive-kit";
 import type { RequestHeadersInit } from "@core/src/classes/RequestHeaders.js";
+import { Header } from "@core/src/enums/Header.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import { parseHeaders } from "@core/src/utils/headers.js";
 import { PONT_CORE_VERSION } from "@core/src/utils/internals.js";
@@ -15,7 +16,7 @@ export type HeadersManagerInit = {
 export class HeadersManager extends Manager {
   protected defaultHeaders: Record<string, string> = {};
   protected coreHeaders: Record<string, string> = {
-    "x-pont": PONT_CORE_VERSION,
+    [Header.PONT]: PONT_CORE_VERSION,
   };
 
   public init(init?: HeadersManagerInit): this {

@@ -2,6 +2,7 @@ import { S } from "@auaust/primitive-kit";
 import type { Request } from "@core/src/classes/Request.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
 import type { WithPont } from "@core/src/contracts/WithPont.js";
+import { Header } from "@core/src/enums/Header.js";
 import { parseHeaders } from "@core/src/utils/headers.js";
 /**
  * A value that can be used to initialize the request headers.
@@ -36,7 +37,7 @@ export class RequestHeaders extends Creatable() implements WithPont {
 
   public getCoreHeaders(): Record<string, string> {
     return {
-      "x-pont-type": this.request.getType(),
+      [Header.TYPE]: this.request.getType(),
     };
   }
 

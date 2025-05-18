@@ -10,7 +10,7 @@ import { Url } from "@core/src/classes/Url.js";
 import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
 import type { WithPont } from "@core/src/contracts/WithPont.js";
-import { RequestType } from "@core/src/enums/RequestType.js";
+import { ExchangeType } from "@core/src/enums/ExchangeType.js";
 import type { RequestOptions } from "@core/src/types/requests.js";
 import { forwardCalls } from "@core/src/utils/forwardCalls.js";
 import {
@@ -20,7 +20,7 @@ import {
 } from "@core/src/utils/methods.js";
 
 export type RequestInit = {
-  type: RequestType;
+  type: ExchangeType;
   url: string;
   method?: Method | MethodString;
   data?: RequestDataInit;
@@ -39,7 +39,7 @@ export interface Request
  * It includes the URL, the method, the body, the headers.
  */
 export class Request extends Creatable() implements WithPont {
-  protected readonly type: RequestType;
+  protected readonly type: ExchangeType;
   protected readonly url: Url;
   protected readonly method: Method;
   protected readonly data: RequestData;
@@ -62,7 +62,7 @@ export class Request extends Creatable() implements WithPont {
   ) {
     super();
 
-    this.type = type ?? RequestType.NAVIGATION;
+    this.type = type ?? ExchangeType.NAVIGATION;
     this.method = toMethod(method, Method.GET);
     this.url = this.pont.createUrl(url, params);
     this.data = RequestData.create(this, data);
@@ -87,7 +87,7 @@ export class Request extends Creatable() implements WithPont {
     };
   }
 
-  public getType(): RequestType {
+  public getType(): ExchangeType {
     return this.type;
   }
 

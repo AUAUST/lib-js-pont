@@ -7,9 +7,9 @@ import type {
   ValidResponseInstance,
 } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
+import { ExchangeType } from "@core/src/enums/ExchangeType.js";
 import { ExecuteStatus } from "@core/src/enums/ExecuteStatus.js";
 import { Method } from "@core/src/enums/Method.js";
-import { RequestType } from "@core/src/enums/RequestType.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import type { ResponseParcel } from "@core/src/services/Transporter.js";
@@ -255,7 +255,7 @@ export class RequestsManager extends Manager {
   }
 
   public createRequest(
-    type: RequestType,
+    type: ExchangeType,
     url: string,
     options: Omit<RequestInit, "url" | "type">
   ): Request {
@@ -266,13 +266,13 @@ export class RequestsManager extends Manager {
     url: string,
     options: Omit<RequestInit, "url" | "type">
   ): Request {
-    return this.createRequest(RequestType.DATA, url, options);
+    return this.createRequest(ExchangeType.DATA, url, options);
   }
 
   public createNavigationRequest(
     url: string,
     options: Omit<RequestInit, "url" | "type">
   ): Request {
-    return this.createRequest(RequestType.NAVIGATION, url, options);
+    return this.createRequest(ExchangeType.NAVIGATION, url, options);
   }
 }
