@@ -1,24 +1,34 @@
+import { O } from "@auaust/primitive-kit";
 import {
-  type BaseResponseInit,
-  Response,
-} from "@core/src/classes/Responses/Response.js";
+  ValidResponse,
+  type ValidResponseInit,
+} from "@core/src/classes/Responses/ValidResponse.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 import type { PageProps, PropsGroups } from "@core/src/types/app.js";
 import type { PageName } from "@core/src/types/utils.js";
 
-export interface PartialResponseInit extends BaseResponseInit {
-  type: ResponseType.PARTIAL;
+export interface PartialResponseInit extends ValidResponseInit {
+  type?: ResponseType.PARTIAL;
   intendedPage: PageName;
   propsGroups: Partial<PropsGroups>;
 }
 
-export class PartialResponse extends Response<ResponseType.PARTIAL> {
+export class PartialResponse extends ValidResponse {
+  public readonly type: ResponseType.PARTIAL;
   protected readonly intendedPage: PageName;
+  protected declare readonly propsGroups: PropsGroups;
 
-  public constructor(init: Omit<PartialResponseInit, "type">) {
-    super({ ...init, type: ResponseType.PARTIAL });
+  public constructor(init: PartialResponseInit) {
+    super(init);
 
+    this.type = ResponseType.PARTIAL;
     this.intendedPage = init.intendedPage;
+    this.propsGroups.layout = O.from(init.propsGroups?.layout);
+    this.propsGroups.page = O.from(init.propsGroups?.page);
+  }
+
+  public getType() {
+    return this.type;
   }
 
   public getIntendedPage(): PageName {

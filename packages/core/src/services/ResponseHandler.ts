@@ -1,17 +1,17 @@
 import { A, B, N, O, S } from "@auaust/primitive-kit";
 import type { Request } from "@core/src/classes/Request.js";
-import { EmptyResponse } from "@core/src/classes/Responses/EmptyResponse.js";
-import {
-  Response,
-  type ResponseInstance,
-} from "@core/src/classes/Responses/Response.js";
+import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
+import { type ResponseInstance } from "@core/src/classes/Responses/Response.js";
+import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { Service } from "@core/src/classes/Service.js";
-import { ResponseType } from "@core/src/enums/ResponseType.js";
+import { ExchangeType } from "@core/src/enums/ExchangeType.js";
+import { Header } from "@core/src/enums/Header.js";
+import { isResponseType, ResponseType } from "@core/src/enums/ResponseType.js";
 import type { ResponseParcel } from "@core/src/services/Transporter.js";
-import type { PropsGroups } from "@core/src/types/app.js";
-import type { Effects } from "@core/src/types/effects.js";
-import type { ErrorBag } from "@core/src/types/errors.js";
-import { RequestType } from "../enums/RequestType.js";
+import { EmptyResponse } from "../classes/Responses/EmptyResponse.js";
+import { PartialResponse } from "../classes/Responses/PartialResponse.js";
+import { VisitResponse } from "../classes/Responses/VisitResponse.js";
+import { Effects } from "../types/effects.js";
 
 /**
  * Handles a raw response from the server and converts it into a usable format.
@@ -23,96 +23,61 @@ export type ResponseHandlerSignature = (
   parcel: ResponseParcel
 ) => ResponseInstance;
 
-type ResponseContext = {
-  payload: {
-    type: ResponseType;
-    [key: string]: unknown;
-  };
-  status: number;
-  url: string;
-  title?: string;
-  errors?: ErrorBag;
-  effects?: Effects;
-  propsGroups: Partial<PropsGroups>;
-};
-
 export class ResponseHandlerService extends Service<"responseHandler"> {
   protected request!: Request;
   protected parcel!: ResponseParcel;
-  protected type!: ResponseType;
+  protected type!: ExchangeType;
   protected status!: number;
   protected url!: URL;
   protected headers!: Headers;
   protected data!: unknown;
+  protected json?: any;
 
   public override handle(request: Request, parcel: ResponseParcel) {
     this.request = request;
     this.parcel = parcel;
 
     try {
-      this.headers = this.parseHeaders();
+      this.prepare();
 
-      this.ensurePontResponse();
-
-      this.type = this.parseResponseType();
-
-      this.ensureResponseType();
-
-      this.status = this.parseStatus();
-      this.url = this.parseUrl();
-    } catch (error) {
-      return Response.unhandled(parcel, error.message);
-    }
-
-    const payload = this.payload();
-
-    if (!payload) {
-      // If there is no payload but the response is ok,
-      // we return an EmptyResponse. It simply means the
-      // request was successful, but there is nothing to do.
-      if (parcel.isOk()) {
-        return EmptyResponse.create({ url, status });
+      if (this.type === ExchangeType.DATA) {
+        return this.handleDataResponse();
       }
 
-      return Response.unhandled(parcel, "Invalid payload");
+      if (this.type === ExchangeType.NAVIGATION) {
+        return this.handleNavigationResponse();
+      }
+    } catch (error) {
+      return UnhandledResponse.create({
+        ...parcel,
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
     }
 
-    this.data = payload;
-
-    const type = payload.type;
-
-    if (
-      (request.getType() === RequestType.DATA) !==
-      (type === ResponseType.DATA)
-    ) {
-      return Response.unhandled(
-        parcel,
-        request.getType() === RequestType.DATA
-          ? "Expected a data response"
-          : "Expected a navigation response"
-      );
-    }
-
-    const title = this.title();
-    const errors = this.errors();
-    const effects = this.effects();
-    const propsGroups = this.propsGroups();
-
-    return this.createResponse(type, parcel, {
-      payload,
-      url,
-      status,
-      title,
-      errors,
-      effects,
-      propsGroups,
+    return UnhandledResponse.create({
+      ...parcel,
+      error: new Error("Invalid response type"),
     });
   }
 
   protected prepare(): void {
+    this.headers = this.parseHeaders();
+
+    this.ensurePontResponse();
+
+    this.type = this.parseExchangeType();
     this.status = this.parseStatus();
     this.url = this.parseUrl();
-    this.headers = this.parseHeaders();
+    this.json = this.parseJson();
+  }
+
+  protected ensurePontResponse(): void {
+    const pont = this.headers.get(Header.PONT);
+
+    // If the header is not exactly set to `1` or `true`, it's not a valid Pont response.
+    if (!B.isLoose(pont) || !B.from(pont)) {
+      throw new Error("The response does not contain the x-pont header");
+    }
   }
 
   protected parseStatus(): number {
@@ -155,110 +120,171 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     return new Headers(headers);
   }
 
-  protected ensurePontResponse(): void {
-    const pont = this.headers.get("x-pont");
-
-    // If the header is not exactly set to `1` or `true`, it's not a valid Pont response.
-    if (B.isLoose(pont) && !B.from(pont)) {
-      throw new Error("The response does not contain the x-pont header");
-    }
-  }
-
-  protected ensureResponseType(): void {
-    const responseType = this.headers.get("x-pont-type");
+  protected parseExchangeType(): ExchangeType {
+    const responseType = this.headers.get(Header.TYPE);
     const requestType = this.request.getType();
 
-    if (responseType === ResponseType.DATA) {
-      if (requestType !== RequestType.DATA) {
-        throw new Error(
-          "A data response was received from a navigation request"
-        );
-      }
-
-      return;
+    if (
+      responseType === ExchangeType.NAVIGATION &&
+      requestType === responseType
+    ) {
+      return ExchangeType.NAVIGATION;
     }
 
-    if (requestType === RequestType.DATA) {
-      if (responseType !== ResponseType.DATA) {
-        throw new Error(
-          "A navigation response was received from a data request"
-        );
-      }
-
-      return;
+    if (responseType === ExchangeType.DATA && requestType === responseType) {
+      return ExchangeType.DATA;
     }
 
+    if (
+      responseType === ExchangeType.DATA &&
+      requestType === ExchangeType.NAVIGATION
+    ) {
+      throw new Error("A data response was received from a navigation request");
+    }
+
+    if (
+      responseType === ExchangeType.NAVIGATION &&
+      requestType === ExchangeType.DATA
+    ) {
+      throw new Error("A navigation response was received from a data request");
+    }
+
+    throw new Error("An invalid response type was received");
+  }
+
+  protected parseJson(): object | undefined {
     if (this.headers.get("content-type") !== "application/json") {
-      throw new Error(
-        "A navigation response was received without JSON content"
-      );
+      return undefined;
+    }
+
+    const data = this.parcel.data;
+
+    if (S.is(data)) {
+      return JSON.parse(data);
+    }
+
+    if (O.isStrict(data)) {
+      return data;
     }
   }
 
-  // createResponse(
-  //   type: ResponseType,
-  //   response: RawResponse,
-  //   context: ResponseContext
-  // ) {
-  //   switch (S.lower(type)) {
-  //     case ResponseType.VISIT:
-  //       return this.createVisitResponse(response, context);
-  //     case ResponseType.PARTIAL:
-  //       return this.createPartialResponse(response, context);
-  //     case ResponseType.EMPTY:
-  //       return this.createEmptyResponse(response, context);
-  //     case ResponseType.DATA:
-  //       return this.createDataResponse(response, context);
-  //     // Should never happen, but just in case
-  //     default:
-  //       return Response.unhandled(response, "Invalid response type");
-  //   }
-  // }
+  protected handleDataResponse(): DataResponse {
+    return DataResponse.create({
+      url: this.url,
+      status: this.status,
+      headers: this.headers,
+      data: this.json ?? this.parcel.data,
+    });
+  }
 
-  // createVisitResponse(
-  //   response: RawResponse,
-  //   context: ResponseContext
-  // ): VisitResponse | UnhandledResponse {
-  //   const { payload, propsGroups } = context;
+  protected handleNavigationResponse(): ResponseInstance {
+    const type = this.getResponseType();
 
-  //   const page = S.is(payload.page) ? payload.page : undefined;
+    if (type === ResponseType.VISIT) {
+      return VisitResponse.create({
+        url: this.url,
+        status: this.status,
+        headers: this.headers,
+        page: this.getPage(),
+        layout: this.getLayout(),
+        propsGroups: {
+          page: this.getPageProps(),
+          layout: this.getLayoutProps(),
+          global: this.getGlobalProps(),
+        },
+        effects: this.getEffects(),
+      });
+    }
 
-  //   if (!page) {
-  //     return Response.unhandled(response, "Missing page component");
-  //   }
+    if (type === ResponseType.PARTIAL) {
+      return PartialResponse.create({
+        url: this.url,
+        status: this.status,
+        headers: this.headers,
+        intendedPage: this.getIntendedPage(),
+        propsGroups: {
+          page: this.getPageProps(),
+          layout: this.getLayoutProps(),
+          global: this.getGlobalProps(),
+        },
+        effects: this.getEffects(),
+      });
+    }
 
-  //   const url = S.is(payload.url) ? payload.url : undefined;
+    if (type === ResponseType.EMPTY) {
+      return EmptyResponse.create({
+        url: this.url,
+        status: this.status,
+        headers: this.headers,
+        effects: this.getEffects(),
+      });
+    }
 
-  //   if (!url) {
-  //     return Response.unhandled(response, "Missing URL");
-  //   }
+    return UnhandledResponse.create({
+      url: this.url,
+      status: this.status,
+      headers: this.headers,
+      reason: "The response does not contain a valid type",
+    });
+  }
 
-  //   const layout = S.is(payload.layout) ? payload.layout : undefined;
+  protected getResponseType(): ResponseType {
+    const type = this.json?.type;
 
-  //   propsGroups.page = O(O.deepGet(payload, "propsGroups.page"));
-  //   propsGroups.layout = O(O.deepGet(payload, "propsGroups.layout"));
+    if (isResponseType(type)) {
+      return type;
+    }
 
-  //   return VisitResponse.create({
-  //     ...context,
-  //     url,
-  //     page,
-  //     layout,
-  //     propsGroups,
-  //   });
-  // }
+    throw new Error("The response does not contain a valid type");
+  }
 
-  // createEmptyResponse(
-  //   response: RawResponse,
-  //   context: ResponseContext
-  // ): EmptyResponse {
-  //   return EmptyResponse.create(context);
-  // }
+  protected getPage() {
+    const page = this.json?.page;
 
-  // createPartialResponse(
-  //   response: RawResponse,
-  //   context: ResponseContext
-  // ): PartialResponse | UnhandledResponse {
-  //   const { payload } = context;
+    if (S.is(page)) {
+      return page;
+    }
+
+    throw new Error("The response does not contain a valid page");
+  }
+
+  protected getLayout() {
+    const layout = this.json?.layout;
+
+    return S.is(layout) ? layout : undefined;
+  }
+
+  protected getIntendedPage() {
+    const page = this.json?.intendedPage;
+
+    if (S.is(page)) {
+      return page;
+    }
+
+    throw new Error("The response does not contain a valid intended page");
+  }
+
+  protected getGlobalProps() {
+    return this.json?.propsGroups?.global;
+  }
+
+  protected getLayoutProps() {
+    return this.json?.propsGroups?.layout;
+  }
+
+  protected getPageProps() {
+    return this.json?.propsGroups?.page;
+  }
+
+  protected getEffects(): Effects {
+    const json = this.json;
+
+    if (O.in("effects", json)) {
+      return A.wrap(json.effects);
+    }
+
+    return [];
+  }
 
   //   const intendedPage = S.is(payload.page) ? payload.page : undefined;
 
@@ -282,81 +308,81 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
   //   });
   // }
 
-  payload(): { type: ResponseType; [key: string]: unknown } | undefined {
-    const json = this.parcel.getJson();
+  // payload(): { type: ResponseType; [key: string]: unknown } | undefined {
+  //   const json = this.parcel.getJson();
 
-    // If the response has no JSON data, it is not valid.
-    // The JSON data is required to include the response type, props and such.
-    if (!O.is(json)) {
-      return;
-    }
+  //   // If the response has no JSON data, it is not valid.
+  //   // The JSON data is required to include the response type, props and such.
+  //   if (!O.is(json)) {
+  //     return;
+  //   }
 
-    // If the response type is not set, it is not valid.
-    // It is required for the server to specify the response type
-    // otherwise the client cannot know how to handle it.
-    if (!Response.isValidType(json.type)) {
-      return;
-    }
+  //   // // If the response type is not set, it is not valid.
+  //   // // It is required for the server to specify the response type
+  //   // // otherwise the client cannot know how to handle it.
+  //   // if (!Response.isValidType(json.type)) {
+  //   //   return;
+  //   // }
 
-    // @ts-expect-error - The type is not inferred correctly
-    return json;
-  }
+  //   // @ts-expect-error - The type is not inferred correctly
+  //   return json;
+  // }
 
-  title(): string | undefined {
-    return S.is(this.data.title) ? this.data.title : undefined;
-  }
+  // title(): string | undefined {
+  //   return S.is(this.data.title) ? this.data.title : undefined;
+  // }
 
-  errors(): ErrorBag | undefined {
-    if (!O.is(this.data.errors)) {
-      return;
-    }
+  // errors(): ErrorBag | undefined {
+  //   if (!O.is(this.data.errors)) {
+  //     return;
+  //   }
 
-    const errorBag: ErrorBag = {};
+  //   const errorBag: ErrorBag = {};
 
-    for (const [field, errors] of O.entries(this.data.errors)) {
-      if (S.is(field)) {
-        errorBag[field] = A.wrap(errors).map(S).filter(Boolean);
-      }
-    }
+  //   for (const [field, errors] of O.entries(this.data.errors)) {
+  //     if (S.is(field)) {
+  //       errorBag[field] = A.wrap(errors).map(S).filter(Boolean);
+  //     }
+  //   }
 
-    return errorBag;
-  }
+  //   return errorBag;
+  // }
 
-  effects(): Effects | undefined {
-    if (!A.is(this.data.effects)) {
-      return;
-    }
+  // effects(): Effects | undefined {
+  //   if (!A.is(this.data.effects)) {
+  //     return;
+  //   }
 
-    const effects: Effects = [];
+  //   const effects: Effects = [];
 
-    for (const effect of this.data.effects) {
-      if (O.is(effect)) {
-        if (S.is(effect.type)) {
-          // @ts-expect-error - The type is not inferred correctly
-          effects.push(effect);
-        }
-      } else if (S.is(effect)) {
-        effects.push({ type: effect });
-      }
-    }
+  //   for (const effect of this.data.effects) {
+  //     if (O.is(effect)) {
+  //       if (S.is(effect.type)) {
+  //         // @ts-expect-error - The type is not inferred correctly
+  //         effects.push(effect);
+  //       }
+  //     } else if (S.is(effect)) {
+  //       effects.push({ type: effect });
+  //     }
+  //   }
 
-    return effects;
-  }
+  //   return effects;
+  // }
 
-  /**
-   * Tries extracting the global props groups from the response data.
-   */
-  propsGroups(): Partial<PropsGroups> {
-    const propsGroups: Partial<PropsGroups> = {};
+  // /**
+  //  * Tries extracting the global props groups from the response data.
+  //  */
+  // propsGroups(): Partial<PropsGroups> {
+  //   const propsGroups: Partial<PropsGroups> = {};
 
-    if (!O.is(this.data.propsGroups)) {
-      return propsGroups;
-    }
+  //   if (!O.is(this.data.propsGroups)) {
+  //     return propsGroups;
+  //   }
 
-    if (O.is(this.data.propsGroups.global)) {
-      propsGroups.global = this.data.propsGroups.global;
-    }
+  //   if (O.is(this.data.propsGroups.global)) {
+  //     propsGroups.global = this.data.propsGroups.global;
+  //   }
 
-    return propsGroups;
-  }
+  //   return propsGroups;
+  // }
 }

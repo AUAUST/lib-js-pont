@@ -1,31 +1,26 @@
-import { F, S, type ObjectType } from "@auaust/primitive-kit";
 import {
-  Response,
-  type BaseResponseInit,
-} from "@core/src/classes/Responses/Response.js";
+  ValidResponse,
+  type ValidResponseInit,
+} from "@core/src/classes/Responses/ValidResponse.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 
-export interface DataResponseInit<T = unknown> extends BaseResponseInit {
-  type: ResponseType.DATA;
-  /** The raw data to be sent to the client. */
+export interface DataResponseInit<T> extends ValidResponseInit {
+  type?: ResponseType.PARTIAL;
   data: T;
 }
 
-export class DataResponse extends Response<ResponseType.DATA> {
-  protected readonly data: unknown;
+export class DataResponse<T = unknown> extends ValidResponse {
+  public readonly type: ResponseType.PARTIAL;
+  protected readonly data: T;
 
-  public constructor(init: Omit<DataResponseInit, "type">) {
-    super({ ...init, type: ResponseType.DATA });
+  public constructor(init: DataResponseInit<T>) {
+    super(init);
 
+    this.type = ResponseType.PARTIAL;
     this.data = init.data;
   }
 
-  public getData(): ObjectType {
-    if (S.is(this.data)) {
-      return F.try(JSON.parse, this.data, this.data);
-    }
-
-    // @ts-expect-error
+  public getData(): T {
     return this.data;
   }
 }

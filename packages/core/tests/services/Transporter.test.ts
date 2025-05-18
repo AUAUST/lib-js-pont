@@ -12,8 +12,11 @@ test("Pont sends requests using the transporter", async () => {
           url: options.url,
           headers: {
             "x-pont": "true",
+            "x-pont-type": "data",
           },
-          data: { comment: `${(<any>options.data)?.name} is a great name!` },
+          data: {
+            comment: `${(<any>options.data)?.name} is a great name!`,
+          },
         };
       }
 
@@ -22,6 +25,7 @@ test("Pont sends requests using the transporter", async () => {
         url: options.url,
         headers: {
           "x-pont": "true",
+          "x-pont-type": "navigation",
         },
       };
     }),

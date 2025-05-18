@@ -1,53 +1,81 @@
 import { s, S } from "@auaust/primitive-kit";
-import { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
-import { RequestOptions } from "@core/src/types/requests.js";
+import type { ResponseParcel } from "@core/src/services/Transporter.js";
+import type { RequestOptions } from "@core/src/types/requests.js";
 import { vitest } from "vitest";
 
 type MockTransporter = typeof transporter;
 
 export const transporter = {
-  handle: vitest.fn(async function (this: MockTransporter, pont, options) {
+  handle: vitest.fn(async function (
+    this: MockTransporter,
+    pont,
+    options: RequestOptions
+  ) {
     const { url, path, method } = this.parseOptions(options);
 
     switch (`${method} ${path}`) {
       case "GET /":
-        return this.ok().withData({
-          message: "Hello, world!",
+        return this.defaults({
+          url: url.toString(),
+          data: {
+            type: "visit",
+          },
         });
+
+      case "GET /not-found":
+        return this.defaults({
+          status: 404,
+          url: url.toString(),
+        });
+
+      case "GET /non-pont":
+        return {
+          status: 200,
+          url: url.toString(),
+          headers: {},
+        };
+
+      case "GET /network-error":
+      case "POST /network-error":
+        throw new Error("Network Error: Failed to fetch");
     }
 
-    return RawResponse.notFound();
+    return this.defaults({
+      status: 404,
+      url: url.toString(),
+    });
   }),
 
-  parseOptions(options: RequestOptions) {
-    const url = new URL(options.url);
-    const path: string = s(url.pathname)
-      .trimEnd("/")
-      .ensureStart("/")
-      .lower()
-      .toString();
-    const method = S.upper(options.method);
-    const headers = new Headers(options.headers);
-
+  defaults(
+    result: Partial<ResponseParcel> & Pick<ResponseParcel, "url">
+  ): ResponseParcel {
     return {
-      method,
-      url,
-      path,
-      headers,
+      status: 200,
+      ...result,
+      headers: {
+        ...result.headers,
+        "x-pont": "true",
+        "x-pont-type": "navigation",
+      },
     };
   },
 
-  response() {
-    return new RawResponse().withHeaders({
-      "x-pont": "true",
-    });
-  },
+  parseOptions(options: RequestOptions) {
+    const url = new URL(options.url);
+    const headers = new Headers(options.headers);
 
-  ok() {
-    return this.response().withStatus(200);
-  },
-
-  notFound() {
-    return this.response().withStatus(404);
+    return {
+      type: S.lower(options.type),
+      method: S.upper(options.method),
+      url,
+      path: <string>(
+        s(url.pathname).trimEnd("/").ensureStart("/").lower().toString()
+      ),
+      headers,
+      data:
+        headers.get("content-type") === "application/json" && S.is(options.data)
+          ? JSON.parse(options.data)
+          : options.data,
+    };
   },
 };

@@ -1,26 +1,28 @@
-import { Creatable } from "@core/src/concerns/Creatable.js";
+import {
+  Response,
+  type BaseResponseInit,
+} from "@core/src/classes/Responses/Response.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
-import type { ResponseParcel } from "@core/src/services/Transporter.js";
 
-/**
- * The UnhandledResponse class only exists to
- * indicate that the response handler was unable to
- * process the response. This is typically due to
- * the response not being a Pont response.
- */
-export class UnhandledResponse extends Creatable() {
+export interface UnhandledResponseInit extends BaseResponseInit {
+  type?: ResponseType.UNHANDLED;
+  reason?: string;
+  error?: Error;
+}
+
+export class UnhandledResponse extends Response {
   public readonly type = ResponseType.UNHANDLED;
+  public readonly reason?: string;
+  public readonly error?: Error;
 
-  public constructor(
-    public readonly parcel: ResponseParcel,
-    public reason?: string
-  ) {
-    super();
+  public constructor(init: UnhandledResponseInit) {
+    super(init);
+
+    this.reason = init.reason;
+    this.error = init.error;
   }
 
-  public withReason(reason: string): this {
-    this.reason = reason;
-
-    return this;
+  public getReason(): string | undefined {
+    return this.reason ?? this.error?.message;
   }
 }

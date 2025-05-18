@@ -3,8 +3,8 @@ import { Request, type RequestInit } from "@core/src/classes/Request.js";
 import type { RequestDataInit } from "@core/src/classes/RequestData.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import type {
+  NavigationResponseInstance,
   Response,
-  ValidResponseInstance,
 } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { ExchangeType } from "@core/src/enums/ExchangeType.js";
@@ -14,6 +14,7 @@ import { ResponseType } from "@core/src/enums/ResponseType.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import type { ResponseParcel } from "@core/src/services/Transporter.js";
 import { getBaseUrl } from "@core/src/utils/getBaseUrl.js";
+import { ValidResponse } from "../classes/Responses/ValidResponse.js";
 
 export type RequestManagerInit = {
   /**
@@ -80,11 +81,11 @@ export class RequestsManager extends Manager {
     }
   }
 
-  protected handleResponse(
+  protected handleParcel(
     request: Request,
     parcel: ResponseParcel
   ): MightFail<
-    { response: ValidResponseInstance },
+    { response: NavigationResponseInstance },
     { error: Error; response: UnhandledResponse }
   > {
     const response = this.pont.use("responseHandler", request, parcel);
@@ -93,7 +94,7 @@ export class RequestsManager extends Manager {
       return {
         success: false,
         error: new Error(
-          `The response was not handled. Reason: ${response.reason}`
+          `The response was not handled. Reason: ${response.getReason()}`
         ),
         response,
       };
@@ -113,7 +114,7 @@ export class RequestsManager extends Manager {
       return { status: ExecuteStatus.CANCELED };
     }
 
-    let response: ValidResponseInstance | undefined;
+    let response: NavigationResponseInstance | undefined;
 
     this.pont.emit("start", { request });
 
@@ -121,10 +122,7 @@ export class RequestsManager extends Manager {
       const transport = await this.transport(request);
 
       if (!transport.success) {
-        this.pont.emit("exception", {
-          request,
-          error: transport.error,
-        });
+        this.pont.emit("exception", { request, error: transport.error });
 
         return { status: ExecuteStatus.FAILED, error: transport.error };
       }
@@ -133,7 +131,7 @@ export class RequestsManager extends Manager {
 
       this.pont.emit("received", { request, parcel });
 
-      const handling = this.handleResponse(request, parcel);
+      const handling = this.handleParcel(request, parcel);
 
       if (!handling.success) {
         const { canceled } = this.pont.emit("unhandled", {
@@ -141,10 +139,7 @@ export class RequestsManager extends Manager {
           response: handling.response,
         });
 
-        return {
-          status: ExecuteStatus.FAILED,
-          error: handling.error,
-        };
+        return { status: ExecuteStatus.FAILED, error: handling.error };
       }
 
       response = handling.response;
@@ -159,10 +154,7 @@ export class RequestsManager extends Manager {
         });
       }
 
-      return {
-        status: ExecuteStatus.SUCCESS,
-        response: <R>response,
-      };
+      return { status: ExecuteStatus.SUCCESS, response: <R>response };
     } finally {
       this.pont.emit("finish", { request, response });
     }
@@ -193,7 +185,7 @@ export class RequestsManager extends Manager {
 
   public async visit(url: string, options: VisitOptions = {}): Promise<void> {
     const request = this.createNavigationRequest(url, options);
-    const result = await this.execute(request);
+    const result = await this.execute<ValidResponse>(request);
     const { status } = result;
 
     if (status === ExecuteStatus.CANCELED) {
