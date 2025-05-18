@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@auaust/pont": "workspace:*",
-    "@auaust/primitive-kit": "^0.41.5"
+    "@auaust/primitive-kit": "^0.41.7"
   },
   "devDependencies": {
     "tsup-preset-solid": "^2.2.0"
