@@ -1,3 +1,5 @@
+import { enumValidator } from "@core/src/enums/index.js";
+
 /**
  * The possible types of responses received by the server.
  * Unhandled responses are a special case set by the response handler,
@@ -9,3 +11,5 @@ export enum ResponseType {
   EMPTY = "empty",
   UNHANDLED = "unhandled",
 }
+
+export const isResponseType = enumValidator(ResponseType);
