@@ -63,7 +63,7 @@ export class RequestsManager extends Manager {
         const { canceled } = this.pont.emit("unhandled", { request, response });
 
         throw new Error(
-          `A response could not be handled. Please check the response type: ${response.type}. Reason: ${response.reason}`
+          `A response could not be handled. Reason: ${response.reason}`
         );
       }
 
@@ -84,7 +84,7 @@ export class RequestsManager extends Manager {
     const response = await this.execute<DataResponse>(request);
 
     if (!response) {
-      return;
+      throw new Error("The request was canceled.");
     }
 
     if (response.type !== ResponseType.DATA) {

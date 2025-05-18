@@ -1,4 +1,4 @@
-import { F, type Fn, S, s } from "@auaust/primitive-kit";
+import { F, type Fn, s } from "@auaust/primitive-kit";
 import type { Pont } from "@core/src/classes/Pont.js";
 import type { Request } from "@core/src/classes/Request.js";
 import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
@@ -104,9 +104,9 @@ export class EventsManager extends Manager {
         continue;
       }
 
-      const event = <EventName>S.afterStart(name, "on").toLowerCase();
+      const event = s(name).afterStart("on").decapitalize().toString();
 
-      if (event) {
+      if (event && this.eventExists(event)) {
         this.on(event, listener as EventListener<typeof event>);
       }
     }
@@ -193,16 +193,20 @@ export class EventsManager extends Manager {
     name: T,
     event: PontEvent<T>
   ): boolean {
-    const shouldDispatch = this.callListeners(name, event);
+    const shouldDispatch = this.callInternalListeners(name, event);
 
-    if (shouldDispatch && typeof window !== "undefined") {
+    if (!shouldDispatch) {
+      return true;
+    }
+
+    if (typeof window !== "undefined") {
       window.dispatchEvent(event);
     }
 
-    return shouldDispatch && !event.defaultPrevented;
+    return !!event.defaultPrevented;
   }
 
-  protected callListeners<T extends EventName>(
+  protected callInternalListeners<T extends EventName>(
     name: T,
     event: PontEvent<T>
   ): boolean {
