@@ -75,6 +75,10 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
     state: StateManager;
   };
 
+  public static from(init: PontInit): Pont {
+    return Pont.create().init(init);
+  }
+
   public constructor() {
     super();
 
@@ -128,23 +132,13 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
     defaultHeaders,
     initialState,
     services,
-    onBefore,
-    onError,
-    onFinish,
-    onSuccess,
-    onUnhandled,
+    listeners,
   }: PontInit = {}): this {
     if (this.initialized) {
       throw new Error("Pont is already initialized");
     }
 
-    this.managers.events.init({
-      onBefore,
-      onUnhandled,
-      onSuccess,
-      onError,
-      onFinish,
-    });
+    this.managers.events.init({ listeners });
     this.managers.state.init({ initialState });
     this.managers.requests.init({ baseUrl });
     this.managers.headers.init({ defaultHeaders });

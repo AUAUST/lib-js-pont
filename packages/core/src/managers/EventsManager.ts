@@ -6,8 +6,12 @@ import type { ResponseInstance } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { Manager } from "@core/src/managers/Manager.js";
 
-export type EventsManagerInit = {
+export type EventListeners = {
   [K in EventName as `on${Capitalize<K>}`]?: EventListener<K>;
+};
+
+export type EventsManagerInit = {
+  listeners?: EventListeners;
 };
 
 /**
@@ -34,6 +38,10 @@ export type PontEventsMap = {
   unhandled: {
     request: Request;
     response: UnhandledResponse;
+  };
+  exception: {
+    request: Request;
+    error: Error;
   };
   error: {
     request: Request;
@@ -93,21 +101,26 @@ export class EventsManager extends Manager {
     finish: {
       cancelable: false,
     },
+    exception: {
+      cancelable: false,
+    },
   };
 
   protected readonly listeners: { [K in EventName]?: Set<EventListener<K>> } =
     {};
 
   public init(init: EventsManagerInit = {}): this {
-    for (const [name, listener] of Object.entries(init)) {
-      if (!listener) {
-        continue;
-      }
+    if (init.listeners) {
+      for (const [name, listener] of Object.entries(init.listeners)) {
+        if (!listener) {
+          continue;
+        }
 
-      const event = s(name).afterStart("on").decapitalize().toString();
+        const event = s(name).afterStart("on").decapitalize().toString();
 
-      if (event && this.eventExists(event)) {
-        this.on(event, listener as EventListener<typeof event>);
+        if (event && this.eventExists(event)) {
+          this.on(event, listener as EventListener<typeof event>);
+        }
       }
     }
 

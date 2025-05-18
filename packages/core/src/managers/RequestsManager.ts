@@ -8,6 +8,8 @@ import { RequestType } from "@core/src/enums/RequestType.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import { getBaseUrl } from "@core/src/utils/getBaseUrl.js";
+import { RawResponse } from "../classes/Responses/RawResponse.js";
+import { ExecuteStatus } from "../enums/ExecuteStatus.js";
 
 export type RequestManagerInit = {
   /**
@@ -17,6 +19,19 @@ export type RequestManagerInit = {
 };
 
 export type VisitOptions = Omit<RequestInit, "url" | "type">;
+
+export type ExecuteResult<R extends Response = Response> =
+  | {
+      status: ExecuteStatus.CANCELED;
+    }
+  | {
+      status: ExecuteStatus.FAILED;
+      error?: Error;
+    }
+  | {
+      status: ExecuteStatus.SUCCESS;
+      response: R;
+    };
 
 /**
  * The requests manager is responsible for managing the requests made by the app.
@@ -39,20 +54,32 @@ export class RequestsManager extends Manager {
 
   public async execute<R extends Response = Response>(
     request: Request
-  ): Promise<R | undefined> {
+  ): Promise<ExecuteResult<R>> {
     const { canceled } = this.pont.emit("before", { request });
 
     if (canceled) {
       this.pont.emit("prevented", { request });
 
-      return;
+      return { status: ExecuteStatus.CANCELED };
     }
 
     try {
       this.pont.emit("start", { request });
 
       const options = request.getOptions();
-      const rawResponse = await this.pont.use("transporter", options);
+
+      let rawResponse: RawResponse | undefined;
+
+      try {
+        rawResponse = await this.pont.use("transporter", options);
+      } catch (error) {
+        this.pont.emit("exception", {
+          request,
+          error: error instanceof Error ? error : new Error(String(error)),
+        });
+
+        return { status: ExecuteStatus.FAILED };
+      }
 
       this.pont.emit("received", { request, rawResponse });
 
@@ -69,7 +96,10 @@ export class RequestsManager extends Manager {
 
       this.pont.emit("success", { request, response });
 
-      return <R>response;
+      return {
+        status: ExecuteStatus.SUCCESS,
+        response: <R>response,
+      };
     } finally {
       this.pont.emit("finish", { request });
     }
@@ -81,11 +111,18 @@ export class RequestsManager extends Manager {
   ): Promise<T | undefined> {
     const request = this.createDataRequest(url, options);
 
-    const response = await this.execute<DataResponse>(request);
+    const result = await this.execute<DataResponse>(request);
+    const { status } = result;
 
-    if (!response) {
+    if (status === ExecuteStatus.CANCELED) {
       throw new Error("The request was canceled.");
     }
+
+    if (status === ExecuteStatus.FAILED) {
+      throw result.error;
+    }
+
+    const { response } = result;
 
     if (response.type !== ResponseType.DATA) {
       throw new Error(
@@ -105,11 +142,20 @@ export class RequestsManager extends Manager {
     let error: unknown;
 
     try {
-      response = await this.execute(request);
+      const result = await this.execute(request);
+      const { status } = result;
 
-      if (!response) {
+      if (status === ExecuteStatus.CANCELED) {
         return;
       }
+
+      if (status === ExecuteStatus.FAILED) {
+        console.error("Request failed", result.error);
+
+        return;
+      }
+
+      response = result.response;
 
       if (response.type === ResponseType.DATA) {
         // this.pont.emit("invalid");

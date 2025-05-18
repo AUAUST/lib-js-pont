@@ -1,3 +1,6 @@
+/**
+ * Known HTTP methods.
+ */
 export const enum Method {
   GET = "get",
   POST = "post",

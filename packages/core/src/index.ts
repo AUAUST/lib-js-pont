@@ -7,6 +7,10 @@ export { pont, Pont };
 export { Request, Service, Url, UrlParams } from "@core/src/classes/index.js";
 export { type PontInit } from "@core/src/classes/Pont.js";
 export { Method } from "@core/src/enums/Method.js";
+export type {
+  EventListener,
+  EventListeners,
+} from "@core/src/managers/EventsManager.js";
 export {
   EventsManager,
   HeadersManager,
