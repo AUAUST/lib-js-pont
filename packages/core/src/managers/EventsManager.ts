@@ -51,6 +51,10 @@ export type PontEventsMap = {
     request: Request;
     response?: ResponseInstance;
   };
+  invalid: {
+    request: Request;
+    response: ResponseInstance;
+  };
 };
 
 export type EventConfig = EventInit & {
@@ -110,6 +114,9 @@ export class EventsManager extends Manager {
       cancelable: false,
     },
     exception: {
+      cancelable: false,
+    },
+    invalid: {
       cancelable: false,
     },
   };
