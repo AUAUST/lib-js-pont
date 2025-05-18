@@ -11,7 +11,6 @@ import type {
   PartialResponse,
   PartialResponseInit,
 } from "@core/src/classes/Responses/PartialResponse.js";
-import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
 import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import type {
   VisitResponse,
@@ -19,6 +18,7 @@ import type {
 } from "@core/src/classes/Responses/VisitResponse.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
+import { ResponseParcel } from "@core/src/services/Transporter.js";
 import type { PropsGroups } from "@core/src/types/app.js";
 import type { Effects } from "@core/src/types/effects.js";
 import type { ErrorBag } from "@core/src/types/errors.js";
@@ -99,10 +99,10 @@ export abstract class Response<
   }
 
   public static unhandled(
-    raw: RawResponse,
+    parcel: ResponseParcel,
     reason?: string
   ): UnhandledResponse {
-    return UnhandledResponse.create(raw, reason);
+    return UnhandledResponse.create(parcel, reason);
   }
 
   public readonly type: T;

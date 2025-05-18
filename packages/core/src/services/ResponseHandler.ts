@@ -1,17 +1,13 @@
-import { A, O, S } from "@auaust/primitive-kit";
+import { A, B, N, O, S } from "@auaust/primitive-kit";
 import type { Request } from "@core/src/classes/Request.js";
-import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import { EmptyResponse } from "@core/src/classes/Responses/EmptyResponse.js";
-import { PartialResponse } from "@core/src/classes/Responses/PartialResponse.js";
-import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
 import {
   Response,
   type ResponseInstance,
 } from "@core/src/classes/Responses/Response.js";
-import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
-import { VisitResponse } from "@core/src/classes/Responses/VisitResponse.js";
 import { Service } from "@core/src/classes/Service.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
+import type { ResponseParcel } from "@core/src/services/Transporter.js";
 import type { PropsGroups } from "@core/src/types/app.js";
 import type { Effects } from "@core/src/types/effects.js";
 import type { ErrorBag } from "@core/src/types/errors.js";
@@ -24,8 +20,8 @@ import { RequestType } from "../enums/RequestType.js";
  */
 export type ResponseHandlerSignature = (
   request: Request,
-  response: RawResponse
-) => ResponseInstance | UnhandledResponse;
+  parcel: ResponseParcel
+) => ResponseInstance;
 
 type ResponseContext = {
   payload: {
@@ -41,34 +37,44 @@ type ResponseContext = {
 };
 
 export class ResponseHandlerService extends Service<"responseHandler"> {
-  protected response!: RawResponse;
-  protected data!: { type: ResponseType; [key: string]: unknown };
+  protected request!: Request;
+  protected parcel!: ResponseParcel;
+  protected type!: ResponseType;
+  protected status!: number;
+  protected url!: URL;
+  protected headers!: Headers;
+  protected data!: unknown;
 
-  public override handle(request: Request, response: RawResponse) {
-    this.response = response;
+  public override handle(request: Request, parcel: ResponseParcel) {
+    this.request = request;
+    this.parcel = parcel;
 
-    if (!this.isPontResponse()) {
-      return Response.unhandled(response, "Missing x-pont header");
+    try {
+      this.headers = this.parseHeaders();
+
+      this.ensurePontResponse();
+
+      this.type = this.parseResponseType();
+
+      this.ensureResponseType();
+
+      this.status = this.parseStatus();
+      this.url = this.parseUrl();
+    } catch (error) {
+      return Response.unhandled(parcel, error.message);
     }
 
-    const url = response.getUrl();
-
-    if (!S.is(url)) {
-      return Response.unhandled(response, "Missing URL");
-    }
-
-    const status = response.getStatus();
     const payload = this.payload();
 
     if (!payload) {
       // If there is no payload but the response is ok,
       // we return an EmptyResponse. It simply means the
       // request was successful, but there is nothing to do.
-      if (response.isOk()) {
+      if (parcel.isOk()) {
         return EmptyResponse.create({ url, status });
       }
 
-      return Response.unhandled(response, "Invalid payload");
+      return Response.unhandled(parcel, "Invalid payload");
     }
 
     this.data = payload;
@@ -80,7 +86,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       (type === ResponseType.DATA)
     ) {
       return Response.unhandled(
-        response,
+        parcel,
         request.getType() === RequestType.DATA
           ? "Expected a data response"
           : "Expected a navigation response"
@@ -92,7 +98,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     const effects = this.effects();
     const propsGroups = this.propsGroups();
 
-    return this.createResponse(type, response, {
+    return this.createResponse(type, parcel, {
       payload,
       url,
       status,
@@ -103,100 +109,181 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     });
   }
 
-  isPontResponse(): boolean {
-    // If the header "x-pont" is not set, this means the response is not a Pont response.
-    return this.response.hasHeader("x-pont");
+  protected prepare(): void {
+    this.status = this.parseStatus();
+    this.url = this.parseUrl();
+    this.headers = this.parseHeaders();
   }
 
-  createResponse(
-    type: ResponseType,
-    response: RawResponse,
-    context: ResponseContext
-  ) {
-    switch (S.lower(type)) {
-      case ResponseType.VISIT:
-        return this.createVisitResponse(response, context);
-      case ResponseType.PARTIAL:
-        return this.createPartialResponse(response, context);
-      case ResponseType.EMPTY:
-        return this.createEmptyResponse(response, context);
-      case ResponseType.DATA:
-        return this.createDataResponse(response, context);
-      // Should never happen, but just in case
-      default:
-        return Response.unhandled(response, "Invalid response type");
+  protected parseStatus(): number {
+    const status = this.parcel.status;
+
+    if (
+      !N.is(status) ||
+      !N.isInteger(status) ||
+      !N.isBetween(status, 200, 599)
+    ) {
+      throw new Error("A parcel with an invalid status was received");
+    }
+
+    return status;
+  }
+
+  protected parseUrl(): URL {
+    const url = this.parcel.url;
+
+    if (url instanceof URL) {
+      return url;
+    }
+
+    const baseUrl = this.pont.getBaseUrl();
+
+    if (URL.canParse(url, baseUrl)) {
+      return new URL(url, baseUrl);
+    }
+
+    throw new Error("A parcel with an invalid URL was received");
+  }
+
+  protected parseHeaders(): Headers {
+    const headers = this.parcel.headers;
+
+    if (headers instanceof Headers) {
+      return headers;
+    }
+
+    return new Headers(headers);
+  }
+
+  protected ensurePontResponse(): void {
+    const pont = this.headers.get("x-pont");
+
+    // If the header is not exactly set to `1` or `true`, it's not a valid Pont response.
+    if (B.isLoose(pont) && !B.from(pont)) {
+      throw new Error("The response does not contain the x-pont header");
     }
   }
 
-  createVisitResponse(
-    response: RawResponse,
-    context: ResponseContext
-  ): VisitResponse | UnhandledResponse {
-    const { payload, propsGroups } = context;
+  protected ensureResponseType(): void {
+    const responseType = this.headers.get("x-pont-type");
+    const requestType = this.request.getType();
 
-    const page = S.is(payload.page) ? payload.page : undefined;
+    if (responseType === ResponseType.DATA) {
+      if (requestType !== RequestType.DATA) {
+        throw new Error(
+          "A data response was received from a navigation request"
+        );
+      }
 
-    if (!page) {
-      return Response.unhandled(response, "Missing page component");
+      return;
     }
 
-    const url = S.is(payload.url) ? payload.url : undefined;
+    if (requestType === RequestType.DATA) {
+      if (responseType !== ResponseType.DATA) {
+        throw new Error(
+          "A navigation response was received from a data request"
+        );
+      }
 
-    if (!url) {
-      return Response.unhandled(response, "Missing URL");
+      return;
     }
 
-    const layout = S.is(payload.layout) ? payload.layout : undefined;
-
-    propsGroups.page = O(O.deepGet(payload, "propsGroups.page"));
-    propsGroups.layout = O(O.deepGet(payload, "propsGroups.layout"));
-
-    return VisitResponse.create({
-      ...context,
-      url,
-      page,
-      layout,
-      propsGroups,
-    });
-  }
-
-  createEmptyResponse(
-    response: RawResponse,
-    context: ResponseContext
-  ): EmptyResponse {
-    return EmptyResponse.create(context);
-  }
-
-  createPartialResponse(
-    response: RawResponse,
-    context: ResponseContext
-  ): PartialResponse | UnhandledResponse {
-    const { payload } = context;
-
-    const intendedPage = S.is(payload.page) ? payload.page : undefined;
-
-    if (!intendedPage) {
-      return Response.unhandled(response, "Missing intended page component");
+    if (this.headers.get("content-type") !== "application/json") {
+      throw new Error(
+        "A navigation response was received without JSON content"
+      );
     }
-
-    return PartialResponse.create({
-      ...context,
-      intendedPage,
-    });
   }
 
-  createDataResponse(
-    response: RawResponse,
-    context: ResponseContext
-  ): DataResponse {
-    return DataResponse.create({
-      ...context,
-      data: context.payload.data,
-    });
-  }
+  // createResponse(
+  //   type: ResponseType,
+  //   response: RawResponse,
+  //   context: ResponseContext
+  // ) {
+  //   switch (S.lower(type)) {
+  //     case ResponseType.VISIT:
+  //       return this.createVisitResponse(response, context);
+  //     case ResponseType.PARTIAL:
+  //       return this.createPartialResponse(response, context);
+  //     case ResponseType.EMPTY:
+  //       return this.createEmptyResponse(response, context);
+  //     case ResponseType.DATA:
+  //       return this.createDataResponse(response, context);
+  //     // Should never happen, but just in case
+  //     default:
+  //       return Response.unhandled(response, "Invalid response type");
+  //   }
+  // }
+
+  // createVisitResponse(
+  //   response: RawResponse,
+  //   context: ResponseContext
+  // ): VisitResponse | UnhandledResponse {
+  //   const { payload, propsGroups } = context;
+
+  //   const page = S.is(payload.page) ? payload.page : undefined;
+
+  //   if (!page) {
+  //     return Response.unhandled(response, "Missing page component");
+  //   }
+
+  //   const url = S.is(payload.url) ? payload.url : undefined;
+
+  //   if (!url) {
+  //     return Response.unhandled(response, "Missing URL");
+  //   }
+
+  //   const layout = S.is(payload.layout) ? payload.layout : undefined;
+
+  //   propsGroups.page = O(O.deepGet(payload, "propsGroups.page"));
+  //   propsGroups.layout = O(O.deepGet(payload, "propsGroups.layout"));
+
+  //   return VisitResponse.create({
+  //     ...context,
+  //     url,
+  //     page,
+  //     layout,
+  //     propsGroups,
+  //   });
+  // }
+
+  // createEmptyResponse(
+  //   response: RawResponse,
+  //   context: ResponseContext
+  // ): EmptyResponse {
+  //   return EmptyResponse.create(context);
+  // }
+
+  // createPartialResponse(
+  //   response: RawResponse,
+  //   context: ResponseContext
+  // ): PartialResponse | UnhandledResponse {
+  //   const { payload } = context;
+
+  //   const intendedPage = S.is(payload.page) ? payload.page : undefined;
+
+  //   if (!intendedPage) {
+  //     return Response.unhandled(response, "Missing intended page component");
+  //   }
+
+  //   return PartialResponse.create({
+  //     ...context,
+  //     intendedPage,
+  //   });
+  // }
+
+  // createDataResponse(
+  //   response: RawResponse,
+  //   context: ResponseContext
+  // ): DataResponse {
+  //   return DataResponse.create({
+  //     ...context,
+  //     data: context.payload.data,
+  //   });
+  // }
 
   payload(): { type: ResponseType; [key: string]: unknown } | undefined {
-    const json = this.response.getJson();
+    const json = this.parcel.getJson();
 
     // If the response has no JSON data, it is not valid.
     // The JSON data is required to include the response type, props and such.

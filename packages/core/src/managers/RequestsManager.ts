@@ -2,7 +2,6 @@ import { S, type ObjectType } from "@auaust/primitive-kit";
 import { Request, type RequestInit } from "@core/src/classes/Request.js";
 import type { RequestDataInit } from "@core/src/classes/RequestData.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
-import { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
 import type {
   Response,
   ValidResponseInstance,
@@ -13,6 +12,7 @@ import { Method } from "@core/src/enums/Method.js";
 import { RequestType } from "@core/src/enums/RequestType.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 import { Manager } from "@core/src/managers/Manager.js";
+import type { ResponseParcel } from "@core/src/services/Transporter.js";
 import { getBaseUrl } from "@core/src/utils/getBaseUrl.js";
 
 export type RequestManagerInit = {
@@ -63,14 +63,14 @@ export class RequestsManager extends Manager {
 
   protected async transport(
     request: Request
-  ): Promise<MightFail<{ rawResponse: RawResponse }>> {
+  ): Promise<MightFail<{ parcel: ResponseParcel }>> {
     try {
       const options = request.getOptions();
-      const rawResponse = await this.pont.use("transporter", options);
+      const parcel = await this.pont.use("transporter", options);
 
       return {
         success: true,
-        rawResponse,
+        parcel,
       };
     } catch (error) {
       return {
@@ -82,12 +82,12 @@ export class RequestsManager extends Manager {
 
   protected handleResponse(
     request: Request,
-    rawResponse: RawResponse
+    parcel: ResponseParcel
   ): MightFail<
     { response: ValidResponseInstance },
     { error: Error; response: UnhandledResponse }
   > {
-    const response = this.pont.use("responseHandler", request, rawResponse);
+    const response = this.pont.use("responseHandler", request, parcel);
 
     if (response.type === ResponseType.UNHANDLED) {
       return {
@@ -129,11 +129,11 @@ export class RequestsManager extends Manager {
         return { status: ExecuteStatus.FAILED, error: transport.error };
       }
 
-      const { rawResponse } = transport;
+      const { parcel } = transport;
 
-      this.pont.emit("received", { request, rawResponse });
+      this.pont.emit("received", { request, parcel });
 
-      const handling = this.handleResponse(request, rawResponse);
+      const handling = this.handleResponse(request, parcel);
 
       if (!handling.success) {
         const { canceled } = this.pont.emit("unhandled", {

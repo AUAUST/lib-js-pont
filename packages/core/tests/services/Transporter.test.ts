@@ -1,6 +1,5 @@
 import { Pont } from "@auaust/pont";
 import type { ServiceObject } from "@auaust/pont/services";
-import { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
 import type { RequestOptions } from "@core/src/types/requests.js";
 import { expect, test, vitest } from "vitest";
 
@@ -8,23 +7,23 @@ test("Pont sends requests using the transporter", async () => {
   const transporter = {
     handle: vitest.fn(async (pont, options: RequestOptions) => {
       if (options.headers?.["x-pont-type"] === "data") {
-        return RawResponse.ok()
-          .withStatus(200)
-          .withUrl(options.url)
-          .withHeaders({
+        return {
+          status: 200,
+          url: options.url,
+          headers: {
             "x-pont": "true",
-          })
-          .withData({
-            type: "data",
-            data: { comment: `${(<any>options.data)?.name} is a great name!` },
-          });
+          },
+          data: { comment: `${(<any>options.data)?.name} is a great name!` },
+        };
       }
 
-      return RawResponse.ok()
-        .withHeaders({
+      return {
+        status: 200,
+        url: options.url,
+        headers: {
           "x-pont": "true",
-        })
-        .withUrl(options.url);
+        },
+      };
     }),
   } satisfies ServiceObject<"transporter">;
 

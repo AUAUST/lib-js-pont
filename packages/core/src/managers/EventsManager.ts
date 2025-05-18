@@ -1,10 +1,10 @@
 import { F, type Fn, O, S, s } from "@auaust/primitive-kit";
 import type { Pont } from "@core/src/classes/Pont.js";
 import type { Request } from "@core/src/classes/Request.js";
-import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
 import type { ResponseInstance } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { Manager } from "@core/src/managers/Manager.js";
+import type { ResponseParcel } from "@core/src/services/Transporter.js";
 import type { ErrorBag } from "@core/src/types/errors.js";
 
 export type EventListeners = {
@@ -30,7 +30,7 @@ export type PontEventsMap = {
   };
   received: {
     request: Request;
-    rawResponse: RawResponse;
+    parcel: ResponseParcel;
   };
   success: {
     request: Request;

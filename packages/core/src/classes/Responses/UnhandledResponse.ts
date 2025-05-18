@@ -1,6 +1,6 @@
-import type { RawResponse } from "@core/src/classes/Responses/RawResponse.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
+import type { ResponseParcel } from "@core/src/services/Transporter.js";
 
 /**
  * The UnhandledResponse class only exists to
@@ -12,7 +12,7 @@ export class UnhandledResponse extends Creatable() {
   public readonly type = ResponseType.UNHANDLED;
 
   public constructor(
-    public readonly rawResponse: RawResponse,
+    public readonly parcel: ResponseParcel,
     public reason?: string
   ) {
     super();
