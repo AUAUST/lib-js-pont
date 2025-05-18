@@ -76,7 +76,7 @@ export type PontEvent<T extends EventName = EventName> = CustomEvent<
 export type EventListener<T extends EventName = EventName> = (
   this: Pont,
   event: PontEvent<T>
-) => void | false;
+) => unknown | false;
 
 export type EventRegistrars = {
   [K in EventName as `on${Capitalize<K>}`]: (
