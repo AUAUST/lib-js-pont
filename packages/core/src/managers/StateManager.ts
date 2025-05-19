@@ -1,8 +1,9 @@
-import { O } from "@auaust/primitive-kit";
+import { O, S } from "@auaust/primitive-kit";
 import {
   Response,
   ValidResponseInstance,
 } from "@core/src/classes/Responses/Response.js";
+import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import type {
   GlobalProps,
@@ -11,10 +12,9 @@ import type {
   PropsGroups,
   StateInit,
 } from "@core/src/types/app.js";
+import type { Effects } from "@core/src/types/effects.js";
+import type { ErrorBag } from "@core/src/types/errors.js";
 import type { LayoutName, PageName } from "@core/src/types/utils.js";
-import { ExchangeMode } from "../enums/ExchangeType.js";
-import { Effects } from "../types/effects.js";
-import { ErrorBag } from "../types/errors.js";
 
 export type StateManagerInit = {
   initialState?: StateInit;
@@ -74,32 +74,33 @@ export class StateManager extends Manager {
     return this.propsGroups.global;
   }
 
-  public applySideEffects(response: ValidResponseInstance): void {
+  public handleSideEffects(response: ValidResponseInstance): void {
     if (response.mode === ExchangeMode.DATA) {
-      return this.applyEffects(response.getEffects());
+      return this.handleEffects(response.getEffects());
     }
 
     this.applyTitle(response.getTitle());
-    this.applyErrors(response.getErrors());
-    this.applyEffects(response.getEffects());
-    // if (title) {
-    //   this.applyTitle(title);
-    // }
-    // const errors = response.getErrors();
-    // if (errors) {
-    //   this.applyErrors(errors);
-    // }
-    // const effects = response.getEffects();
-    // if (effects) {
-    //   this.applyEffects(effects);
-    // }
+    this.handleErrors(response.getErrors());
+    this.handleEffects(response.getEffects());
   }
 
-  public applyTitle(title: string | undefined): void {}
+  public applyTitle(title: string | undefined): void {
+    if (!S.is(title)) {
+      return;
+    }
 
-  public applyErrors(errors: ErrorBag | undefined): void {}
+    this.title = this.transformTitle(title);
+  }
 
-  public applyEffects(effects: Effects | undefined): void {}
+  public handleErrors(errors: ErrorBag | undefined): void {}
+
+  public handleEffects(effects: Effects | undefined): void {
+    if (!effects || !effects.length) {
+      return;
+    }
+
+    console.log("Effects", effects);
+  }
 
   public updateState(response: Response, options: StateUpdateOptions = {}) {
     // switch (response.type) {
