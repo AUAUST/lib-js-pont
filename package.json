@@ -1,6 +1,7 @@
 {
   "name": "pont",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*"
   ],
