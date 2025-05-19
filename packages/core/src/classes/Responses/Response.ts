@@ -5,7 +5,8 @@ import type { PartialResponse } from "@core/src/classes/Responses/PartialRespons
 import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import type { VisitResponse } from "@core/src/classes/Responses/VisitResponse.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
-import { ResponseType } from "@core/src/enums/ResponseType.js";
+import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
+import { isResponseType, ResponseType } from "@core/src/enums/ResponseType.js";
 
 export type ResponseInstance<T extends ResponseType = ResponseType> =
   | ValidResponseInstance
@@ -47,5 +48,37 @@ export abstract class Response extends Creatable() {
 
   public isServerError(): boolean {
     return N.isBetween(this.status, 500, 599);
+  }
+
+  public isNavigation(): this is NavigationResponseInstance {
+    return "mode" in this && this.mode === ExchangeMode.NAVIGATION;
+  }
+
+  public isData(): this is DataResponse {
+    return "mode" in this && this.mode === ExchangeMode.DATA;
+  }
+
+  public isUnhandled(): this is UnhandledResponse {
+    return "type" in this && this.type === ResponseType.UNHANDLED;
+  }
+
+  public isValid(): this is ValidResponseInstance {
+    return (
+      "type" in this &&
+      isResponseType(this.type) &&
+      this.type !== ResponseType.UNHANDLED
+    );
+  }
+
+  public isPartial(): this is PartialResponse {
+    return "type" in this && this.type === ResponseType.PARTIAL;
+  }
+
+  public isEmpty(): this is EmptyResponse {
+    return "type" in this && this.type === ResponseType.EMPTY;
+  }
+
+  public isVisit(): this is VisitResponse {
+    return "type" in this && this.type === ResponseType.VISIT;
   }
 }

@@ -3,7 +3,6 @@ import {
   Response,
   ValidResponseInstance,
 } from "@core/src/classes/Responses/Response.js";
-import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import type {
   GlobalProps,
@@ -75,7 +74,7 @@ export class StateManager extends Manager {
   }
 
   public handleSideEffects(response: ValidResponseInstance): void {
-    if (response.mode === ExchangeMode.DATA) {
+    if (response.isData()) {
       return this.handleEffects(response.getEffects());
     }
 

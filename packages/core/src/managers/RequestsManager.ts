@@ -11,7 +11,6 @@ import { ValidResponse } from "@core/src/classes/Responses/ValidResponse.js";
 import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
 import { ExecuteStatus } from "@core/src/enums/ExecuteStatus.js";
 import { Method } from "@core/src/enums/Method.js";
-import { ResponseType } from "@core/src/enums/ResponseType.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import type { ResponseParcel } from "@core/src/services/Transporter.js";
 import { getBaseUrl } from "@core/src/utils/getBaseUrl.js";
@@ -90,7 +89,7 @@ export class RequestsManager extends Manager {
   > {
     const response = this.pont.use("responseHandler", request, parcel);
 
-    if (response.type === ResponseType.UNHANDLED) {
+    if (response.isUnhandled()) {
       return {
         success: false,
         error: new Error(
@@ -145,16 +144,17 @@ export class RequestsManager extends Manager {
 
       response = handling.response;
 
-      if (response.isOk()) {
-        if (response.mode === ExchangeMode.NAVIGATION && response.hasErrors()) {
-          this.pont.emit("error", {
-            request,
-            response,
-            errors: response.getErrors(),
-          });
-        } else {
-          this.pont.emit("success", { request, response });
-        }
+      if (
+        !response.isOk() ||
+        (response.isNavigation() && response.hasErrors())
+      ) {
+        this.pont.emit("error", {
+          request,
+          response,
+          errors: response.isNavigation() ? response.getErrors() : undefined,
+        });
+      } else {
+        this.pont.emit("success", { request, response });
       }
 
       return { status: ExecuteStatus.SUCCESS, response };
