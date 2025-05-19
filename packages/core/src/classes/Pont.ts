@@ -50,15 +50,26 @@ interface Pont
     | "getPageProps"
     | "getTitle"
     | "getUrl"
+    | "handleSideEffects"
+    | "updateState"
   > {}
 
 interface Pont extends Pick<ServicesManager, "use"> {}
 
+interface Pont
+  extends Pick<
+    HeadersManager,
+    | "getHeaders"
+    | "removeDefaultHeader"
+    | "setDefaultHeader"
+    | "setDefaultHeaders"
+  > {}
+
 class Pont extends Creatable(HasSingleton()) implements WithPont {
   public readonly pont: Pont;
-  protected initialized: boolean = false;
 
-  protected readonly managers: {
+  private initialized: boolean = false;
+  private readonly managers: {
     events: EventsManager;
     headers: HeadersManager;
     requests: RequestsManager;
@@ -98,6 +109,13 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
       "onUnhandled",
     ]);
 
+    forwardCalls(this.managers.headers, this.pont, [
+      "getHeaders",
+      "removeDefaultHeader",
+      "setDefaultHeader",
+      "setDefaultHeaders",
+    ]);
+
     forwardCalls(this.managers.requests, this.pont, [
       "getBaseUrl",
       "data",
@@ -119,6 +137,8 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
       "getPageProps",
       "getTitle",
       "getUrl",
+      "handleSideEffects",
+      "updateState",
     ]);
   }
 
@@ -146,26 +166,6 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
 
   public isInitialized(): boolean {
     return this.initialized;
-  }
-
-  public getEventsManager() {
-    return this.managers.events;
-  }
-
-  public getStateManager() {
-    return this.managers.state;
-  }
-
-  public getRequestsManager() {
-    return this.managers.requests;
-  }
-
-  public getHeadersManager() {
-    return this.managers.headers;
-  }
-
-  public getServicesManager() {
-    return this.managers.services;
   }
 
   public createUrl(url: string, params?: UrlParamsInit) {

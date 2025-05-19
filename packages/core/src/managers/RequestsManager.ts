@@ -181,7 +181,7 @@ export class RequestsManager extends Manager {
 
     const { response } = result;
 
-    this.pont.getStateManager().handleSideEffects(response);
+    this.pont.handleSideEffects(response);
 
     return <T>response.getData();
   }
@@ -203,8 +203,8 @@ export class RequestsManager extends Manager {
 
     const { response } = result;
 
-    this.pont.getStateManager().handleSideEffects(response);
-    this.pont.getStateManager().updateState(response);
+    this.pont.handleSideEffects(response);
+    this.pont.updateState(response);
   }
 
   public async get(

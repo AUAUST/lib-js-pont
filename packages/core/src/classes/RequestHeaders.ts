@@ -22,7 +22,7 @@ export class RequestHeaders extends Creatable() implements WithPont {
   }
 
   public getHeaders(): Record<string, string> {
-    return this.pont.getHeadersManager().getHeaders({
+    return this.pont.getHeaders({
       ...this.getDefaultHeaders(),
       ...this.headers,
       ...this.getCoreHeaders(),
