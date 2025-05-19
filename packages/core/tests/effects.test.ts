@@ -1,4 +1,4 @@
-import { Pont, type PontInit } from "@auaust/pont";
+import { type EffectContext, Pont, type PontInit } from "@auaust/pont";
 import { transporter } from "@core/tests/mocks/Transporter.js";
 import { describe } from "node:test";
 import { beforeAll, beforeEach, expect, test, vitest } from "vitest";
@@ -135,6 +135,36 @@ describe("Pont effects", () => {
 
       expect(handledInStringHandler).toBe(false);
       expect(handledInWildcardHandler).toBe(true);
+    });
+  });
+
+  describe("keep track of executions", () => {
+    test("and expose the execution count", async () => {
+      let stringHandlerCount: number | undefined;
+      let executedInStringHandler: boolean | undefined;
+      let wildcardHandlerCount: number | undefined;
+      let executedInWildcardHandler: boolean | undefined;
+
+      stringHandler.mockImplementationOnce(
+        ({ wasExecuted, executionCount }: EffectContext) => {
+          executedInStringHandler = wasExecuted;
+          stringHandlerCount = executionCount;
+        }
+      );
+
+      wildcardHandler.mockImplementationOnce(
+        ({ wasExecuted, executionCount }: EffectContext) => {
+          executedInWildcardHandler = wasExecuted;
+          wildcardHandlerCount = executionCount;
+        }
+      );
+
+      await visit();
+
+      expect(stringHandlerCount).toBe(0);
+      expect(executedInStringHandler).toBe(false);
+      expect(wildcardHandlerCount).toBe(1);
+      expect(executedInWildcardHandler).toBe(true);
     });
   });
 });

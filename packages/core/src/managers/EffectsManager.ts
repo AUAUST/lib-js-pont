@@ -26,6 +26,8 @@ export type EffectContext = {
   readonly props: unknown;
   handled: () => void;
   readonly wasHandled: boolean;
+  readonly wasExecuted: boolean;
+  readonly executionCount: number;
 };
 
 export type EffectsManagerInit = {
@@ -125,7 +127,7 @@ export class EffectsManager extends Manager {
 
     if (handlers) {
       for (const handler of handlers) {
-        handler.call(this.pont, context);
+        this.call(handler, context);
         executed = true;
       }
     }
@@ -183,6 +185,8 @@ export class EffectsManager extends Manager {
 
   protected call(handler: EffectHandler, context: EffectContext): void {
     handler.call(this.pont, context);
+    // @ts-expect-error
+    context.__incrementExecutionCount();
   }
 
   public registerEffectHandlers(effects: EffectsInit | undefined): this {
@@ -309,9 +313,14 @@ export class EffectsManager extends Manager {
     props: unknown
   ): EffectContext {
     let wasHandled = false;
+    let executionCount = 0;
 
     const handled = () => {
       wasHandled = true;
+    };
+
+    const incrementExecutionCount = () => {
+      executionCount++;
     };
 
     return {
@@ -321,6 +330,14 @@ export class EffectsManager extends Manager {
       get wasHandled() {
         return wasHandled;
       },
+      get wasExecuted() {
+        return executionCount > 0;
+      },
+      get executionCount() {
+        return executionCount;
+      },
+      // @ts-expect-error
+      __incrementExecutionCount: incrementExecutionCount,
     };
   }
 }
