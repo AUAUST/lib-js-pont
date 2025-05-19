@@ -5,9 +5,9 @@ import { enumValidator } from "@core/src/enums/index.js";
  * Whether it is a request for data or a navigation request.
  * Used to set the `x-pont-type` header.
  */
-export enum ExchangeType {
+export enum ExchangeMode {
   DATA = "data",
   NAVIGATION = "navigation",
 }
 
-export const isExchangeType = enumValidator(ExchangeType);
+export const isExchangeMode = enumValidator(ExchangeMode);

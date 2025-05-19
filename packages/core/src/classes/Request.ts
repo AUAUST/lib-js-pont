@@ -10,7 +10,7 @@ import { Url } from "@core/src/classes/Url.js";
 import type { UrlParamsInit } from "@core/src/classes/UrlParams.js";
 import { Creatable } from "@core/src/concerns/Creatable.js";
 import type { WithPont } from "@core/src/contracts/WithPont.js";
-import { ExchangeType } from "@core/src/enums/ExchangeType.js";
+import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
 import type { RequestOptions } from "@core/src/types/requests.js";
 import { forwardCalls } from "@core/src/utils/forwardCalls.js";
 import {
@@ -20,7 +20,7 @@ import {
 } from "@core/src/utils/methods.js";
 
 export type RequestInit = {
-  type: ExchangeType;
+  mode: ExchangeMode;
   url: string;
   method?: Method | MethodString;
   data?: RequestDataInit;
@@ -39,11 +39,11 @@ export interface Request
  * It includes the URL, the method, the body, the headers.
  */
 export class Request extends Creatable() implements WithPont {
-  protected readonly type: ExchangeType;
+  protected readonly mode: ExchangeMode;
   protected readonly url: Url;
   protected readonly method: Method;
-  protected readonly data: RequestData;
   protected readonly headers: RequestHeaders;
+  protected readonly data: RequestData;
 
   /**
    * Whether the request is currently being processed.
@@ -58,11 +58,11 @@ export class Request extends Creatable() implements WithPont {
 
   public constructor(
     public readonly context: WithPont,
-    { data, headers, method, params, type, url }: RequestInit
+    { data, headers, method, params, mode, url }: RequestInit
   ) {
     super();
 
-    this.type = type ?? ExchangeType.NAVIGATION;
+    this.mode = mode ?? ExchangeMode.NAVIGATION;
     this.method = toMethod(method, Method.GET);
     this.url = this.pont.createUrl(url, params);
     this.data = RequestData.create(this, data);
@@ -79,7 +79,7 @@ export class Request extends Creatable() implements WithPont {
 
   public getOptions(): RequestOptions {
     return {
-      type: this.getType(),
+      mode: this.getMode(),
       url: this.getUrl(),
       method: this.getMethod(),
       data: this.getData(),
@@ -87,8 +87,8 @@ export class Request extends Creatable() implements WithPont {
     };
   }
 
-  public getType(): ExchangeType {
-    return this.type;
+  public getMode(): ExchangeMode {
+    return this.mode;
   }
 
   public getMethod(): Method {

@@ -67,7 +67,7 @@ export const transporter = {
     const headers = new Headers(options.headers);
 
     return {
-      type: S.lower(options.type),
+      type: S.lower(options.mode),
       method: S.upper(options.method),
       url,
       path: <string>(

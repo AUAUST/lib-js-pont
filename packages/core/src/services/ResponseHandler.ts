@@ -7,7 +7,7 @@ import { type ResponseInstance } from "@core/src/classes/Responses/Response.js";
 import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { VisitResponse } from "@core/src/classes/Responses/VisitResponse.js";
 import { Service } from "@core/src/classes/Service.js";
-import { ExchangeType } from "@core/src/enums/ExchangeType.js";
+import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
 import { Header } from "@core/src/enums/Header.js";
 import { isResponseType, ResponseType } from "@core/src/enums/ResponseType.js";
 import type { ResponseParcel } from "@core/src/services/Transporter.js";
@@ -25,8 +25,8 @@ export type ResponseHandlerSignature = (
 
 export class ResponseHandlerService extends Service<"responseHandler"> {
   protected request!: Request;
+  protected mode!: ExchangeMode;
   protected parcel!: ResponseParcel;
-  protected type!: ExchangeType;
   protected status!: number;
   protected url!: URL;
   protected headers!: Headers;
@@ -40,11 +40,11 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     try {
       this.prepare();
 
-      if (this.type === ExchangeType.DATA) {
+      if (this.mode === ExchangeMode.DATA) {
         return this.handleDataResponse();
       }
 
-      if (this.type === ExchangeType.NAVIGATION) {
+      if (this.mode === ExchangeMode.NAVIGATION) {
         return this.handleNavigationResponse();
       }
     } catch (error) {
@@ -65,7 +65,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
 
     this.ensurePontResponse();
 
-    this.type = this.parseExchangeType();
+    this.mode = this.parseExchangeMode();
     this.status = this.parseStatus();
     this.url = this.parseUrl();
     this.json = this.parseJson();
@@ -120,31 +120,31 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     return new Headers(headers);
   }
 
-  protected parseExchangeType(): ExchangeType {
-    const responseType = this.headers.get(Header.TYPE);
-    const requestType = this.request.getType();
+  protected parseExchangeMode(): ExchangeMode {
+    const responseMode = this.headers.get(Header.MODE);
+    const requestMode = this.request.getMode();
 
     if (
-      responseType === ExchangeType.NAVIGATION &&
-      requestType === responseType
+      responseMode === ExchangeMode.NAVIGATION &&
+      requestMode === responseMode
     ) {
-      return ExchangeType.NAVIGATION;
+      return ExchangeMode.NAVIGATION;
     }
 
-    if (responseType === ExchangeType.DATA && requestType === responseType) {
-      return ExchangeType.DATA;
+    if (responseMode === ExchangeMode.DATA && requestMode === responseMode) {
+      return ExchangeMode.DATA;
     }
 
     if (
-      responseType === ExchangeType.DATA &&
-      requestType === ExchangeType.NAVIGATION
+      responseMode === ExchangeMode.DATA &&
+      requestMode === ExchangeMode.NAVIGATION
     ) {
       throw new Error("A data response was received from a navigation request");
     }
 
     if (
-      responseType === ExchangeType.NAVIGATION &&
-      requestType === ExchangeType.DATA
+      responseMode === ExchangeMode.NAVIGATION &&
+      requestMode === ExchangeMode.DATA
     ) {
       throw new Error("A navigation response was received from a data request");
     }

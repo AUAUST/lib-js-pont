@@ -3,7 +3,7 @@ import {
   ValidResponse,
   type ValidResponseInit,
 } from "@core/src/classes/Responses/ValidResponse.js";
-import { ExchangeType } from "@core/src/enums/ExchangeType.js";
+import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
 import type { PropsGroups } from "@core/src/types/app.js";
 import type { ErrorBag } from "@core/src/types/errors.js";
 
@@ -14,7 +14,7 @@ export interface NavigationResponseInit extends ValidResponseInit {
 }
 
 export abstract class NavigationResponse extends ValidResponse {
-  public readonly exchangeType = ExchangeType.NAVIGATION;
+  public readonly mode = ExchangeMode.NAVIGATION;
   protected readonly propsGroups: Pick<PropsGroups, "global">;
   protected readonly errors?: ErrorBag;
   protected readonly title?: string;

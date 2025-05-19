@@ -37,7 +37,7 @@ export class RequestHeaders extends Creatable() implements WithPont {
 
   public getCoreHeaders(): Record<string, string> {
     return {
-      [Header.TYPE]: this.request.getType(),
+      [Header.MODE]: this.request.getMode(),
     };
   }
 

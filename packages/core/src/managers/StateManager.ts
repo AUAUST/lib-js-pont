@@ -12,7 +12,7 @@ import type {
   StateInit,
 } from "@core/src/types/app.js";
 import type { LayoutName, PageName } from "@core/src/types/utils.js";
-import { ExchangeType } from "../enums/ExchangeType.js";
+import { ExchangeMode } from "../enums/ExchangeType.js";
 import { Effects } from "../types/effects.js";
 import { ErrorBag } from "../types/errors.js";
 
@@ -75,7 +75,7 @@ export class StateManager extends Manager {
   }
 
   public applySideEffects(response: ValidResponseInstance): void {
-    if (response.exchangeType === ExchangeType.DATA) {
+    if (response.mode === ExchangeMode.DATA) {
       return this.applyEffects(response.getEffects());
     }
 

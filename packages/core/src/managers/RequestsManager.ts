@@ -8,7 +8,7 @@ import type {
 } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { ValidResponse } from "@core/src/classes/Responses/ValidResponse.js";
-import { ExchangeType } from "@core/src/enums/ExchangeType.js";
+import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
 import { ExecuteStatus } from "@core/src/enums/ExecuteStatus.js";
 import { Method } from "@core/src/enums/Method.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
@@ -23,7 +23,7 @@ export type RequestManagerInit = {
   baseUrl?: string;
 };
 
-export type VisitOptions = Omit<RequestInit, "url" | "type">;
+export type VisitOptions = Omit<RequestInit, "url" | "mode">;
 
 export type ExecuteResult<R extends Response = Response> =
   | {
@@ -146,10 +146,7 @@ export class RequestsManager extends Manager {
       response = handling.response;
 
       if (response.isOk()) {
-        if (
-          response.exchangeType === ExchangeType.NAVIGATION &&
-          response.hasErrors()
-        ) {
+        if (response.mode === ExchangeMode.NAVIGATION && response.hasErrors()) {
           this.pont.emit("error", {
             request,
             response,
@@ -253,24 +250,24 @@ export class RequestsManager extends Manager {
   }
 
   public createRequest(
-    type: ExchangeType,
+    mode: ExchangeMode,
     url: string,
-    options: Omit<RequestInit, "url" | "type">
+    options: Omit<RequestInit, "url" | "mode">
   ): Request {
-    return Request.create(this, { ...options, url, type });
+    return Request.create(this, { ...options, url, mode });
   }
 
   public createDataRequest(
     url: string,
-    options: Omit<RequestInit, "url" | "type">
+    options: Omit<RequestInit, "url" | "mode">
   ): Request {
-    return this.createRequest(ExchangeType.DATA, url, options);
+    return this.createRequest(ExchangeMode.DATA, url, options);
   }
 
   public createNavigationRequest(
     url: string,
-    options: Omit<RequestInit, "url" | "type">
+    options: Omit<RequestInit, "url" | "mode">
   ): Request {
-    return this.createRequest(ExchangeType.NAVIGATION, url, options);
+    return this.createRequest(ExchangeMode.NAVIGATION, url, options);
   }
 }

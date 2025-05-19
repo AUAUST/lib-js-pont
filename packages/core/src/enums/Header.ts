@@ -11,7 +11,7 @@ export enum Header {
 
   /**
    * Indicates the type of the request or response.
-   * Its value is one of the `ExchangeType` enum values.
+   * Its value is one of the `ExchangeMode` enum values.
    */
-  TYPE = "x-pont-type",
+  MODE = "x-pont-mode",
 }
