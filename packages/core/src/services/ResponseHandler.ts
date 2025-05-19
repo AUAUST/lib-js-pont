@@ -1,17 +1,17 @@
 import { A, B, N, O, S } from "@auaust/primitive-kit";
 import type { Request } from "@core/src/classes/Request.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
+import { EmptyResponse } from "@core/src/classes/Responses/EmptyResponse.js";
+import { PartialResponse } from "@core/src/classes/Responses/PartialResponse.js";
 import { type ResponseInstance } from "@core/src/classes/Responses/Response.js";
 import { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
+import { VisitResponse } from "@core/src/classes/Responses/VisitResponse.js";
 import { Service } from "@core/src/classes/Service.js";
 import { ExchangeType } from "@core/src/enums/ExchangeType.js";
 import { Header } from "@core/src/enums/Header.js";
 import { isResponseType, ResponseType } from "@core/src/enums/ResponseType.js";
 import type { ResponseParcel } from "@core/src/services/Transporter.js";
-import { EmptyResponse } from "../classes/Responses/EmptyResponse.js";
-import { PartialResponse } from "../classes/Responses/PartialResponse.js";
-import { VisitResponse } from "../classes/Responses/VisitResponse.js";
-import { Effects } from "../types/effects.js";
+import type { Effects } from "@core/src/types/effects.js";
 
 /**
  * Handles a raw response from the server and converts it into a usable format.

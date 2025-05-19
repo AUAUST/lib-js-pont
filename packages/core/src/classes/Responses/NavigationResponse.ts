@@ -1,8 +1,11 @@
 import { O } from "@auaust/primitive-kit";
+import {
+  ValidResponse,
+  type ValidResponseInit,
+} from "@core/src/classes/Responses/ValidResponse.js";
 import { ExchangeType } from "@core/src/enums/ExchangeType.js";
 import type { PropsGroups } from "@core/src/types/app.js";
 import type { ErrorBag } from "@core/src/types/errors.js";
-import { ValidResponse, type ValidResponseInit } from "./ValidResponse.js";
 
 export interface NavigationResponseInit extends ValidResponseInit {
   propsGroups?: Partial<Pick<PropsGroups, "global">>;

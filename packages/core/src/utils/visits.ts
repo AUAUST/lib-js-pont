@@ -1,4 +1,4 @@
-import type { EventWithTarget } from "../types/events.js";
+import type { EventWithTarget } from "@core/src/types/events.js";
 
 export function shouldHijackClick(
   event: EventWithTarget<MouseEvent, HTMLElement>

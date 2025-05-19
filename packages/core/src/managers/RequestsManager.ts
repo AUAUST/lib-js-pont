@@ -7,6 +7,7 @@ import type {
   ValidResponseInstance,
 } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
+import { ValidResponse } from "@core/src/classes/Responses/ValidResponse.js";
 import { ExchangeType } from "@core/src/enums/ExchangeType.js";
 import { ExecuteStatus } from "@core/src/enums/ExecuteStatus.js";
 import { Method } from "@core/src/enums/Method.js";
@@ -14,7 +15,6 @@ import { ResponseType } from "@core/src/enums/ResponseType.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import type { ResponseParcel } from "@core/src/services/Transporter.js";
 import { getBaseUrl } from "@core/src/utils/getBaseUrl.js";
-import { ValidResponse } from "../classes/Responses/ValidResponse.js";
 
 export type RequestManagerInit = {
   /**
