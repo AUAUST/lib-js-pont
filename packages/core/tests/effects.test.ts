@@ -1,7 +1,7 @@
 import { Pont, type PontInit } from "@auaust/pont";
 import { transporter } from "@core/tests/mocks/Transporter.js";
 import { describe } from "node:test";
-import { beforeAll, expect, test, vitest } from "vitest";
+import { beforeAll, beforeEach, expect, test, vitest } from "vitest";
 
 describe("Pont effects", () => {
   const init: PontInit = {
@@ -22,6 +22,8 @@ describe("Pont effects", () => {
 
   let pont: Pont;
 
+  beforeEach(() => vitest.clearAllMocks());
+
   beforeAll(() => {
     pont = Pont.from({
       ...init,
@@ -35,7 +37,7 @@ describe("Pont effects", () => {
     });
   });
 
-  beforeAll(async () => {
+  const visit = async () =>
     await pont.post("/return-json-as-is", {
       effects: [
         { type: "my-string-effect", props: { message: "Hello" } },
@@ -43,10 +45,11 @@ describe("Pont effects", () => {
         { type: "does-not-exist" },
       ],
     });
-  });
 
   describe("default handler", () => {
-    test("is called only for unmatched effects", () => {
+    test("is called only for unmatched effects", async () => {
+      await visit();
+
       expect(defaultHandler).toHaveBeenCalledExactlyOnceWith(
         expect.objectContaining({
           type: "does-not-exist",
@@ -56,13 +59,27 @@ describe("Pont effects", () => {
   });
 
   describe("wildcard handler", () => {
-    test("is called for every effect", () => {
+    test("is called for every effect", async () => {
+      await visit();
+
       expect(wildcardHandler).toHaveBeenCalledTimes(3);
+
+      expect(wildcardHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "my-string-effect" })
+      );
+      expect(wildcardHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "my-regexp-effect" })
+      );
+      expect(wildcardHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "does-not-exist" })
+      );
     });
   });
 
   describe("string matcher", () => {
-    test("matches and handles exact type string", () => {
+    test("matches and handles exact type string", async () => {
+      await visit();
+
       expect(stringHandler).toHaveBeenCalledExactlyOnceWith(
         expect.objectContaining({
           type: "my-string-effect",
@@ -73,7 +90,9 @@ describe("Pont effects", () => {
   });
 
   describe("regex matcher", () => {
-    test("matches type via pattern", () => {
+    test("matches type via pattern", async () => {
+      await visit();
+
       expect(regexpHandler).toHaveBeenCalledExactlyOnceWith(
         expect.objectContaining({
           type: "my-regexp-effect",
@@ -83,14 +102,39 @@ describe("Pont effects", () => {
   });
 
   describe("function matcher", () => {
-    test("is invoked for every effect type", () => {
+    test("is invoked for every effect type", async () => {
+      await visit();
+
       expect(functionMatcher).toHaveBeenCalledWith("my-string-effect");
       expect(functionMatcher).toHaveBeenCalledWith("my-regexp-effect");
       expect(functionMatcher).toHaveBeenCalledWith("does-not-exist");
     });
 
-    test("executes handler only on positive match", () => {
+    test("executes handler only on positive match", async () => {
+      await visit();
+
       expect(functionHandler).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("have a handling state", () => {
+    test("that is shared between effects", async () => {
+      let handledInStringHandler: boolean | undefined;
+      let handledInWildcardHandler: boolean | undefined;
+
+      stringHandler.mockImplementationOnce(({ wasHandled, handled }) => {
+        handledInStringHandler = wasHandled;
+        handled();
+      });
+
+      wildcardHandler.mockImplementationOnce(({ wasHandled }) => {
+        handledInWildcardHandler = wasHandled;
+      });
+
+      await visit();
+
+      expect(handledInStringHandler).toBe(false);
+      expect(handledInWildcardHandler).toBe(true);
     });
   });
 });
