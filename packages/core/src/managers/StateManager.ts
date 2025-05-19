@@ -69,23 +69,18 @@ export class StateManager extends Manager {
   }
 
   public applySideEffects(response: Response): void {
-    const title = response.getTitle();
-
-    if (title) {
-      this.applyTitle(title);
-    }
-
-    const errors = response.getErrors();
-
-    if (errors) {
-      this.applyErrors(errors);
-    }
-
-    const effects = response.getEffects();
-
-    if (effects) {
-      this.applyEffects(effects);
-    }
+    // const title = response.getTitle();
+    // if (title) {
+    //   this.applyTitle(title);
+    // }
+    // const errors = response.getErrors();
+    // if (errors) {
+    //   this.applyErrors(errors);
+    // }
+    // const effects = response.getEffects();
+    // if (effects) {
+    //   this.applyEffects(effects);
+    // }
   }
 
   public applyTitle(title: string): void {}

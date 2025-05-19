@@ -1,34 +1,42 @@
 import { Pont } from "@auaust/pont";
 import type { ServiceObject } from "@auaust/pont/services";
+import { ResponseParcel } from "@core/src/services/Transporter.js";
 import type { RequestOptions } from "@core/src/types/requests.js";
 import { expect, test, vitest } from "vitest";
 
 test("Pont sends requests using the transporter", async () => {
   const transporter = {
-    handle: vitest.fn(async (pont, options: RequestOptions) => {
-      if (options.headers?.["x-pont-type"] === "data") {
+    handle: vitest.fn(
+      async (pont, options: RequestOptions): Promise<ResponseParcel> => {
+        if (options.headers?.["x-pont-type"] === "data") {
+          return {
+            status: 200,
+            url: options.url,
+            headers: {
+              "x-pont": "true",
+              "x-pont-type": "data",
+            },
+            data: {
+              comment: `${(<any>options.data)?.name} is a great name!`,
+            },
+          };
+        }
+
         return {
           status: 200,
           url: options.url,
           headers: {
             "x-pont": "true",
-            "x-pont-type": "data",
+            "x-pont-type": "navigation",
+            "content-type": "application/json",
           },
           data: {
-            comment: `${(<any>options.data)?.name} is a great name!`,
+            type: "visit",
+            page: "home",
           },
         };
       }
-
-      return {
-        status: 200,
-        url: options.url,
-        headers: {
-          "x-pont": "true",
-          "x-pont-type": "navigation",
-        },
-      };
-    }),
+    ),
   } satisfies ServiceObject<"transporter">;
 
   const pont = Pont.create().init({

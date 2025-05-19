@@ -1,19 +1,20 @@
 import { O } from "@auaust/primitive-kit";
 import {
-  ValidResponse,
-  type ValidResponseInit,
-} from "@core/src/classes/Responses/ValidResponse.js";
+  NavigationResponse,
+  type NavigationResponseInit,
+} from "@core/src/classes/Responses/NavigationResponse.js";
+
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 import type { PageProps, PropsGroups } from "@core/src/types/app.js";
 import type { PageName } from "@core/src/types/utils.js";
 
-export interface PartialResponseInit extends ValidResponseInit {
+export interface PartialResponseInit extends NavigationResponseInit {
   type?: ResponseType.PARTIAL;
   intendedPage: PageName;
   propsGroups: Partial<PropsGroups>;
 }
 
-export class PartialResponse extends ValidResponse {
+export class PartialResponse extends NavigationResponse {
   public readonly type: ResponseType.PARTIAL;
   protected readonly intendedPage: PageName;
   protected declare readonly propsGroups: PropsGroups;

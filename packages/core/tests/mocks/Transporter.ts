@@ -10,7 +10,7 @@ export const transporter = {
     this: MockTransporter,
     pont,
     options: RequestOptions
-  ) {
+  ): Promise<ResponseParcel> {
     const { url, path, method } = this.parseOptions(options);
 
     switch (`${method} ${path}`) {
@@ -19,6 +19,7 @@ export const transporter = {
           url: url.toString(),
           data: {
             type: "visit",
+            page: "home",
           },
         });
 
@@ -53,9 +54,10 @@ export const transporter = {
       status: 200,
       ...result,
       headers: {
+        "x-pont-type": "navigation",
+        "content-type": "application/json",
         ...result.headers,
         "x-pont": "true",
-        "x-pont-type": "navigation",
       },
     };
   },

@@ -1,3 +1,4 @@
+import { N } from "@auaust/primitive-kit";
 import type { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import type { EmptyResponse } from "@core/src/classes/Responses/EmptyResponse.js";
 import type { PartialResponse } from "@core/src/classes/Responses/PartialResponse.js";
@@ -7,9 +8,10 @@ import { Creatable } from "@core/src/concerns/Creatable.js";
 import { ResponseType } from "@core/src/enums/ResponseType.js";
 
 export type ResponseInstance<T extends ResponseType = ResponseType> =
-  | NavigationResponseInstance
-  | DataResponse
+  | ValidResponseInstance
   | UnhandledResponse;
+
+export type ValidResponseInstance = NavigationResponseInstance | DataResponse;
 
 export type NavigationResponseInstance =
   | VisitResponse
@@ -33,5 +35,17 @@ export abstract class Response extends Creatable() {
     this.status = status;
     this.url = url.toString();
     this.headers = new Headers(headers);
+  }
+
+  public isOk(): boolean {
+    return N.isBetween(this.status, 200, 299);
+  }
+
+  public isClientError(): boolean {
+    return N.isBetween(this.status, 400, 499);
+  }
+
+  public isServerError(): boolean {
+    return N.isBetween(this.status, 500, 599);
   }
 }

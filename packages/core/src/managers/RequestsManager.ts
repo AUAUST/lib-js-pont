@@ -3,8 +3,8 @@ import { Request, type RequestInit } from "@core/src/classes/Request.js";
 import type { RequestDataInit } from "@core/src/classes/RequestData.js";
 import { DataResponse } from "@core/src/classes/Responses/DataResponse.js";
 import type {
-  NavigationResponseInstance,
   Response,
+  ValidResponseInstance,
 } from "@core/src/classes/Responses/Response.js";
 import type { UnhandledResponse } from "@core/src/classes/Responses/UnhandledResponse.js";
 import { ExchangeType } from "@core/src/enums/ExchangeType.js";
@@ -85,7 +85,7 @@ export class RequestsManager extends Manager {
     request: Request,
     parcel: ResponseParcel
   ): MightFail<
-    { response: NavigationResponseInstance },
+    { response: ValidResponseInstance },
     { error: Error; response: UnhandledResponse }
   > {
     const response = this.pont.use("responseHandler", request, parcel);
@@ -105,7 +105,8 @@ export class RequestsManager extends Manager {
 
   protected async execute<R extends Response = Response>(
     request: Request
-  ): Promise<ExecuteResult<R>> {
+  ): Promise<ExecuteResult<R>>;
+  protected async execute(request: Request): Promise<ExecuteResult> {
     const { canceled } = this.pont.emit("before", { request });
 
     if (canceled) {
@@ -114,7 +115,7 @@ export class RequestsManager extends Manager {
       return { status: ExecuteStatus.CANCELED };
     }
 
-    let response: NavigationResponseInstance | undefined;
+    let response: ValidResponseInstance | undefined;
 
     this.pont.emit("start", { request });
 
@@ -144,17 +145,22 @@ export class RequestsManager extends Manager {
 
       response = handling.response;
 
-      if (response.isValid() && !response.hasErrors()) {
-        this.pont.emit("success", { request, response });
-      } else {
-        this.pont.emit("error", {
-          request,
-          response,
-          errors: response.getErrors(),
-        });
+      if (response.isOk()) {
+        if (
+          response.exchangeType === ExchangeType.NAVIGATION &&
+          response.hasErrors()
+        ) {
+          this.pont.emit("error", {
+            request,
+            response,
+            errors: response.getErrors(),
+          });
+        } else {
+          this.pont.emit("success", { request, response });
+        }
       }
 
-      return { status: ExecuteStatus.SUCCESS, response: <R>response };
+      return { status: ExecuteStatus.SUCCESS, response };
     } finally {
       this.pont.emit("finish", { request, response });
     }

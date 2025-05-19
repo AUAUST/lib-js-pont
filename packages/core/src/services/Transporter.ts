@@ -13,7 +13,7 @@ export type TransporterSignature = (
 export type ResponseParcel = {
   readonly status: number;
   readonly url: URL | string;
-  readonly headers: Headers | Record<string, string>;
+  readonly headers: HeadersInit;
   readonly data?: unknown;
 };
 
