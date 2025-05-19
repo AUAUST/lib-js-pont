@@ -181,46 +181,15 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     const type = this.getResponseType();
 
     if (type === ResponseType.VISIT) {
-      return VisitResponse.create({
-        url: this.url,
-        status: this.status,
-        headers: this.headers,
-        page: this.getPage(),
-        layout: this.getLayout(),
-        title: this.getTitle(),
-        propsGroups: {
-          page: this.getPageProps(),
-          layout: this.getLayoutProps(),
-          global: this.getGlobalProps(),
-        },
-        effects: this.getEffects(),
-      });
+      return this.handleVisitResponse();
     }
 
     if (type === ResponseType.PARTIAL) {
-      return PartialResponse.create({
-        url: this.url,
-        status: this.status,
-        headers: this.headers,
-        intendedPage: this.getIntendedPage(),
-        title: this.getTitle(),
-        propsGroups: {
-          page: this.getPageProps(),
-          layout: this.getLayoutProps(),
-          global: this.getGlobalProps(),
-        },
-        effects: this.getEffects(),
-      });
+      return this.handlePartialResponse();
     }
 
     if (type === ResponseType.EMPTY) {
-      return EmptyResponse.create({
-        url: this.url,
-        status: this.status,
-        headers: this.headers,
-        title: this.getTitle(),
-        effects: this.getEffects(),
-      });
+      return this.handleEmptyResponse();
     }
 
     return UnhandledResponse.create({
@@ -228,6 +197,49 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
       status: this.status,
       headers: this.headers,
       reason: "The response does not contain a valid type",
+    });
+  }
+
+  protected handleVisitResponse(): VisitResponse {
+    return VisitResponse.create({
+      url: this.url,
+      status: this.status,
+      headers: this.headers,
+      page: this.getPage(),
+      layout: this.getLayout(),
+      title: this.getTitle(),
+      propsGroups: {
+        page: this.getPageProps(),
+        layout: this.getLayoutProps(),
+        global: this.getGlobalProps(),
+      },
+      effects: this.getEffects(),
+    });
+  }
+
+  protected handlePartialResponse(): PartialResponse {
+    return PartialResponse.create({
+      url: this.url,
+      status: this.status,
+      headers: this.headers,
+      intendedPage: this.getIntendedPage(),
+      title: this.getTitle(),
+      propsGroups: {
+        page: this.getPageProps(),
+        layout: this.getLayoutProps(),
+        global: this.getGlobalProps(),
+      },
+      effects: this.getEffects(),
+    });
+  }
+
+  protected handleEmptyResponse(): EmptyResponse {
+    return EmptyResponse.create({
+      url: this.url,
+      status: this.status,
+      headers: this.headers,
+      title: this.getTitle(),
+      effects: this.getEffects(),
     });
   }
 
