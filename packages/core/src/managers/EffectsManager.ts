@@ -85,13 +85,13 @@ export class EffectsManager extends Manager {
     }
 
     if (S.is(effect)) {
-      this.execute(effect, undefined);
+      return this.execute(effect, undefined);
     }
 
-    if (O.isStrict(effect)) {
+    if (O.is(effect)) {
       const { type, props } = effect;
 
-      this.execute(type, props);
+      return this.execute(type, props);
     }
 
     throw new Error(
