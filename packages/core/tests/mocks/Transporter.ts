@@ -54,7 +54,7 @@ export const transporter = {
       status: 200,
       ...result,
       headers: {
-        "x-pont-type": "navigation",
+        "x-pont-mode": "navigation",
         "content-type": "application/json",
         ...result.headers,
         "x-pont": "true",

@@ -8,13 +8,13 @@ test("Pont sends requests using the transporter", async () => {
   const transporter = {
     handle: vitest.fn(
       async (pont, options: RequestOptions): Promise<ResponseParcel> => {
-        if (options.headers?.["x-pont-type"] === "data") {
+        if (options.headers?.["x-pont-mode"] === "data") {
           return {
             status: 200,
             url: options.url,
             headers: {
               "x-pont": "true",
-              "x-pont-type": "data",
+              "x-pont-mode": "data",
             },
             data: {
               comment: `${(<any>options.data)?.name} is a great name!`,
@@ -27,7 +27,7 @@ test("Pont sends requests using the transporter", async () => {
           url: options.url,
           headers: {
             "x-pont": "true",
-            "x-pont-type": "navigation",
+            "x-pont-mode": "navigation",
             "content-type": "application/json",
           },
           data: {
@@ -51,12 +51,12 @@ test("Pont sends requests using the transporter", async () => {
   });
 
   expect(transporter.handle).toHaveBeenCalledExactlyOnceWith(pont, {
-    type: "navigation",
+    mode: "navigation",
     url: "https://example.com/",
     method: "get",
     data: undefined,
     headers: expect.objectContaining({
-      "x-pont-type": "navigation",
+      "x-pont-mode": "navigation",
     }),
   });
 
@@ -67,13 +67,13 @@ test("Pont sends requests using the transporter", async () => {
   );
 
   expect(transporter.handle).toHaveBeenLastCalledWith(pont, {
-    type: "navigation",
+    mode: "navigation",
     url: "https://example.com/",
     method: "post",
     data: { john: "doe" },
     headers: expect.objectContaining({
       "x-test": "Test",
-      "x-pont-type": "navigation",
+      "x-pont-mode": "navigation",
     }),
   });
 
@@ -83,12 +83,12 @@ test("Pont sends requests using the transporter", async () => {
   });
 
   expect(transporter.handle).toHaveBeenLastCalledWith(pont, {
-    type: "data",
+    mode: "data",
     url: "https://example.com/",
     method: "post",
     data: { name: "John Cena" },
     headers: expect.objectContaining({
-      "x-pont-type": "data",
+      "x-pont-mode": "data",
     }),
   });
 
