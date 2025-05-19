@@ -10,8 +10,8 @@ import { Service } from "@core/src/classes/Service.js";
 import { ExchangeMode } from "@core/src/enums/ExchangeType.js";
 import { Header } from "@core/src/enums/Header.js";
 import { isResponseType, ResponseType } from "@core/src/enums/ResponseType.js";
+import type { Effects } from "@core/src/index.js";
 import type { ResponseParcel } from "@core/src/services/Transporter.js";
-import type { Effects } from "@core/src/types/effects.js";
 
 /**
  * Handles a raw response from the server and converts it into a usable format.

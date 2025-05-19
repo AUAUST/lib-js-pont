@@ -1,4 +1,8 @@
 export {
+  EffectsManager,
+  type EffectsManagerInit,
+} from "@core/src/managers/EffectsManager.js";
+export {
   EventsManager,
   type EventsManagerInit,
 } from "@core/src/managers/EventsManager.js";

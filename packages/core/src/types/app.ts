@@ -1,4 +1,4 @@
-import type { Effects } from "@core/src/types/effects.js";
+import type { Effects } from "@core/src/index.js";
 import type { Errors } from "@core/src/types/errors.js";
 import type { LayoutName, PageName } from "@core/src/types/utils.js";
 

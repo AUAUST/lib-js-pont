@@ -3,7 +3,7 @@ import {
   Response,
   type BaseResponseInit,
 } from "@core/src/classes/Responses/Response.js";
-import type { Effects } from "@core/src/types/effects.js";
+import type { Effects } from "@core/src/index.js";
 
 export interface ValidResponseInit extends BaseResponseInit {
   effects?: Effects;

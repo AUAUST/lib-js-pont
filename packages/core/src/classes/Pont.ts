@@ -5,11 +5,13 @@ import { HasSingleton } from "@core/src/concerns/HasSingleton.js";
 import type { WithPont } from "@core/src/contracts/WithPont.js";
 import type { EventRegistrars } from "@core/src/managers/EventsManager.js";
 import {
+  EffectsManager,
   EventsManager,
   HeadersManager,
   RequestsManager,
   ServicesManager,
   StateManager,
+  type EffectsManagerInit,
   type EventsManagerInit,
   type HeadersManagerInit,
   type ServicesManagerInit,
@@ -22,7 +24,19 @@ export type PontInit = {
 } & EventsManagerInit &
   HeadersManagerInit &
   ServicesManagerInit &
-  StateManagerInit;
+  StateManagerInit &
+  EffectsManagerInit;
+
+interface Pont
+  extends Pick<
+    EffectsManager,
+    | "registerDefaultEffectHandler"
+    | "registerEffectHandler"
+    | "registerEffectHandlers"
+    | "registerWildcardEffectHandler"
+    | "runEffect"
+    | "runEffects"
+  > {}
 
 interface Pont
   extends Pick<EventsManager, "emit" | "on" | "once" | keyof EventRegistrars> {}
@@ -70,6 +84,7 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
 
   private initialized: boolean = false;
   private readonly managers: {
+    effects: EffectsManager;
     events: EventsManager;
     headers: HeadersManager;
     requests: RequestsManager;
@@ -87,12 +102,22 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
     this.pont = this;
 
     this.managers = {
+      effects: EffectsManager.create(this),
       events: EventsManager.create(this),
       headers: HeadersManager.create(this),
       requests: RequestsManager.create(this),
       services: ServicesManager.create(this),
       state: StateManager.create(this),
     };
+
+    forwardCalls(this.managers.effects, this.pont, [
+      "registerDefaultEffectHandler",
+      "registerEffectHandler",
+      "registerEffectHandlers",
+      "registerWildcardEffectHandler",
+      "runEffect",
+      "runEffects",
+    ]);
 
     forwardCalls(this.managers.events, this.pont, [
       "emit",
@@ -148,11 +173,13 @@ class Pont extends Creatable(HasSingleton()) implements WithPont {
     initialState,
     services,
     listeners,
+    effects,
   }: PontInit = {}): this {
     if (this.initialized) {
       throw new Error("Pont is already initialized");
     }
 
+    this.managers.effects.init({ effects });
     this.managers.events.init({ listeners });
     this.managers.state.init({ initialState });
     this.managers.requests.init({ baseUrl });

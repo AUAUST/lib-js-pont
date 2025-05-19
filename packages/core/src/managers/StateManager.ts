@@ -3,6 +3,7 @@ import {
   Response,
   ValidResponseInstance,
 } from "@core/src/classes/Responses/Response.js";
+import type { Effects } from "@core/src/index.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import type {
   GlobalProps,
@@ -11,7 +12,6 @@ import type {
   PropsGroups,
   StateInit,
 } from "@core/src/types/app.js";
-import type { Effects } from "@core/src/types/effects.js";
 import type { ErrorBag } from "@core/src/types/errors.js";
 import type { LayoutName, PageName } from "@core/src/types/utils.js";
 

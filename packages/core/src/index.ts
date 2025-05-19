@@ -8,6 +8,17 @@ export { Request, Service, Url, UrlParams } from "@core/src/classes/index.js";
 export { type PontInit } from "@core/src/classes/Pont.js";
 export { Method } from "@core/src/enums/Method.js";
 export type {
+  Effect,
+  EffectContext,
+  EffectHandler,
+  EffectInit,
+  EffectMatcher,
+  EffectMatcherFn,
+  EffectName,
+  Effects,
+  EffectsInit,
+} from "@core/src/managers/EffectsManager.js";
+export type {
   EventDetails,
   EventListener,
   EventListeners,
