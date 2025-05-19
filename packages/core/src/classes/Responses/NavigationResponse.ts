@@ -1,4 +1,4 @@
-import { O } from "@auaust/primitive-kit";
+import { O, S } from "@auaust/primitive-kit";
 import {
   ValidResponse,
   type ValidResponseInit,
@@ -10,18 +10,21 @@ import type { ErrorBag } from "@core/src/types/errors.js";
 export interface NavigationResponseInit extends ValidResponseInit {
   propsGroups?: Partial<Pick<PropsGroups, "global">>;
   errors?: ErrorBag;
+  title?: string;
 }
 
 export abstract class NavigationResponse extends ValidResponse {
   public readonly exchangeType = ExchangeType.NAVIGATION;
   protected readonly propsGroups: Pick<PropsGroups, "global">;
   protected readonly errors?: ErrorBag;
+  protected readonly title?: string;
 
   public constructor(init: NavigationResponseInit) {
     super(init);
 
     this.propsGroups = { global: O.from(init.propsGroups?.global) };
     this.errors = O.is(init.errors) ? init.errors : undefined;
+    this.title = S.is(init.title) ? init.title : undefined;
   }
 
   public getGlobalProps() {
@@ -34,5 +37,9 @@ export abstract class NavigationResponse extends ValidResponse {
 
   public getErrors(): ErrorBag | undefined {
     return this.errors;
+  }
+
+  public getTitle(): string | undefined {
+    return this.title;
   }
 }

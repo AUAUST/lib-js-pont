@@ -1,5 +1,8 @@
 import { O } from "@auaust/primitive-kit";
-import { Response } from "@core/src/classes/Responses/Response.js";
+import {
+  Response,
+  ValidResponseInstance,
+} from "@core/src/classes/Responses/Response.js";
 import { Manager } from "@core/src/managers/Manager.js";
 import type {
   GlobalProps,
@@ -9,6 +12,9 @@ import type {
   StateInit,
 } from "@core/src/types/app.js";
 import type { LayoutName, PageName } from "@core/src/types/utils.js";
+import { ExchangeType } from "../enums/ExchangeType.js";
+import { Effects } from "../types/effects.js";
+import { ErrorBag } from "../types/errors.js";
 
 export type StateManagerInit = {
   initialState?: StateInit;
@@ -68,8 +74,14 @@ export class StateManager extends Manager {
     return this.propsGroups.global;
   }
 
-  public applySideEffects(response: Response): void {
-    // const title = response.getTitle();
+  public applySideEffects(response: ValidResponseInstance): void {
+    if (response.exchangeType === ExchangeType.DATA) {
+      return this.applyEffects(response.getEffects());
+    }
+
+    this.applyTitle(response.getTitle());
+    this.applyErrors(response.getErrors());
+    this.applyEffects(response.getEffects());
     // if (title) {
     //   this.applyTitle(title);
     // }
@@ -83,11 +95,11 @@ export class StateManager extends Manager {
     // }
   }
 
-  public applyTitle(title: string): void {}
+  public applyTitle(title: string | undefined): void {}
 
-  public applyErrors(errors: unknown): void {}
+  public applyErrors(errors: ErrorBag | undefined): void {}
 
-  public applyEffects(effects: unknown): void {}
+  public applyEffects(effects: Effects | undefined): void {}
 
   public updateState(response: Response, options: StateUpdateOptions = {}) {
     // switch (response.type) {

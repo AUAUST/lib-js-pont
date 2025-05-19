@@ -187,6 +187,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
         headers: this.headers,
         page: this.getPage(),
         layout: this.getLayout(),
+        title: this.getTitle(),
         propsGroups: {
           page: this.getPageProps(),
           layout: this.getLayoutProps(),
@@ -202,6 +203,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
         status: this.status,
         headers: this.headers,
         intendedPage: this.getIntendedPage(),
+        title: this.getTitle(),
         propsGroups: {
           page: this.getPageProps(),
           layout: this.getLayoutProps(),
@@ -216,6 +218,7 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
         url: this.url,
         status: this.status,
         headers: this.headers,
+        title: this.getTitle(),
         effects: this.getEffects(),
       });
     }
@@ -262,6 +265,10 @@ export class ResponseHandlerService extends Service<"responseHandler"> {
     }
 
     throw new Error("The response does not contain a valid intended page");
+  }
+
+  protected getTitle() {
+    return this.json?.title;
   }
 
   protected getGlobalProps() {
