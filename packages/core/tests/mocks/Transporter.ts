@@ -11,7 +11,7 @@ export const transporter = {
     pont,
     options: RequestOptions
   ): Promise<ResponseParcel> {
-    const { url, path, method } = this.parseOptions(options);
+    const { url, path, method, data } = this.parseOptions(options);
 
     switch (`${method} ${path}`) {
       case "GET /":
@@ -35,6 +35,16 @@ export const transporter = {
           url: url.toString(),
           headers: {},
         };
+
+      case "POST /return-json-as-is":
+        return this.defaults({
+          url: url.toString(),
+          data: {
+            type: "visit",
+            page: "home",
+            ...data,
+          },
+        });
 
       case "GET /network-error":
       case "POST /network-error":
