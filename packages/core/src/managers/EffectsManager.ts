@@ -30,6 +30,8 @@ export type EffectContext = {
   readonly executionCount: number;
 };
 
+export type ExecutionContext = [EffectContext, incrementCount: () => void];
+
 export type EffectsManagerInit = {
   effects?: EffectsInit;
 };
@@ -102,17 +104,19 @@ export class EffectsManager extends Manager {
   }
 
   protected execute(effect: EffectName, props: unknown): void {
-    const context = this.createEffectContext(effect, props);
+    const executionContext = this.createEffectContext(effect, props);
 
-    this.runStringHandlers(effect, context);
-    this.runRegExpHandlers(effect, context);
-    this.runFunctionHandlers(effect, context);
+    this.runStringHandlers(effect, executionContext);
+    this.runRegExpHandlers(effect, executionContext);
+    this.runFunctionHandlers(effect, executionContext);
+
+    const [context] = executionContext;
 
     if (!context.wasExecuted) {
-      this.runDefaultHandlers(context);
+      this.runDefaultHandlers(executionContext);
     }
 
-    this.runWildcardHandlers(context);
+    this.runWildcardHandlers(executionContext);
 
     if (!context.wasExecuted) {
       throw new Error(
@@ -121,52 +125,66 @@ export class EffectsManager extends Manager {
     }
   }
 
-  protected runStringHandlers(effect: EffectName, context: EffectContext) {
+  protected runStringHandlers(
+    effect: EffectName,
+    executionContext: ExecutionContext
+  ) {
     const handlers = this.handlers.string[effect];
 
     if (handlers) {
       for (const handler of handlers) {
-        this.call(handler, context);
+        this.call(handler, executionContext);
       }
     }
   }
 
-  protected runRegExpHandlers(effect: EffectName, context: EffectContext) {
+  protected runRegExpHandlers(
+    effect: EffectName,
+    executionContext: ExecutionContext
+  ) {
     for (const [regexp, handlers] of this.handlers.regexp.entries()) {
       if (regexp.test(effect)) {
         for (const handler of handlers) {
-          this.call(handler, context);
+          this.call(handler, executionContext);
         }
       }
     }
   }
 
-  protected runFunctionHandlers(effect: EffectName, context: EffectContext) {
+  protected runFunctionHandlers(
+    effect: EffectName,
+    executionContext: ExecutionContext
+  ) {
     for (const [fn, handlers] of this.handlers.function.entries()) {
       if (fn.call(this.pont, effect)) {
         for (const handler of handlers) {
-          this.call(handler, context);
+          this.call(handler, executionContext);
         }
       }
     }
   }
 
-  protected runDefaultHandlers(context: EffectContext): void {
+  protected runDefaultHandlers(executionContext: ExecutionContext): void {
     for (const handler of this.handlers.default) {
-      this.call(handler, context);
+      this.call(handler, executionContext);
     }
   }
 
-  protected runWildcardHandlers(context: EffectContext): void {
+  protected runWildcardHandlers(executionContext: ExecutionContext): void {
     for (const handler of this.handlers.wildcard) {
-      this.call(handler, context);
+      this.call(handler, executionContext);
     }
   }
 
-  protected call(handler: EffectHandler, context: EffectContext): void {
+  protected call(
+    handler: EffectHandler,
+    executionContext: ExecutionContext
+  ): void {
+    const [context, increment] = executionContext;
+
     handler.call(this.pont, context);
-    // @ts-expect-error
-    context.__incrementExecutionCount();
+
+    increment();
   }
 
   public registerEffectHandlers(effects: EffectsInit | undefined): this {
@@ -332,7 +350,7 @@ export class EffectsManager extends Manager {
   protected createEffectContext(
     type: EffectName,
     props: unknown
-  ): EffectContext {
+  ): ExecutionContext {
     let wasHandled = false;
     let executionCount = 0;
 
@@ -344,21 +362,22 @@ export class EffectsManager extends Manager {
       executionCount++;
     };
 
-    return {
-      type,
-      props,
-      handled,
-      get wasHandled() {
-        return wasHandled;
+    return [
+      {
+        type,
+        props,
+        handled,
+        get wasHandled() {
+          return wasHandled;
+        },
+        get wasExecuted() {
+          return executionCount > 0;
+        },
+        get executionCount() {
+          return executionCount;
+        },
       },
-      get wasExecuted() {
-        return executionCount > 0;
-      },
-      get executionCount() {
-        return executionCount;
-      },
-      // @ts-expect-error
-      __incrementExecutionCount: incrementExecutionCount,
-    };
+      incrementExecutionCount,
+    ];
   }
 }
