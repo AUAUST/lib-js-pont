@@ -121,58 +121,34 @@ export class EffectsManager extends Manager {
     }
   }
 
-  protected runStringHandlers(
-    effect: EffectName,
-    context: EffectContext
-  ): boolean {
+  protected runStringHandlers(effect: EffectName, context: EffectContext) {
     const handlers = this.handlers.string[effect];
-
-    let executed = false;
 
     if (handlers) {
       for (const handler of handlers) {
         this.call(handler, context);
-        executed = true;
       }
     }
-
-    return executed;
   }
 
-  protected runRegExpHandlers(
-    effect: EffectName,
-    context: EffectContext
-  ): boolean {
-    let executed = false;
-
+  protected runRegExpHandlers(effect: EffectName, context: EffectContext) {
     for (const [regexp, handlers] of this.handlers.regexp.entries()) {
       if (regexp.test(effect)) {
         for (const handler of handlers) {
           this.call(handler, context);
-          executed = true;
         }
       }
     }
-
-    return executed;
   }
 
-  protected runFunctionHandlers(
-    effect: EffectName,
-    context: EffectContext
-  ): boolean {
-    let executed = false;
-
+  protected runFunctionHandlers(effect: EffectName, context: EffectContext) {
     for (const [fn, handlers] of this.handlers.function.entries()) {
       if (fn.call(this.pont, effect)) {
         for (const handler of handlers) {
           this.call(handler, context);
-          executed = true;
         }
       }
     }
-
-    return executed;
   }
 
   protected runDefaultHandlers(context: EffectContext): void {

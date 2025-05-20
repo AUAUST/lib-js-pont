@@ -1,7 +1,7 @@
 import { type EffectContext, Pont, type PontInit } from "@auaust/pont";
 import { transporter } from "@core/tests/mocks/Transporter.js";
 import { describe } from "node:test";
-import { beforeAll, beforeEach, expect, test, vitest } from "vitest";
+import { beforeEach, expect, test, vitest } from "vitest";
 
 describe("Pont effects", () => {
   const init: PontInit = {
@@ -22,9 +22,9 @@ describe("Pont effects", () => {
 
   let pont: Pont;
 
-  beforeEach(() => vitest.clearAllMocks());
+  beforeEach(() => {
+    vitest.clearAllMocks();
 
-  beforeAll(() => {
     pont = Pont.from({
       ...init,
       effects: [
@@ -174,7 +174,7 @@ describe("Pont effects", () => {
         ...init,
       });
 
-      expect(async () => await visit()).rejects.toThrowError(
+      await expect(async () => await visit()).rejects.toThrowError(
         /sure to register a handler/
       );
     });
