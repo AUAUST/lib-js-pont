@@ -167,4 +167,61 @@ describe("Pont effects", () => {
       expect(executedInWildcardHandler).toBe(true);
     });
   });
+
+  describe("cause errors", () => {
+    test("if no handler matched an effect", async () => {
+      pont = Pont.from({
+        ...init,
+      });
+
+      expect(async () => await visit()).rejects.toThrowError(
+        /sure to register a handler/
+      );
+    });
+  });
+
+  describe("can be registered after Pont creation", () => {
+    test("registers a string handler dynamically", async () => {
+      const handler = vitest.fn();
+
+      pont.registerEffectHandler("dynamic-handler", handler);
+
+      await pont.post("/return-json-as-is", {
+        effects: ["dynamic-handler"],
+      });
+
+      expect(handler).toHaveBeenCalledOnce();
+      expect(handler).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "dynamic-handler" })
+      );
+    });
+
+    test("returns a function to unregister the handler", async () => {
+      const handler = vitest.fn();
+
+      const unregister = pont.registerEffectHandler("dynamic-handler", handler);
+
+      await pont.post("/return-json-as-is", {
+        effects: ["dynamic-handler"],
+      });
+
+      expect(handler).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({ type: "dynamic-handler" })
+      );
+
+      expect(wildcardHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "dynamic-handler" })
+      );
+
+      unregister();
+
+      handler.mockClear();
+
+      await pont.post("/return-json-as-is", {
+        effects: ["dynamic-handler"],
+      });
+
+      expect(handler).not.toHaveBeenCalled();
+    });
+  });
 });

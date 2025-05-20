@@ -104,17 +104,21 @@ export class EffectsManager extends Manager {
   protected execute(effect: EffectName, props: unknown): void {
     const context = this.createEffectContext(effect, props);
 
-    let executed = false;
+    this.runStringHandlers(effect, context);
+    this.runRegExpHandlers(effect, context);
+    this.runFunctionHandlers(effect, context);
 
-    executed = this.runStringHandlers(effect, context) || executed;
-    executed = this.runRegExpHandlers(effect, context) || executed;
-    executed = this.runFunctionHandlers(effect, context) || executed;
-
-    if (!executed) {
+    if (!context.wasExecuted) {
       this.runDefaultHandlers(context);
     }
 
     this.runWildcardHandlers(context);
+
+    if (!context.wasExecuted) {
+      throw new Error(
+        `The effect "${effect}" was not handled. Make sure to register a handler for it, or use a default or wildcard handler.`
+      );
+    }
   }
 
   protected runStringHandlers(
@@ -211,17 +215,32 @@ export class EffectsManager extends Manager {
     return this;
   }
 
-  public registerEffectHandler(effect: EffectInit): this {
+  public registerEffectHandler(
+    matcher: EffectMatcher,
+    handler: EffectHandler
+  ): () => void;
+  public registerEffectHandler(effect: EffectInit): () => void;
+  public registerEffectHandler(
+    effectOrName: EffectInit | EffectMatcher,
+    maybeHandler?: EffectHandler
+  ): () => void {
     let matcher: EffectMatcher | undefined, handler: EffectHandler | undefined;
 
-    if (A.is(effect)) {
-      [matcher, handler] = effect;
-    } else if (O.isStrict(effect)) {
-      ({ matcher, handler } = effect);
+    if (A.is(effectOrName)) {
+      [matcher, handler] = effectOrName;
+    } else if (
+      S.is(effectOrName) ||
+      F.is(effectOrName) ||
+      effectOrName instanceof RegExp
+    ) {
+      matcher = effectOrName;
+      handler = maybeHandler;
+    } else if (O.is(effectOrName)) {
+      ({ matcher, handler } = effectOrName);
     }
 
     if (handler === undefined) {
-      return this;
+      return F.noop;
     }
 
     if (!F.is(handler)) {
@@ -261,51 +280,77 @@ export class EffectsManager extends Manager {
     );
   }
 
-  public registerDefaultEffectHandler(handler: EffectHandler): this {
+  public registerDefaultEffectHandler(handler: EffectHandler): () => void {
     this.handlers.default.add(handler);
 
-    return this;
+    return () => this.unregisterDefaultEffectHandler(handler);
   }
 
-  public registerWildcardEffectHandler(handler: EffectHandler): this {
+  protected unregisterDefaultEffectHandler(handler: EffectHandler) {
+    this.handlers.default.delete(handler);
+  }
+
+  public registerWildcardEffectHandler(handler: EffectHandler): () => void {
     this.handlers.wildcard.add(handler);
 
-    return this;
+    return () => this.unregisterWildcardEffectHandler(handler);
+  }
+
+  protected unregisterWildcardEffectHandler(handler: EffectHandler) {
+    this.handlers.wildcard.delete(handler);
   }
 
   protected registerStringHandler(
     matcher: EffectName,
     handler: EffectHandler
-  ): this {
+  ): () => void {
     (this.handlers.string[matcher] ??= new Set()).add(handler);
 
-    return this;
+    return () => this.unregisterStringHandler(matcher, handler);
+  }
+
+  protected unregisterStringHandler(
+    matcher: EffectName,
+    handler: EffectHandler
+  ) {
+    this.handlers.string[matcher]?.delete(handler);
   }
 
   protected registerRegExpHandler(
     matcher: RegExp,
     handler: EffectHandler
-  ): this {
+  ): () => void {
     if (!this.handlers.regexp.has(matcher)) {
       this.handlers.regexp.set(matcher, new Set());
     }
 
     this.handlers.regexp.get(matcher)!.add(handler);
 
-    return this;
+    return () => this.unregisterRegExpHandler(matcher, handler);
+  }
+
+  protected unregisterRegExpHandler(matcher: RegExp, handler: EffectHandler) {
+    this.handlers.regexp.get(matcher)?.delete(handler);
   }
 
   protected registerFunctionHandler(
     matcher: EffectMatcherFn,
     handler: EffectHandler
-  ): this {
+  ): () => void {
     if (!this.handlers.function.has(matcher)) {
       this.handlers.function.set(matcher, new Set());
     }
 
     this.handlers.function.get(matcher)!.add(handler);
 
-    return this;
+    return () => this.unregisterFunctionHandler(matcher, handler);
+  }
+
+  protected unregisterFunctionHandler(
+    matcher: EffectMatcherFn,
+    handler: EffectHandler
+  ) {
+    this.handlers.function.get(matcher)?.delete(handler);
   }
 
   protected createEffectContext(
