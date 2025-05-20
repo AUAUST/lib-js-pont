@@ -23,10 +23,15 @@ export type EffectMatcher =
 
 export type EffectContext = {
   readonly type: EffectName;
+  /** Any properties that are passed to the effect. */
   readonly props: unknown;
+  /** Marks the effect as handled. Subsequent handlers can check if the effect was handled by checking the `wasHandled` property. */
   handled: () => void;
+  /** Indicates if the effect was marked as handled by another handler. Has no impact on the internal execution of the effect. It is a convenience for users. */
   readonly wasHandled: boolean;
+  /** Indicates if the effect was executed by any other handler previous to this one. */
   readonly wasExecuted: boolean;
+  /** The number of times the effect has been executed. */
   readonly executionCount: number;
 };
 
