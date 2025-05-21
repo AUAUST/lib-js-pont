@@ -7,8 +7,7 @@ import {
 } from "@auaust/pont";
 import { S } from "@auaust/primitive-kit";
 import { transporter } from "@core/tests/mocks/Transporter.js";
-import { describe } from "node:test";
-import { beforeEach, expect, test, vitest } from "vitest";
+import { beforeEach, describe, expect, test, vitest } from "vitest";
 
 describe("Pont events", () => {
   const init: PontInit = {

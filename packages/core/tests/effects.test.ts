@@ -1,7 +1,6 @@
 import { type EffectContext, Pont, type PontInit } from "@auaust/pont";
 import { transporter } from "@core/tests/mocks/Transporter.js";
-import { describe } from "node:test";
-import { beforeEach, expect, test, vitest } from "vitest";
+import { beforeEach, describe, expect, test, vitest } from "vitest";
 
 describe("Pont effects", () => {
   const init: PontInit = {
